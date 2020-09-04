@@ -6,4 +6,7 @@
 /site/static/code
 /figures/*.png
 /figures/*.pdf
-
+*.o
+/code/blur_image/*/blur
+/code/calculate_pi/*/calcpi
+/code/add_numbers/*/addnumbers
