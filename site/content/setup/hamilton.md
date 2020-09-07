@@ -11,3 +11,10 @@ instructions](https://www.dur.ac.uk/cis/local/hpc/hamilton/account/#getting_acco
 
 Since we'll be logging in a lot, I also provide some [tips]({{< ref
 configuration.md >}}) on how to configure `ssh` for swifter login.
+
+# Using cosma instead
+
+Some of you may have access to the Physics-run
+[COSMA](https://www.dur.ac.uk/icc/cosma/) system. You can also use
+this system, the same information about setting up ssh login also
+applies.

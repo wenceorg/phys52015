@@ -1,6 +1,5 @@
 baseURL = 'https://teaching.wence.uk/phys52015/'
 DefaultContentLanguage = 'en'
-copyright = 'foo'
 title = 'PHYS52015 – Introduction to HPC'
 
 staticDir = ['static']
@@ -35,4 +34,4 @@ BookRepo = 'https://github.com/wenceorg/phys52015'
 ModulePage = 'https://www.dur.ac.uk/postgraduate.modules/module_description/?year=2020&module_code=PHYS52015'
 BookEditPath = 'edit/master/content'
 ImageDir = 'images'
-CopyRight = '&copy; 2020-- [Lawrence Mitchell](mailto:lawrence@wence.uk) & [Durham University](https://www.dur.ac.uk/).'
+CopyRight = '&copy; 2020-- [Lawrence Mitchell](mailto:lawrence@wence.uk), [Christian Arnold](https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712) & [Durham University](https://www.dur.ac.uk/).'
