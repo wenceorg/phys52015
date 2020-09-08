@@ -20,6 +20,6 @@ Hands-On stuff
 
 ## Lecturers
 
-Lawrence Mitchell
+[Lawrence Mitchell](mailto:lawrence@wence.uk)
 
-Christian Arnold
+[Christian Arnold](https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712)
