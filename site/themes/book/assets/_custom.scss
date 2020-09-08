@@ -2,6 +2,16 @@
 
 // @import "plugins/numbered";
 
+.book-menu {
+    .book-center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        padding-bottom: $padding-16;
+        width: 75%;
+    }
+}
+
 .markdown {
     .question {
         border-color: #4a4;

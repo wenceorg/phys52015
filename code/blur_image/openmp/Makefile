@@ -9,7 +9,7 @@ EXE = blur
 
 .PHONY: all clean
 
-all: $(EXE)
+all: $(EXE) Makefile
 
 $(EXE): $(OBJ) $(DEPS)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LIBS)

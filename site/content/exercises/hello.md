@@ -42,14 +42,12 @@ Create a C file `serial.c` containing the below.
 {{< code-include "hello/serial.c" "c" >}}
 
 {{< hint "info" >}}
-
 You can copy the download link and use `wget` after logging in to get the
 code
 
 ```sh
 $ wget {{< code-ref "hello/serial.c" >}}
 ```
-
 {{< /hint >}}
 
 Having done that you should compile the code with `icc`

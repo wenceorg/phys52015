@@ -1,4 +1,4 @@
-CC = gcc-10
+CC = gcc
 
 CFLAGS = -Wall -Wextra -I. -O2 -std=c11
 LIBS = -lm
@@ -9,7 +9,7 @@ EXE = blur
 
 .PHONY: all clean
 
-all: $(EXE)
+all: $(EXE) Makefile
 
 $(EXE): $(OBJ) $(DEPS)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LIBS)
