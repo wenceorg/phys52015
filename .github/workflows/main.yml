@@ -22,4 +22,4 @@ jobs:
                      "repository": "${{ github.repository }}",
                      "repository_name": "${{ github.event.repository.name}}",
                      "site_location": "site",
-                     "build command": "make html"}}'
+                     "build_command": "make html"}}'
