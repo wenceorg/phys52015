@@ -1,7 +1,7 @@
 @import "variables";
 
 .markdown {
-  line-height: 1.6;
+    line-height: 1.6;
 
   // remove padding at the beginning of page
   > :first-child {
@@ -78,6 +78,8 @@
     background: $gray-100;
     border-radius: $border-radius;
     overflow-x: auto;
+    line-height: 1.2;
+    margin: 0;
 
     code {
       padding: 0;

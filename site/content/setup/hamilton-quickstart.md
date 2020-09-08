@@ -1,6 +1,35 @@
 ---
-title: "Hamilton quickstart"
+title: "Hamilton access & quickstart"
 ---
+
+# Accessing Durham Supercomputing facilities
+
+Most of the exercises in this course will require that you use one of
+Durham's supercomputing systems. This will either be Hamilton, or (for
+some Physics students) COSMA. You don't automatically get an account
+on Hamilton, so you'll need to register for one.
+
+## Access to Hamilton
+
+For many of the exercises in the course, we will be using the
+[Hamilton](https://www.dur.ac.uk/cis/local/hpc/) supercomputer. You
+should obtain an account on Hamilton by [following their
+instructions](https://www.dur.ac.uk/cis/local/hpc/hamilton/account/#getting_account).
+
+Since we'll be logging in a lot, I also provide some [tips]({{< ref
+configuration.md >}}) on how to configure `ssh` for swifter login.
+
+## Access to COSMA
+
+Some of you may have access to the Physics-run
+[COSMA](https://www.dur.ac.uk/icc/cosma/) system. You can also use
+this system, the same information about setting up ssh login also
+applies.
+
+The rest of the guide is a quick start on using supercomputing systems
+where you must compile code and then submit it via a batch scheduler.
+The focus is on Hamilton, but COSMA uses the same scheduling system,
+so most things will work with only minor changes.
 
 # Supercomputing Durham: Hamilton Quick Start Guide
 
