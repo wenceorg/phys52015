@@ -1,6 +1,7 @@
 ---
 title: "Vectorisation: loops with conditionals"
 weight: 2
+katex: true
 ---
 
 # Vectorisation of a loop with conditionals

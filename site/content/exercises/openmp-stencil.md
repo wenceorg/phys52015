@@ -1,6 +1,7 @@
 ---
 title: "OpenMP: stencils & profiling"
 weight: 5
+katex: false
 ---
 
 # Revisiting the stencil exercise

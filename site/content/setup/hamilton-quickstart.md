@@ -121,7 +121,7 @@ most supercomputers, Hamilton consists of two parts.
 1. Login nodes (this is where we've been so far);
 2. Compute nodes (this is where you want to run your code).
 
-{{< manfig src="hamilton-nodes.png"
+{{< manfig src="hamilton-nodes.svg"
     width="70%"
     caption="Schematic of Hamilton login and compute nodes" >}}
 

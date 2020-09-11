@@ -1,6 +1,7 @@
 ---
 title: "Parallel Hello World"
 weight: 1
+katex: false
 ---
 
 # Hello, World!

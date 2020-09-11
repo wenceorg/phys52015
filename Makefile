@@ -1,14 +1,14 @@
 pyfigures = $(wildcard figures/*.py)
 drawiofigures = $(wildcard figures/*.drawio)
 
-drawiopng = $(patsubst %.drawio,%.png,$(drawiofigures))
+drawiosvg = $(patsubst %.drawio,%.svg,$(drawiofigures))
 drawiopdf = $(patsubst %.drawio,%.pdf,$(drawiofigures))
-pypng = $(patsubst %.py,%.png,$(pyfigures))
+pysvg = $(patsubst %.py,%.svg,$(pyfigures))
 pypdf = $(patsubst %.py,%.pdf,$(pyfigures))
 
-.PHONY: html pypng allcode alltgz killds_store
+.PHONY: html allsvg pysvg allcode alltgz killds_store
 
-html: allcode alltgz pypng
+html: allcode alltgz allsvg
 	(cd site; hugo --minify --cleanDestinationDir)
 
 allslides: allfigures
@@ -16,21 +16,23 @@ allslides: allfigures
 site/static/images:
 	mkdir -p $@
 
-pypng: site/static/images $(pypng)
-	rsync --delete -rupm figures/ site/static/images/auto/ --filter '+ */' --filter '+ *.png' --filter '- *'
+allsvg: pysvg drawiosvg
 
-drawiopng: site/static/images $(drawiopng)
-	rsync --delete -rupm figures/ site/static/images/manual/ --filter '+ */' --filter '+ *.png' --filter '- *'
+pysvg: site/static/images $(pysvg)
+	rsync --delete -rupm $(pysvg) site/static/images/auto/
+
+drawiosvg: site/static/images $(drawiosvg)
+	rsync --delete -rupm $(drawiosvg) site/static/images/manual/
 
 allpdf: $(drawiopdf) $(pypdf)
 
-figures/%.png: figures/%.drawio
-	drawio -s 2 -t -f png -x --crop -o $@ $<
+figures/%.svg: figures/%.drawio
+	drawio -s 2 -t -f svg -x --crop -o $@ $<
 
 figures/%.pdf: figures/%.drawio
 	drawio -f pdf -x --crop -o $@ $<
 
-figures/%.png: figures/%.py
+figures/%.svg: figures/%.py
 	python $< $@
 
 figures/%.pdf: figures/%.py

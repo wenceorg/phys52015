@@ -1,6 +1,7 @@
 ---
 title: "OpenMP: parallel loops"
 weight: 4
+katex: false
 ---
 
 # Parallelisation of a simple loop
