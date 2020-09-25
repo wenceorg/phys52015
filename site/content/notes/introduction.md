@@ -2,6 +2,7 @@
 title: "Introduction and motivation"
 weight: 1
 katex: false
+chartjs: false
 ---
 
 # Introduction
@@ -10,6 +11,15 @@ This course provides a brief introduction to parallel computing. It
 focuses on those paradigms that are prevalent in scientific computing
 in academia. There are other parallel programming models which we will
 mention in passing where appropriate.
+
+{{< task >}} 
+
+Sign up for a [Hamilton account]({{< ref "hamilton-quickstart.md" >}})
+if you don't already have one. If you have a COSMA account, you can
+use that instead, and need not sign up for Hamilton access (although
+you may wish to anyway).
+
+{{< /task >}}
 
 ## Why parallel computing?
 
@@ -52,19 +62,25 @@ in the [Top 500](https://www.top500.org), which has been measuring the
 floating point performance of the largest 500 supercomputers in the
 world since 1993.
 
-FIXME: Add figure
+{{< autofig src="top500.svg"
+    width="50%"
+    caption="Performance trends of the Top500 list since inception." >}}
 
 This seems great, however, there is a catch. If we zoom in and look
 at a history of CPU trends we see a slightly different picture.
 
-FIXME: Add figure
+<a href="https://github.com/karlrupp/microprocessor-trend-data">
+{{< manfig src="48-years-processor-trend.png"
+    width="100%"
+    caption="48 years of microprocessor trend data (image by Karl Rupp)" >}}
+</a>
 
 Although the transistor counts still follow an exponential growth
 curve, CPU clock speed stopped increasing in around 2004. As a
-consequence, the rate at which the CPU executes instructions has not
-improved. Herb Sutter makes some nice observations about this in [_The
-Free Lunch is
-Over_](http://www.gotw.ca/publications/concurrency-ddj.htm).
+consequence, the _single thread_ (SpecINT in the above figure)
+performance of modern chips has almost flat-lined since 2008. This
+Herb Sutter makes some nice observations about this in [_The Free
+Lunch is Over_](http://www.gotw.ca/publications/concurrency-ddj.htm).
 
 ## Consequences
 
@@ -72,9 +88,9 @@ If the number of transistors continues to increase, but the effective
 single-thread performance of CPUs does not (or at least, does not at
 the same rate), what are all these extra transistors being used for?
 
-The answer is that they are used to provide parallelism. Rather than
-getting a single thread of execution on a CPU, we might have two,
-four, or even 32 or 64.
+The answer is that they are used to provide parallelism. Notice how
+since 2004, the number of logical cores on a CPU has risen from one to
+typically around 32.
 
 The consequence for us as programmers is that to use all the performance
 that chips provide, we must write code that exposes and uses
