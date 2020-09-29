@@ -38,12 +38,31 @@ computer. Or, the problem may take so long that running it one a
 single computer would require us to wait a week or longer for the
 result.
 
-TODO add some examples.
+For example, the [UK Met Office](https://www.metoffice.gov.uk)
+produces a weather forecast for the UK six times every day. That is,
+every 4 hours, they run a computer model which predicts the weather
+for the next three days[^1]. Obviously, this forecast would be useless
+if the computer model took longer than 4 hours to run! The model over
+the UK is at a [resolution of
+1.5km](https://www.metoffice.gov.uk/research/approach/modelling-systems/unified-model/weather-forecasting).
+This produces a computer problem that is large enough that each run is
+parallelised across 500 compute cores (so that they can hit their
+operational window of taking less than one hour to produce a
+forecast). To do this, the data, and algorithmic work that produce the
+model answers must be split up across these processes.
 
-In such a case, our only solution is to find a way to parallelise the
-computation, splitting up the work (and data) so that we can run parts
-of our analysis on different computers and then combine these parts to
-obtain the result we want.
+[^1]: This is a slight simplification, see their [detailed
+breakdown](https://www.metoffice.gov.uk/research/approach/modelling-systems/unified-model/weather-forecasting)
+for the full picture.
+
+A perhaps simpler example comes when performing various forms of Monte
+Carlo integration. Of which we will see a very simple example in [one
+of the exercises]({{< ref "mpi-pi.md" >}}). The accuracy of Monte
+Carlo estimators increases when we add more samples. These samples are
+often completely independent. If we want to generate more samples (to
+improve accuracy), we can do so by running a single process code for
+longer, or dividing up the work of generating samples among multiple
+processes.
 
 
 ## [Moore's Law](https://en.wikipedia.org/wiki/Moore%27s_law)
