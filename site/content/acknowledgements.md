@@ -3,6 +3,14 @@ title: "Acknowledgements"
 weight: 10
 ---
 
-# Acknowledgements & further reading
+# Acknowledgements
 
+Some of the exercises and examples, where noted, are adapted from
+[Victor Eijkhout's](https://pages02.tacc.utexas.edu) introductory high
+performance computing
+[textbook](https://pages02.tacc.utexas.edu/istc/istc.html).
 
+Some of the material is adapted from a previous version of the course
+taught by [Tobias
+Weinzierl](http://www.peano-framework.org/index.php/tobias-weinzierl/)
+at Durham.

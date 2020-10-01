@@ -65,7 +65,7 @@ longer, or dividing up the work of generating samples among multiple
 processes.
 
 
-## [Moore's Law](https://en.wikipedia.org/wiki/Moore%27s_law)
+## [Moore's Law](https://en.wikipedia.org/wiki/Moore%27s_law) {#moores-law}
 
 > The number of transistors in an integrated circuit doubles about
 > every two years.

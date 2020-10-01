@@ -1,5 +1,5 @@
 ---
-title: "Scaling laws: how fast might my program go?"
+title: "Parallel scaling laws"
 weight: 2
 katex: true
 chartjs: false
@@ -18,7 +18,7 @@ improving an existing parallel code.
 
 [^3]: These examples are adapted from section 2.1 of Victor Eijkhout's
     [Introduction to High Performance Scientific
-    Computing](https://pages.tacc.utexas.edu/~eijkhout/istc/istc.html),
+    Computing](https://pages02.tacc.utexas.edu/istc/istc.html),
     reproduced under [CC-BY
     3.0](https://creativecommons.org/licenses/by/3.0/).
 
@@ -120,12 +120,22 @@ parallelism. We'll do so when we introduce programming models.
 
 ## A thought experiment
 
-Before we look at what other people have come up with, let's see if we
-can construct a simple model of parallel performance.
+In the previous examples, we set up a problem where we had some piece
+of code and needed to parallelise it. We saw that even if the code is
+perfectly parallel, the potential speedup may be less than perfect.
+
+The examples we showed were not whole programs, and the real world is
+far from perfect, so we might expect that more realistic performance
+models are more complicated. Before we look at two of them, let's see
+if we can construct a model for ourselves.
+
+The setting we have in mind is that we have some computation that
+requires \\(N\\) units of work, taking \\(T\\) seconds on a single
+process.
 
 {{< exercise >}}
 
-Write down a formula (model) for the time to solution on \\(P\\) computers,
+Write down a formula (model) for the time to solution on \\(P\\) processes,
 given that a program takes \\(T\\) seconds on one computer.
 
 {{< question >}}
@@ -143,22 +153,29 @@ might be lower than predicted by your model?
 
 ## Amdahl's law and strong scaling
 
-To construct some models of scaling, we first need some notation. We
-also need to decide what we mean by "performance". We will generally
-use "useful work per second" as the unit of performance.
+This model considers a fixed problem size. That is, we fix the \\(N\\)
+units of work that we want to perform. It then makes an assumption
+about how much of that work is (potentially) parallelisable and
+attempts to answer the question of what speedup we might obtain if we
+were able to parallelise that part of the code perfectly.
 
 Let \\(F_s\\) be the _serial fraction_ and \\(F_p := 1 - F_s\\) the
 _parallel fraction_ of a given code and suppose that a problem takes
 \\(T_1\\) seconds on a single process.
 
-We can write the total parallel execution time on \\(P\\) processors
-as
+{{< manfig src="serial-fraction.svg"
+    width="75%"
+    caption="Division of a code into serial and parallelisable parts." >}}
+
+We assume that we can perfectly parallelise the parallel fraction, and
+so the total parallel execution time on \\(P\\)
+processors is
 
 $$
 T_P := T_1 \left(F_s + \frac{F_p}{P}\right).
 $$
 
-Writing the speedup as
+Defining the speedup as the ratio
 $$
 S_P := \frac{T_1}{T_P}
 $$
@@ -170,7 +187,8 @@ S_\infty = \lim_{P \to \infty} \frac{T_1}{T_1\left(F_s +
 \frac{F_p}{P}\right)} = \frac{1}{F_s}.
 $$
 
-This phenomenon is known as [Amdahl's
+This phenomenon, where the maximum speedup is limited by the serial
+fraction of the code, is known as [Amdahl's
 law](https://dl.acm.org/doi/10.1145/1465482.1465560) after [Gene
 Amdahl](https://en.wikipedia.org/wiki/Gene_Amdahl).
 
@@ -197,9 +215,13 @@ the code have to increase as a function of the number of processors?
 {{< /exercise >}}
 
 This type of parallel scaling, where we _fix_ the problem size and add
-more compute resources, is termed _strong scaling_. It is appropriate
-to consider when what we want to do is take a fixed size problem and
-ask ourselves how fast we might possibly run it.
+more compute resources, is termed _strong scaling_.  That is, fix have
+a fixed total work \\(N\\) and each process performs a decreasing
+fraction of the work \\(\frac{N}{P}\\) as we add more processes.
+
+This is an appropriate metric to consider when what we want to do is
+take a fixed size problem and ask ourselves how fast we might possibly
+run it.
 
 Amdahl's law seems to paint a rather disappointing picture. If I have
 even 1% serial fraction in my code, the best possible speedup I can
@@ -213,11 +235,11 @@ Fortunately, there is an implicit assumption hiding in Amdahl's model,
 which is that we are only ever interested in _fixed_ problem sizes. In
 typical use, this is not the case, since there is often a way we can
 increase the size of a problem. For example, we might add more
-resolution to a weather forecast (so that we have more accurate
-predictions of where _exactly_ in Durham it will be raining [^1]).
+resolution to a weather forecast so that we have more accurate
+predictions of where _exactly_ in Durham it will be raining[^1].
 
-[^1] Some might claim this is easy, namely that it is always raining
-everywhere in Durham.
+[^1]: Some might claim this is easy, namely that it is always raining
+    everywhere in Durham.
 
 This leads us to a different way of thinking about parallel scaling
 and efficiency.
@@ -253,19 +275,23 @@ independent of the problem size, and a parallel fraction that we can
 replicate arbitrarily.
 
 This type of parallel scalability is called _weak scaling_. In this
-scenario we fix the problem size _per process_. It is an appropriate
-thing to consider when we have a fixed runtime we are targetting and
-are asking how large a problem we could run.
+scenario we fix the problem size _per process_. In this scenario, the
+total work \\(N\\) increases when we add more processes, since we
+require that the ratio \\(\frac{N}{P}\\) is constant as we change \\(P\\).
 
+
+This metric is an appropriate one to consider when we have a fixed
+runtime we are targetting and are asking how large a problem we could
+run (by adding more compute resources).
 
 {{< manfig src="weak-scaling.svg"
-           width="75%"
-           caption="Perfect weak scaling matches the number of processes to the problem size, giving constant runtime for increasing problem sizes by adding more processes." >}}
+    width="75%"
+    caption="Perfect weak scaling matches the number of processes to the problem size, giving constant runtime for increasing problem sizes by adding more processes." >}}
 
 
 {{< exercise >}}
 Produce plots of the normalised speedup as given by the two approaches
-for a range of serial fractiosn from \\( F_s = 0.01 \\) to \\( F_s =
+for a range of serial fractions from \\( F_s = 0.01 \\) to \\( F_s =
 0.5 \\). 
 
 Compare the behaviour of the speedup curve over a range of processes
@@ -305,7 +331,8 @@ to the serial performance. Can you think of why that might be a bad idea?
 
 Can you think of any ways that you could "cheat" these scaling models?
 
-That is, how might you make it seem like your code is scalable?
+For example, how could you improve the scalability without actually
+improving the time to solution?
 
 Hint: is scalable code good code? What information does a scaling plot
 _not_ give you?
