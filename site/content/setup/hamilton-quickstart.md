@@ -16,6 +16,10 @@ For many of the exercises in the course, we will be using the
 should obtain an account on Hamilton by [following their
 instructions](https://www.dur.ac.uk/cis/local/hpc/hamilton/account/#getting_account).
 
+When requesting an account for this course, please put the course
+leader (Lawrence Mitchell) as the approver, and mention that the
+access is for the MISCADA course PHYS52015.
+
 Since we'll be logging in a lot, I also provide some [tips]({{< ref
 configuration.md >}}) on how to configure `ssh` for swifter login.
 
@@ -39,14 +43,6 @@ Weinzierl](http://www.peano-framework.org/index.php/tobias-weinzierl/).
 It is intended to get you up and running on the Hamilton supercomputer
 quickly. It is not replacement of any of the [official
 documentation](https://www.dur.ac.uk/cis/local/hpc/hamilton/).
-
-## Getting access
-
-Access to Hamilton is free for Durham researchers and students via
-your university login. Go to
-https://www.dur.ac.uk/cis/local/hpc/hamilton/account and fill out the
-registration form. For this course, put the course leader (Lawrence
-Mitchell) as the approver.
 
 ## Logging in and transferring code
 
