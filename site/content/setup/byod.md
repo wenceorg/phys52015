@@ -28,7 +28,9 @@ Apple's C compiler does not come with
 $ brew install gcc
 ```
 
-To use it, you'll need to run `gcc-10` (rather than just `gcc`).
+Since MacOS ships with its own compiler toolchain, homebrew doesn't
+install these compilers with clashing names, so to use this version of
+GCC you'll need to run `gcc-10` (rather than just `gcc`).
 
 ### Intel toolchain
 
