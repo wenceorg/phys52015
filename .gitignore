@@ -4,6 +4,7 @@
 /site/node_modules
 /site/static/images/auto
 /site/static/code
+/figures/*.svg
 /figures/*.png
 /figures/*.pdf
 *.o
