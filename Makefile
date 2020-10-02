@@ -39,7 +39,7 @@ figures/%.pdf: figures/%.py
 	python $< $@
 
 killds_store:
-	find . -name ".DS_Store" -print0 | xargs -0 rm
+	find . -name ".DS_Store" -print0 | xargs -0 rm -f
 
 site/static/code/blur_image.tgz: code/blur_image/vec/Makefile $(wildcard code/blur_image/vec/*.[ch]) code/blur_image/openmp/Makefile $(wildcard code/blur_image/openmp/*.[ch]) $(wildcard code/blur_image/images/*.ppm)
 	(cd code; tar -zcf $(abspath $@) $(patsubst code/%,%,$^))
