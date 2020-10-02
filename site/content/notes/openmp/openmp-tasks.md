@@ -1,5 +1,5 @@
 ---
-title: "OpenMP: task parallelism"
+title: "Task parallelism"
 weight: 5
 ---
 

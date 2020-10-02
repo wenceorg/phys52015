@@ -1,5 +1,5 @@
 ---
-title: "MPI: collectives"
+title: "Collectives"
 weight: 8
 ---
 

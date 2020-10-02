@@ -101,6 +101,15 @@ performance of modern chips has almost flat-lined since 2008. This
 Herb Sutter makes some nice observations about this in [_The Free
 Lunch is Over_](http://www.gotw.ca/publications/concurrency-ddj.htm).
 
+{{< exercise >}}
+
+Read [_The Free Lunch is
+Over_](http://www.gotw.ca/publications/concurrency-ddj.htm). Make a
+note of what you think the key points are, and anything you didn't
+understand, to bring to the live sessions.
+
+{{< /exercise >}}
+
 ## Consequences
 
 If the number of transistors continues to increase, but the effective

@@ -55,9 +55,14 @@ public key.
 A minimal sequence of instructions is to generate a keypair on
 your local machine with
 
+```sh
+$ ssh-keygen -t rsa -b 4096 -C "YOUREMAIL@ADDRESS"
 ```
-ssh-keygen -t rsa -b 4096 -C "YOUREMAIL@ADDRESS"
-```
+
+{{< hint info >}}
+Here, and elsewhere in the notes, the `$` indicates the shell prompt.
+You should not type it.
+{{< /hint >}}
 
 This will prompt you for a _passphrase_. **DO NOT LEAVE IT BLANK**,
 since without a passphrase, anyone with the private key can log in as

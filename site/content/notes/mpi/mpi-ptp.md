@@ -1,5 +1,5 @@
 ---
-title: "MPI: introduction and point-to-point messaging"
+title: "Point-to-point messaging"
 weight: 7
 ---
 

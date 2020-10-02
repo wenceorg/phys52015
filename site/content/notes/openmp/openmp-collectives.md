@@ -1,5 +1,5 @@
 ---
-title: "OpenMP: collectives"
+title: "Collectives"
 weight: 5
 ---
 

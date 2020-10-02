@@ -25,7 +25,20 @@ programming. Here are some I like, with brief commentary.
   optimisation and performance-modelling from the off. An annotated
   bibliography [is provided](https://blogs.fau.de/hager/hpc-book) by
   Georg Hager.
-  
+
+- [Bill Gropp](http://wgropp.cs.illinois.edu), one of the authors of
+  the MPI standard, has a course on [designing and building
+  applications for extreme scale
+  systems](http://wgropp.cs.illinois.edu/courses/cs598-s16/index.htm).
+  He covers performance models as well, and has a lot of good advice.
+
+- [Matt Knepley's](https://cse.buffalo.edu/~knepley/) notes on
+  [computational
+  science](https://cse.buffalo.edu/~knepley/classes/caam519/CSBook.pdf)
+  also have much good advice, with a focus on the use of
+  [PETSc](http://www.mcs.anl.gov/petsc) providing parallel data
+  structures and solvers.
+
 - The [Lawrence Livermore](https://www.llnl.gov) high performance
   computing [centre](https://hpc.llnl.gov/user-portal), has some nice
   [tutorials](https://hpc.llnl.gov/training/tutorials). Including one

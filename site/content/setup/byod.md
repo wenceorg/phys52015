@@ -8,6 +8,10 @@ Although you don't need to, you might find it useful or convenient to
 run the exercises on your own computer. To do so, you'll need to
 obtain appropriate compilers and MPI implementations.
 
+For more general information on getting a development toolchain setup,
+the Faculty of Natural Sciences at [Imperial
+College](https://www.imperial.ac.uk/) have prepared some [useful guides](https://imperial-fons-computing.github.io)
+
 ## MacOS
 
 ### Open source tools

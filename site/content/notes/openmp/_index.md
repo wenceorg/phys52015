@@ -1,9 +1,11 @@
 ---
-title: "OpenMP: overview"
-weight: 5
+title: "OpenMP"
+weight: 3
 ---
 
 # OpenMP
+
+Shared memory programming concepts
 
 Motivation
 
