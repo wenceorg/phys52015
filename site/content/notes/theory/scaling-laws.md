@@ -102,7 +102,7 @@ sums. The inner loop on line 7 is now a loop with \\(\frac{n}{s}\\)
 iterations that can be carried out in parallel. The outer loop now has
 \\(\log_2 n\\) iterations. So if we parallelise the inner loop, we
 have a parallel runtime of \\(\frac{n \log_2 n}{p}\\). So the speedup
-is \\(frac{p}{\log_2 n}\\).
+is \\(\frac{p}{\log_2 n}\\).
 
 
 Even for these two very simple examples we can make some
