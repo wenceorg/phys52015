@@ -151,7 +151,7 @@ might be lower than predicted by your model?
 
 {{< /exercise >}}
 
-## Amdahl's law and strong scaling
+## Amdahl's law and strong scaling {#amdahl}
 
 This model considers a fixed problem size. That is, we fix the \\(N\\)
 units of work that we want to perform. It then makes an assumption
