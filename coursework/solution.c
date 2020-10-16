@@ -15,7 +15,7 @@ int MatMult(Mat A, Vec x, Vec y)
   int ierr;
   if (A->N != x->N || A->N != y->N || x->n != A->n/A->np || x->n != y->n) {
     fprintf(stderr, "Mismatching sizes in MatMult %d %d %d\n", A->N, x->N, y->N);
-    return MPI_Abort(A->comm, MPI_ERR_ARG);CHKERR(ierr);
+    return MPI_Abort(A->comm, MPI_ERR_ARG);
   }
   fprintf(stderr, "[MatMult]: TODO, please implement me.\n");
   /* Do local part of multiplication. This is only correct in serial.

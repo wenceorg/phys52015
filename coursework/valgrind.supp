@@ -1,0 +1,5 @@
+{
+   MPIInitStrcmp
+   Memcheck:Cond
+   fun:__intel_sse2_strncmp
+}

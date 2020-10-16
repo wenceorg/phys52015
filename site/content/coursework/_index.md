@@ -229,14 +229,14 @@ I will build and test your code using the coursework skeleton code, so
 you should make sure that your code compiles and runs correctly with
 an _unmodified_ version of the skeleton.
 
-| Artifact | Descriptor                                           | Marks |
-|---------:|:-----------------------------------------------------|-------|
-|     Code | Correct implementation of MatMult                    | 10    |
-|     Code | Correct implementation of CANNON                     | 15    |
-|     Code | Correct implementation of SUMMA                      | 15    |
-|     Code | Code compiles with no warnings and is Valgrind-clean | 15    |
-|   Report | Description of algorithms                            | 25    |
-|   Report | Analysis and presentation of benchmarking data       | 25    |
+| Artifact | Descriptor                                              | Marks |
+|---------:|:--------------------------------------------------------|-------|
+|     Code | Correct implementation of MatMult                       | 10    |
+|     Code | Correct implementation of CANNON                        | 15    |
+|     Code | Correct implementation of SUMMA                         | 15    |
+|     Code | Code compiles with no warnings and does not leak memory | 15    |
+|   Report | Description of algorithms                               | 25    |
+|   Report | Analysis and presentation of benchmarking data          | 25    |
 
 
 ## Hints
@@ -248,3 +248,10 @@ how to generalise things.
 For debugging purposes, feel free to add `printf` and other statements
 to your code, but your final submission should not contain any
 `printf` output.
+
+[Valgrind](https://www.valgrind.org) is an excellent memory debugger.
+On Hamilton, you can use it like this:
+
+```
+module load valgrind
+```
