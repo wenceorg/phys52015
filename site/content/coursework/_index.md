@@ -41,7 +41,9 @@ contiguous block of the matrix.
 
 This is shown below for a \\(8 \times 8 \\) matrix and four processes.
 
-TODO: add figure.
+{{< manfig src="matrix-block-distribution.svg"
+    width="50%"
+    caption="Blocked data distribution of a matrix over four processes." >}}
 
 The process grid must evenly divide the matrix rows and columns, so
 every local piece is the same size.
@@ -52,6 +54,11 @@ number entries in the vector.
 
 This is shown below for an 8-element vector and four processes.
 
+{{< manfig src="vector-block-distribution.svg"
+    width="25%"
+    caption="Blocked data distribution of a vector over four processes." >}}
+
+
 ## Skeleton code
 
 I provide a skeleton code in C which provides datatypes for vectors
@@ -59,13 +66,20 @@ and matrices, some viewing facilities (for debugging), and has various
 options for benchmarking performance and testing correctness.
 
 Download it as a [tarball here](TODO link), or else find the code the
-`coursework` subdirectory of the [course repository]({{< repo >}}).
+`/coursework` subdirectory of the [course repository]({{< repo >}}).
 
 You should do your implementation in the `solution.c` file, which
 contains three functions that you need to implement. They are correct
 when run in serial, but do not yet work correctly in parallel.
 
-Build the code with `make` and run the executable with `./main`.
+Build the code with `make` and run the executable with `./main`, with
+no arguments, it reports usage information.
+
+```sh
+$ cd coursework
+$ make
+$ ./main
+```
 
 ## Functions to implement
 

@@ -1,11 +1,11 @@
 CC = mpicc
 OPENBLAS = /usr/local/opt/openblas
-CFLAGS = -Wall -Wextra -I$(OPENBLAS)/include -I. -g -O2
+CFLAGS = -std=c99 -Wall -Wextra -I$(OPENBLAS)/include -I. -g -O2
 LDFLAGS = -L$(OPENBLAS)/lib -Wl,-rpath,$(OPENBLAS)/lib -lopenblas -lm
 
-SOLUTION = solution
-HDR = vec.h mat.h utils.h
-OBJ = vec.o mat.o $(SOLUTION).o
+SOLUTION = model-solution
+HDR = vec.h mat.h utils.h check.h bench.h
+OBJ = vec.o mat.o check.o bench.o $(SOLUTION).o
 EXE = main
 
 .PHONY: all clean
