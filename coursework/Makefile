@@ -3,7 +3,7 @@ OPENBLAS = /usr/local/opt/openblas
 CFLAGS = -std=c99 -Wall -Wextra -I$(OPENBLAS)/include -I. -g -O2
 LDFLAGS = -L$(OPENBLAS)/lib -Wl,-rpath,$(OPENBLAS)/lib -lopenblas -lm
 
-SOLUTION = model-solution
+SOLUTION ?= solution
 HDR = vec.h mat.h utils.h check.h bench.h
 OBJ = vec.o mat.o check.o bench.o $(SOLUTION).o
 EXE = main

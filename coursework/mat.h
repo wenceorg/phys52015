@@ -17,9 +17,6 @@ typedef enum {MAT_MULT_SUMMA, MAT_MULT_CANNON} MatMultType;
 int MatCreate(MPI_Comm, int, Mat *);
 int MatDestroy(Mat *);
 int MatView(Mat, FILE *);
-int MatSetValue(Mat, int, int, double);
-int MatGetValue(Mat, int, int, double *);
-
 int MatMatMultLocal(int, const double *,
                            const double *, double *);
 int MatMatMultSumma(Mat, Mat, Mat);

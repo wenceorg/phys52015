@@ -4,7 +4,7 @@
 #include "vec.h"
 #include "mat.h"
 
-int BenchMatMult(Mat, Vec, Vec);
-int BenchMatMatMult(Mat, Mat, Mat, MatMultType);
+int BenchMatMult(Mat, Vec, Vec, const char *);
+int BenchMatMatMult(Mat, Mat, Mat, MatMultType, const char *);
 
 #endif

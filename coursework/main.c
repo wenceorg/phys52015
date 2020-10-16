@@ -18,27 +18,30 @@ typedef struct {
   MatMultType algorithm;
   Mode mode;
   int N;
+  const char *filename;
 } UserOptions;
 
 static void usage(const char *progname) {
   fprintf(stderr, "Usage:\n");
-  fprintf(stderr, "%s -N N [-a ALGORITHM] [-t MODE] [-h]\n", progname);
+  fprintf(stderr, "%s -N N [-a ALGORITHM] [-t MODE] [-f FILE] [-h]\n", progname);
   fprintf(stderr, "Run benchmarking or checking of matrix-vector or matrix-matrix multiplication.\n\n");
   fprintf(stderr, "Options:\n");
-  fprintf(stderr, " -h\n");
-  fprintf(stderr, "    Print this help.\n");
-  fprintf(stderr, " -a CANNON | SUMMA\n");
-  fprintf(stderr, "    Select algorithm for matrix-matrix multiplication (default SUMMA).\n");
   fprintf(stderr, " -N N\n");
-  fprintf(stderr, "    Set matrix size (required).\n");
+  fprintf(stderr, "    Set matrix size (required).\n\n");
+  fprintf(stderr, " -a CANNON | SUMMA\n");
+  fprintf(stderr, "    Select algorithm for matrix-matrix multiplication (default SUMMA).\n\n");
   fprintf(stderr, " -t CHECK_MAT_MULT | BENCH_MAT_MULT | CHECK_MAT_MAT_MULT | BENCH_MAT_MAT_MULT\n");
   fprintf(stderr, "    Select execution mode (default CHECK_MAT_MAT_MULT).\n");
   fprintf(stderr, "    CHECK_MAT_MULT: check correctness of matrix-vector multiplication.\n");
   fprintf(stderr, "    BENCH_MAT_MULT: print timing data for matrix-vector multiplication.\n");
-  fprintf(stderr, "        Prints min_time, max_time, avg_time, standard_deviation over all processes, in seconds.\n");
   fprintf(stderr, "    CHECK_MAT_MAT_MULT: check correctness of matrix-matrix multiplication.\n");
-  fprintf(stderr, "    BENCH_MAT_MAT_MULT: print timing data for matrix-matrix multiplication.\n");
-  fprintf(stderr, "        Prints min_time, max_time, avg_time, standard_deviation over all processes, in seconds.\n");
+  fprintf(stderr, "    BENCH_MAT_MAT_MULT: print timing data for matrix-matrix multiplication.\n\n");
+  fprintf(stderr, " -f FILE\n");
+  fprintf(stderr, "    In benchmarking mode, print timing data to FILE in JSON format.\n");
+  fprintf(stderr, "    WARNING: overwrites output file if it exists.\n");
+  fprintf(stderr, "    Use \"-f -\" to dump to standard output.\n\n");  
+  fprintf(stderr, " -h\n");
+  fprintf(stderr, "    Print this help.\n");
 }
   
 static int ProcessOptions(MPI_Comm comm, int argc, char **argv, UserOptions *options)
@@ -47,7 +50,7 @@ static int ProcessOptions(MPI_Comm comm, int argc, char **argv, UserOptions *opt
   int rank;
   int ierr;
   ierr = MPI_Comm_rank(comm, &rank);CHKERR(ierr);
-  while ((ch = getopt(argc, argv, "a:t:N:h")) != -1) {
+  while ((ch = getopt(argc, argv, "a:t:N:f:h")) != -1) {
     switch (ch) {
     case 'a':
       if (strncmp(optarg, "CANNON", 6) == 0) {
@@ -61,6 +64,9 @@ static int ProcessOptions(MPI_Comm comm, int argc, char **argv, UserOptions *opt
         }
         return 1;
       }
+      break;
+    case 'f':
+      options->filename = strdup(optarg);
       break;
     case 't':
       if (strncmp(optarg, "CHECK_MAT_MULT", 14) == 0) {
@@ -113,7 +119,7 @@ int main(int argc, char **argv)
   int rank;
   int ierr;
   int check;
-  UserOptions options = { .algorithm = MAT_MULT_SUMMA, .mode = CHECK_MAT_MULT, .N = -1 };
+  UserOptions options = { .algorithm = MAT_MULT_SUMMA, .mode = CHECK_MAT_MULT, .N = -1, .filename = NULL };
   Mat A, B, C;
   Vec x, y;
 
@@ -150,7 +156,7 @@ int main(int argc, char **argv)
     }
     break;
   case BENCH_MAT_MULT:
-    ierr = BenchMatMult(A, x, y);CHKERR(ierr);
+    ierr = BenchMatMult(A, x, y, options.filename);CHKERR(ierr);
     break;
   case CHECK_MAT_MAT_MULT:
     check = CheckMatMatMult(A, B, C, options.algorithm);
@@ -164,7 +170,7 @@ int main(int argc, char **argv)
     }
     break;
   case BENCH_MAT_MAT_MULT:
-    ierr = BenchMatMatMult(A, B, C, options.algorithm);CHKERR(ierr);
+    ierr = BenchMatMatMult(A, B, C, options.algorithm, options.filename);CHKERR(ierr);
     break;
   };
 
@@ -173,6 +179,7 @@ int main(int argc, char **argv)
   ierr = MatDestroy(&C);CHKERR(ierr);
   ierr = VecDestroy(&x);CHKERR(ierr);
   ierr = VecDestroy(&y);CHKERR(ierr);
+  free((void *)options.filename);
   ierr = MPI_Finalize();
   return ierr;
 }

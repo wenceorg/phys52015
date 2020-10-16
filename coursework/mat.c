@@ -55,48 +55,6 @@ int MatCreate(MPI_Comm comm, int N, Mat *mat)
   return 0;
 }
 
-/* Set a value in the local part of a matrix.
- *
- * - mat: the matrix to a set a value in.
- * - i: the row index (in local numbering).
- * - j: the column index (in local numbering).
- * - val: the value.
- */
-int MatSetValue(Mat mat, int i, int j, double val)
-{
-  if (i < 0 || i >= mat->n) {
-    fprintf(stderr, "Row index %d not in [0, %d)\n", i, mat->n);
-    return MPI_Abort(mat->comm, MPI_ERR_ARG);
-  }
-  if (j < 0 || j >= mat->n) {
-    fprintf(stderr, "Column index %d not in [0, %d)\n", j, mat->n);
-    return MPI_Abort(mat->comm, MPI_ERR_ARG);
-  }
-  mat->data[i*mat->n + j] = val;
-  return 0;
-}
-
-/* Get a value in the local part of a matrix.
- *
- * - mat: the matrix to a get the value from.
- * - i: the row index (in local numbering).
- * - j: the column index (in local numbering).
- * - val: the value.
- */
-int MatGetValue(Mat mat, int i, int j, double *val)
-{
-  if (i < 0 || i >= mat->n) {
-    fprintf(stderr, "Row index %d not in [0, %d)\n", i, mat->n);
-    return MPI_Abort(mat->comm, MPI_ERR_ARG);
-  }
-  if (j < 0 || j >= mat->n) {
-    fprintf(stderr, "Column index %d not in [0, %d)\n", j, mat->n);
-    return MPI_Abort(mat->comm, MPI_ERR_ARG);
-  }
-  *val = mat->data[i*mat->n + j];
-  return 0;
-}
-
 /* Destroy a matrix
  * - mat: pointer to matrix (may be NULL)
  */
