@@ -47,6 +47,9 @@ site/static/code/blur_image.tgz: code/blur_image/vec/Makefile $(wildcard code/bl
 site/static/code/add_numbers.tgz: code/add_numbers/serial/Makefile $(wildcard code/add_numbers/serial/*.[ch]) code/add_numbers/openmp/Makefile $(wildcard code/add_numbers/openmp/*.[ch])
 	(cd code; tar -zcf $(abspath $@) $(patsubst code/%,%,$^))
 
+site/static/coursework.tgz: coursework/Makefile coursework/valgrind.supp coursework/bench.c coursework/bench.h coursework/check.c coursework/check.h coursework/main.c coursework/mat.c coursework/mat.h coursework/solution.c coursework/utils.h coursework/vec.c coursework/vec.h
+	tar -zcf $(abspath $@) $^
+
 alltgz: killds_store site/static/code/blur_image.tgz site/static/code/add_numbers.tgz
 
 allcode:

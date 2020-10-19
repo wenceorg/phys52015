@@ -7,11 +7,11 @@ katex: true
 
 # Dense linear algebra in parallel
 
-In this coursework you are to write parallel implementations with MPI
-of some dense linear algebra operations, and benchmark the scaling
+In this coursework you are to write parallel implementations of some
+dense linear algebra operations using MPI, and benchmark the scaling
 performance.
 
-I provide a template file that contains input/output routines and
+I provide template code. that contains input/output routines and
 skeleton data structures. There are a number of functions that you
 need to provide an implementation for.
 
@@ -46,7 +46,26 @@ This is shown below for a \\(8 \times 8 \\) matrix and four processes.
     caption="Blocked data distribution of a matrix over four processes." >}}
 
 The process grid must evenly divide the matrix rows and columns, so
-every local piece is the same size. On each process, the local part of
+every local piece is the same size. That is, we require, for \\(p\\)
+processes and an \\( N \times N \\) matrix that
+$$
+\lfloor \sqrt{p}\rfloor = \sqrt{p}
+$$
+and
+$$
+\left\lfloor \frac{N}{\sqrt{p}} \right\rfloor = \frac{N}{\sqrt{p}}.
+$$
+This ensures that all processes have the same local matrix size, which
+simplifies some implementation.
+
+Furthermore, for matrix-vector products, we also require that
+$$
+\left \lfloor\frac{N}{p}\right\rfloor = \frac{N}{p}.
+$$
+The code checks these conditions and produces an error message if they
+are not satisfied.
+
+On each process, the local part of
 the matrix is stored in _row major_ format.
 
 {{< details "Row major indexing" >}}
@@ -75,7 +94,7 @@ I provide a skeleton code in C which provides datatypes for vectors
 and matrices, some viewing facilities (for debugging), and has various
 options for benchmarking performance and testing correctness.
 
-Download it as a [tarball here](TODO link), or else find the code in the
+Download it as a [tarball here]({{< static-ref "coursework.tgz" >}}), or else find the code in the
 `/coursework` subdirectory of the [course repository]({{< repo >}}).
 
 You should do your implementation in the `solution.c` file, which
@@ -203,7 +222,8 @@ each process is related to \\(N/P\\) rather than \\(N\\) (for an \\(N
 
 ### Matrix-matrix multiplication
 
-For this routine, you should implement two approaches.
+For this routine, you should implement two approaches (which you
+should describe in the report):
 
 1. [Cannon's
    algorithm](https://en.wikipedia.org/wiki/Cannon%27s_algorithm),
@@ -239,6 +259,9 @@ an _unmodified_ version of the skeleton.
 |   Report | Analysis and presentation of benchmarking data          | 25    |
 
 
+You can check memory leaks with [Valgrind](https://www.valgrind.org).
+I provide some instructions [below]({{< ref "#valgrind" >}}).
+
 ## Hints
 
 I find it very helpful to draw things out for a small matrix and small
@@ -249,9 +272,98 @@ For debugging purposes, feel free to add `printf` and other statements
 to your code, but your final submission should not contain any
 `printf` output.
 
+### Using valgrind for memory correctness {#valgrind}
+
 [Valgrind](https://www.valgrind.org) is an excellent memory debugger.
 On Hamilton, you can use it like this:
 
 ```
 module load valgrind
 ```
+
+You then run your program with
+
+```sh
+$ valgrind --leak-check=full ./main ANY ARGUMENTS HERE
+```
+
+When running in parallel you should run one valgrind process per MPI
+task. In that case, it is useful to send the output to a log file per
+process.
+
+```sh
+$ mpirun -n 4 valgrind --log-file="log-file.%p" --leak-check=full ./main ANY ARGUMENTS HERE
+```
+
+Unfortunately, the Intel MPI library on Hamilton has a number of
+memory leaks. I therefore recommend the following recipe for checking
+memory leaks. This is what I will do to check things.
+
+{{< hint warning >}}
+**DO NOT** use the MPICH module for any performance testing, since it
+does not use the high-speed interconnect!
+{{< /hint >}}
+
+```sh
+$ module load intel/2019.5
+$ module load mpich2
+$ module load valgrind
+$ module load gcc/8.2.0
+$ module load openblas
+$ make clean
+$ make all
+$ mpirun -n 4 valgrind --log-file="valgrind-log.%p" --leak-check=full --suppressions=valgrind.supp ./main ANY ARGUMENTS HERE
+```
+Where the file `valgrind.supp` is included in the coursework tarball.
+
+A successful run will look something like
+```
+$ mpirun -n 1 valgrind --leak-check=full --suppressions=valgrind.supp ./main -t CHECK_MAT_MULT -N 8
+==28983== Memcheck, a memory error detector
+==28983== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==28983== Using Valgrind-3.14.0 and LibVEX; rerun with -h for copyright info
+==28983== Command: ./main -t CHECK_MAT_MULT -N 8
+==28983== 
+CheckMatMult succeeded.
+==28983== 
+==28983== HEAP SUMMARY:
+==28983==     in use at exit: 0 bytes in 0 blocks
+==28983==   total heap usage: 241 allocs, 241 frees, 4,310,004 bytes allocated
+==28983== 
+==28983== All heap blocks were freed -- no leaks are possible
+==28983== 
+==28983== For counts of detected and suppressed errors, rerun with: -v
+==28983== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 2 from 2)
+```
+Whereas if we failed to deallocate some memory, we see something like
+```
+==30038== Memcheck, a memory error detector
+==30038== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==30038== Using Valgrind-3.14.0 and LibVEX; rerun with -h for copyright info
+==30038== Command: ./main -t CHECK_MAT_MULT -N 8
+==30038== 
+CheckMatMult succeeded.
+==30038== 
+==30038== HEAP SUMMARY:
+==30038==     in use at exit: 64 bytes in 1 blocks
+==30038==   total heap usage: 241 allocs, 240 frees, 4,310,004 bytes allocated
+==30038== 
+==30038== 64 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==30038==    at 0x4C29E83: malloc (vg_replace_malloc.c:299)
+==30038==    by 0x406474: MatMult (solution.c:23)
+==30038==    by 0x404F88: CheckMatMult (check.c:24)
+==30038==    by 0x403AF9: main (main.c:148)
+==30038== 
+==30038== LEAK SUMMARY:
+==30038==    definitely lost: 64 bytes in 1 blocks
+==30038==    indirectly lost: 0 bytes in 0 blocks
+==30038==      possibly lost: 0 bytes in 0 blocks
+==30038==    still reachable: 0 bytes in 0 blocks
+==30038==         suppressed: 0 bytes in 0 blocks
+==30038== 
+==30038== For counts of detected and suppressed errors, rerun with: -v
+==30038== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 2 from 2)
+```
+
+This tells us that memory allocated on line 23 of `solution.c` was
+never `free`d.
