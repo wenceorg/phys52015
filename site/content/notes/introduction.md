@@ -39,11 +39,14 @@ single computer would require us to wait a week or longer for the
 result.
 
 For example, the [UK Met Office](https://www.metoffice.gov.uk)
-produces a weather forecast for the UK six times every day. That is,
-every 4 hours, they run a computer model which predicts the weather
-for the next three days[^1]. Obviously, this forecast would be useless
-if the computer model took longer than 4 hours to run! The model over
-the UK is at a [resolution of
+produces a number of weather forecasts for the UK at various
+resolutions multiple [times a
+day](https://www.metoffice.gov.uk/research/approach/modelling-systems/unified-model/weather-forecasting).
+This includes an hourly run making predictions for the next 12 hours.
+At the very least, a forecast is useless if it is slower than real
+time, and the target here is that every 12 hour forecast runs in under
+one hour (more than 12x real time). The model over the UK is at a
+[resolution of
 1.5km](https://www.metoffice.gov.uk/research/approach/modelling-systems/unified-model/weather-forecasting).
 This produces a computer problem that is large enough that each run is
 parallelised across 500 compute cores (so that they can hit their
@@ -51,9 +54,6 @@ operational window of taking less than one hour to produce a
 forecast). To do this, the data, and algorithmic work that produce the
 model answers must be split up across these processes.
 
-[^1]: This is a slight simplification, see their [detailed
-breakdown](https://www.metoffice.gov.uk/research/approach/modelling-systems/unified-model/weather-forecasting)
-for the full picture.
 
 A perhaps simpler example comes when performing various forms of Monte
 Carlo integration. Of which we will see a very simple example in [one

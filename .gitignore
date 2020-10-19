@@ -11,4 +11,7 @@
 /code/blur_image/*/blur
 /code/calculate_pi/*/calcpi
 /code/add_numbers/*/addnumbers
+/coursework/main
+/coursework/model-solution.c
 .DS_Store
+/site/static/coursework.tgz

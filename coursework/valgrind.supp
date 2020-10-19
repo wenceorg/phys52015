@@ -1,0 +1,7 @@
+{
+   MPIInitStrncmp
+   Memcheck:Cond
+   fun:__intel_sse2_strncmp
+   ...
+   fun:PMPI_Init
+}
