@@ -29,12 +29,19 @@ static int TimingStats(MPI_Comm comm, double duration,
   return 0;
 }
 
-int BenchMatMult(Mat A, Vec x, Vec y, const char *filename)
+int BenchMatMult(MPI_Comm comm, const UserOptions options)
 {
   int ierr;
   double start, end;
   int rank, size;
   double timing[4];
+  Mat A;
+  Vec x, y;
+
+  ierr = MatCreate(comm, options.N, &A);CHKERR(ierr);
+  ierr = VecCreate(comm, options.N, &x);CHKERR(ierr);
+  ierr = VecCreate(comm, options.N, &y);CHKERR(ierr);  
+
   ierr = MPI_Comm_rank(A->comm, &rank);CHKERR(ierr);
   ierr = MPI_Comm_size(A->comm, &size);CHKERR(ierr);
   srand48((long)(size * rank + rank));
@@ -47,21 +54,22 @@ int BenchMatMult(Mat A, Vec x, Vec y, const char *filename)
   ierr = MatMult(A, x, y);CHKERR(ierr);
   end = MPI_Wtime();
   ierr = TimingStats(A->comm, end - start, timing);CHKERR(ierr);
+
   if (!rank) {
-    if (filename) {
-      int isstdout = !strcmp(filename, "-");
-      FILE * fd = isstdout ? stdout : fopen(filename, "w");
+    if (options.filename) {
+      int isstdout = !strcmp(options.filename, "-");
+      FILE * fd = isstdout ? stdout : fopen(options.filename, "w");
       if (!fd) {
-        fprintf(stderr, "Unable to open %s for writing\n", filename);
+        fprintf(stderr, "Unable to open %s for writing\n", options.filename);
         return MPI_Abort(A->comm, MPI_ERR_ARG);
       }
       fprintf(fd, "{\"TestCase\": \"MatMult\", \"nprocs\": %d, \"N\": %d, "
               "\"min\": %g, \"max\": %g, \"mean\": %g, \"std\": %g}\n",
               size, A->N, timing[0], timing[1], timing[2], timing[3]);
       if (!isstdout && fclose(fd)) {
-        fprintf(stderr, "Unable to close %s after writing\n", filename);
+        fprintf(stderr, "Unable to close %s after writing\n", options.filename);
       } else if (!isstdout) {
-        printf("Timing data saved to %s\n", filename);
+        printf("Timing data saved to %s\n", options.filename);
       }
     } else {
       printf("Timing data for MatMult on %d processes, matrix size %d\n",
@@ -70,17 +78,25 @@ int BenchMatMult(Mat A, Vec x, Vec y, const char *filename)
       printf("%g %g %g %g\n", timing[0], timing[1], timing[2], timing[3]);
     }
   }
+
+  ierr = MatDestroy(&A);CHKERR(ierr);
+  ierr = VecDestroy(&x);CHKERR(ierr);
+  ierr = VecDestroy(&y);CHKERR(ierr);
   return 0;
 }
 
-int BenchMatMatMult(Mat A, Mat B, Mat C, MatMultType algorithm,
-                    const char *filename)
+int BenchMatMatMult(MPI_Comm comm, const UserOptions options)
 {
   int ierr;
   double start, end;
   const char *desc = NULL;
   int rank, size;
   double timing[4];
+  Mat A, B, C;
+  ierr = MatCreate(comm, options.N, &A);CHKERR(ierr);
+  ierr = MatCreate(comm, options.N, &B);CHKERR(ierr);
+  ierr = MatCreate(comm, options.N, &C);CHKERR(ierr);
+
   ierr = MPI_Comm_rank(A->comm, &rank);CHKERR(ierr);
   ierr = MPI_Comm_size(A->comm, &size);CHKERR(ierr);
   srand48((long)(size * rank + rank));
@@ -95,9 +111,9 @@ int BenchMatMatMult(Mat A, Mat B, Mat C, MatMultType algorithm,
       C->data[i*C->n + j] = drand48();
 
   start = MPI_Wtime();
-  ierr = MatMatMult(A, B, C, algorithm);CHKERR(ierr);
+  ierr = MatMatMult(A, B, C, options.algorithm);CHKERR(ierr);
   end = MPI_Wtime();
-  switch (algorithm) {
+  switch (options.algorithm) {
   case MAT_MULT_SUMMA:
     desc = "MatMatMult[SUMMA]";
     break;
@@ -107,20 +123,20 @@ int BenchMatMatMult(Mat A, Mat B, Mat C, MatMultType algorithm,
   }
   ierr = TimingStats(A->comm, end - start, timing);CHKERR(ierr);
   if (!rank) {
-    if (filename) {
-      int isstdout = !strcmp(filename, "-");
-      FILE * fd = isstdout ? stdout : fopen(filename, "w");
+    if (options.filename) {
+      int isstdout = !strcmp(options.filename, "-");
+      FILE * fd = isstdout ? stdout : fopen(options.filename, "w");
       if (!fd) {
-        fprintf(stderr, "Unable to open %s for writing\n", filename);
+        fprintf(stderr, "Unable to open %s for writing\n", options.filename);
         return MPI_Abort(A->comm, MPI_ERR_ARG);
       }
       fprintf(fd, "{\"TestCase\": \"%s\", \"nprocs\": %d, \"N\": %d, "
               "\"min\": %g, \"max\": %g, \"mean\": %g, \"std\": %g}\n",
               desc, size, A->N, timing[0], timing[1], timing[2], timing[3]);
       if (!isstdout && fclose(fd)) {
-        fprintf(stderr, "Unable to close %s after writing\n", filename);
+        fprintf(stderr, "Unable to close %s after writing\n", options.filename);
       } else if (!isstdout) {
-        printf("Timing data saved to %s\n", filename);
+        printf("Timing data saved to %s\n", options.filename);
       }
     } else {
       printf("Timing data for %s on %d processes, matrix size %d\n",
@@ -129,5 +145,9 @@ int BenchMatMatMult(Mat A, Mat B, Mat C, MatMultType algorithm,
       printf("%g %g %g %g\n", timing[0], timing[1], timing[2], timing[3]);
     }
   }
+  ierr = MatDestroy(&A);CHKERR(ierr);
+  ierr = MatDestroy(&B);CHKERR(ierr);
+  ierr = MatDestroy(&C);CHKERR(ierr);
+
   return 0;
 }

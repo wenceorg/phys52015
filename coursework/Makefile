@@ -1,6 +1,9 @@
 CC = mpicc
+# You may need to edit this location.
 OPENBLAS = /usr/local/opt/openblas
-CFLAGS = -std=c99 -Wall -Wextra -I$(OPENBLAS)/include -I. -g -O2
+
+# You should not need to change anything else.
+CFLAGS = -std=c99 -Wall -Wextra -I$(OPENBLAS)/include -I. -g -O2 -D_GNU_SOURCE
 LDFLAGS = -L$(OPENBLAS)/lib -Wl,-rpath,$(OPENBLAS)/lib -lopenblas -lm
 
 SOLUTION ?= solution
@@ -13,16 +16,19 @@ EXE = main
 all: $(EXE)
 
 clean:
-	-rm -f $(OBJ) $(EXE)
+	-rm -rf $(OBJ) $(EXE) $(EXE).dSYM
 
-$(EXE): $(EXE).c $(OBJ) $(HDR) Makefile
+$(EXE): $(EXE).c $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $< $(OBJ) $(LDFLAGS)
 
 vec.o: vec.c vec.h utils.h Makefile
-	$(CC) $(CFLAGS) -c -o $@ $<
-
 mat.o: mat.c mat.h vec.h utils.h Makefile
+check.o: check.c check.h utils.h mat.h vec.h Makefile
+bench.o: bench.c bench.h utils.h mat.h vec.h Makefile
+$(SOLUTION).o: $(SOLUTION).c mat.h vec.h utils.h Makefile
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(SOLUTION).o: $(SOLUTION).c mat.h vec.h utils.h Makefile
-	$(CC) $(CFLAGS) -c -o $@ $<
+
+

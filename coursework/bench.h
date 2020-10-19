@@ -3,8 +3,9 @@
 
 #include "vec.h"
 #include "mat.h"
+#include "utils.h"
 
-int BenchMatMult(Mat, Vec, Vec, const char *);
-int BenchMatMatMult(Mat, Mat, Mat, MatMultType, const char *);
+int BenchMatMult(MPI_Comm, const UserOptions);
+int BenchMatMatMult(MPI_Comm, const UserOptions);
 
 #endif

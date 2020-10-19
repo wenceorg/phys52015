@@ -2,8 +2,9 @@
 #define _CHECK_H
 #include "vec.h"
 #include "mat.h"
+#include "utils.h"
 
-int CheckMatMult(Mat, Vec, Vec);
-int CheckMatMatMult(Mat, Mat, Mat, MatMultType);
+int CheckMatMult(MPI_Comm, const UserOptions);
+int CheckMatMatMult(MPI_Comm, const UserOptions);
 
 #endif

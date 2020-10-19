@@ -11,16 +11,6 @@
 #include "mat.h"
 #include "utils.h"
 
-typedef enum {CHECK_MAT_MULT, CHECK_MAT_MAT_MULT,
-  BENCH_MAT_MULT, BENCH_MAT_MAT_MULT} Mode;
-
-typedef struct {
-  MatMultType algorithm;
-  Mode mode;
-  int N;
-  const char *filename;
-} UserOptions;
-
 static void usage(const char *progname) {
   fprintf(stderr, "Usage:\n");
   fprintf(stderr, "%s -N N [-a ALGORITHM] [-t MODE] [-f FILE] [-h]\n", progname);
@@ -120,8 +110,6 @@ int main(int argc, char **argv)
   int ierr;
   int check;
   UserOptions options = { .algorithm = MAT_MULT_SUMMA, .mode = CHECK_MAT_MULT, .N = -1, .filename = NULL };
-  Mat A, B, C;
-  Vec x, y;
 
   ierr = MPI_Init(&argc, &argv);
   if (ierr) {
@@ -136,17 +124,10 @@ int main(int argc, char **argv)
 
   ierr = MPI_Comm_rank(comm, &rank);CHKERR(ierr);
 
-  /* Create 2D process grid np x np (rows x cols) */
-  ierr = MatCreate(comm, options.N, &A);CHKERR(ierr);
-  ierr = MatCreate(comm, options.N, &B);CHKERR(ierr);
-  ierr = MatCreate(comm, options.N, &C);CHKERR(ierr);
-  ierr = VecCreate(comm, options.N, &x);CHKERR(ierr);
-  ierr = VecCreate(comm, options.N, &y);CHKERR(ierr);
-
   switch (options.mode) {
   case CHECK_MAT_MULT:
-    check = CheckMatMult(A, x, y);
-    ierr = MPI_Allreduce(MPI_IN_PLACE, &check, 1, MPI_INT, MPI_MAX, A->comm);CHKERR(ierr);
+    check = CheckMatMult(comm, options);
+    ierr = MPI_Allreduce(MPI_IN_PLACE, &check, 1, MPI_INT, MPI_MAX, comm);CHKERR(ierr);
     if (!rank) {
       if (check) {
         fprintf(stderr, "CheckMatMult failed.\n");
@@ -156,11 +137,11 @@ int main(int argc, char **argv)
     }
     break;
   case BENCH_MAT_MULT:
-    ierr = BenchMatMult(A, x, y, options.filename);CHKERR(ierr);
+    ierr = BenchMatMult(comm, options);CHKERR(ierr);
     break;
   case CHECK_MAT_MAT_MULT:
-    check = CheckMatMatMult(A, B, C, options.algorithm);
-    ierr = MPI_Allreduce(MPI_IN_PLACE, &check, 1, MPI_INT, MPI_MAX, A->comm);CHKERR(ierr);
+    check = CheckMatMatMult(comm, options);
+    ierr = MPI_Allreduce(MPI_IN_PLACE, &check, 1, MPI_INT, MPI_MAX, comm);CHKERR(ierr);
     if (!rank) {
       if (check) {
         fprintf(stderr, "CheckMatMatMult failed.\n");
@@ -170,15 +151,9 @@ int main(int argc, char **argv)
     }
     break;
   case BENCH_MAT_MAT_MULT:
-    ierr = BenchMatMatMult(A, B, C, options.algorithm, options.filename);CHKERR(ierr);
+    ierr = BenchMatMatMult(comm, options);CHKERR(ierr);
     break;
   };
-
-  ierr = MatDestroy(&A);CHKERR(ierr);
-  ierr = MatDestroy(&B);CHKERR(ierr);
-  ierr = MatDestroy(&C);CHKERR(ierr);
-  ierr = VecDestroy(&x);CHKERR(ierr);
-  ierr = VecDestroy(&y);CHKERR(ierr);
   free((void *)options.filename);
   ierr = MPI_Finalize();
   return ierr;

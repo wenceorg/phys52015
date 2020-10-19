@@ -6,13 +6,20 @@
 #include "mat.h"
 #include "utils.h"
 
-int CheckMatMult(Mat A, Vec x, Vec y)
+int CheckMatMult(MPI_Comm comm, const UserOptions options)
 {
   int ierr;
   int rank, size;
   int process_row;
   int error = 0;
   double expect;
+  Mat A;
+  Vec x, y;
+  
+  ierr = MatCreate(comm, options.N, &A);CHKERR(ierr);
+  ierr = VecCreate(comm, options.N, &x);CHKERR(ierr);
+  ierr = VecCreate(comm, options.N, &y);CHKERR(ierr);  
+
   ierr = MPI_Comm_rank(A->comm, &rank);CHKERR(ierr);
   ierr = MPI_Comm_size(A->comm, &size);CHKERR(ierr);
   for (int i = 0; i < A->n; i++)
@@ -36,16 +43,24 @@ int CheckMatMult(Mat A, Vec x, Vec y)
       error = 1;
     }
   }
+  ierr = MatDestroy(&A);CHKERR(ierr);
+  ierr = VecDestroy(&x);CHKERR(ierr);
+  ierr = VecDestroy(&y);CHKERR(ierr);
   return error;
 }
 
-int CheckMatMatMult(Mat A, Mat B, Mat C, MatMultType algorithm)
+int CheckMatMatMult(MPI_Comm comm, const UserOptions options)
 {
   int ierr;
   int rank, size;
   int process_row, process_col;
   int error = 0;
   double expect;
+  Mat A, B, C;
+  ierr = MatCreate(comm, options.N, &A);CHKERR(ierr);
+  ierr = MatCreate(comm, options.N, &B);CHKERR(ierr);
+  ierr = MatCreate(comm, options.N, &C);CHKERR(ierr);
+
   ierr = MPI_Comm_rank(A->comm, &rank);CHKERR(ierr);
   ierr = MPI_Comm_size(A->comm, &size);CHKERR(ierr);
   for (int i = 0; i < A->n; i++) {
@@ -56,7 +71,7 @@ int CheckMatMatMult(Mat A, Mat B, Mat C, MatMultType algorithm)
     }
   }
   
-  ierr = MatMatMult(A, B, C, algorithm);CHKERR(ierr);
+  ierr = MatMatMult(A, B, C, options.algorithm);CHKERR(ierr);
 
   process_row = rank / A->np;
   process_col = rank % A->np;
@@ -75,6 +90,9 @@ int CheckMatMatMult(Mat A, Mat B, Mat C, MatMultType algorithm)
       }
     }
   }
+  ierr = MatDestroy(&A);CHKERR(ierr);
+  ierr = MatDestroy(&B);CHKERR(ierr);
+  ierr = MatDestroy(&C);CHKERR(ierr);
   return error;
 }
 
