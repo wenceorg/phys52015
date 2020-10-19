@@ -260,7 +260,7 @@ into the loop), then the loop may be vectorised. Similarly, builtin
 mathematical functions are often recognised by compilers as
 vectorisable.
 
-### No data dependencies in the loop
+### No data dependencies in the loop {#data-dep}
 
 This is the most subtle, but also easy to get an intuition for.
 Remember that conceptually the way we vectorise a loop is to _unroll_

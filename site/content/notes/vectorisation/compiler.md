@@ -33,21 +33,24 @@ broadly four options available to us to exploit vector hardware.
 
    Here we rely on automated analysis from the compiler to find
    vectorisable parts of the code and apply the appropriate
-   transformation
-   
+   transformation. This works well when there are simple loops.
+
 2. Partially automatic: compiler + pragma-based source annotations
 
    In this case, we still want the compiler to do the work, but we
    will give it some hints by annotating our code with extra
-   information.
-   
+   information. Often this is needed because we have relatively simple
+   loops, but have a better idea than the compiler about whether
+   vectorisation is likely to be effective, or which loops should be
+   vectorised.
+
 3. Explicit use of intrinsics
 
    Here we use special variable types and replace normal code by calls
    to functions that are turned into inline assembly. This is slightly
    like writing "semi-portable" assembly. This is quite a complicated
    approach, and makes your code far less readable.
-   
+
    ```c
    /* Before */
    for (size_t i = 0; i < N; i++)
@@ -61,7 +64,7 @@ broadly four options available to us to exploit vector hardware.
        _mm256_store_pd(c + i, cv);
    }
    ```
-   
+
    {{< hint info >}}
    If you want to
    know what these functions do, see the interactive [Intel intrinsics
@@ -81,7 +84,6 @@ broadly four options available to us to exploit vector hardware.
    don't rely on the compiler for control flow or register allocation
    and have to do everything by hand.
 
-
 There is also a further class of methods that might rely on using
 domain-specific languages or language extensions. We won't touch on
 them here.
@@ -89,3 +91,135 @@ them here.
 Given the complexity, and lack of portability, in the third and fourth
 options. In this course we will only look at vectorisation available
 via compiler optimisations, sometimes helped by pragma annotations.
+
+## Compiler vectorisation and feedback
+
+The core idea in compiler (auto-)vectorisation is that the compiler
+performs some analysis of your code, to determine whether or not
+vectorisation (or in general any of the many optimisations it can
+apply) is _possible_. Having determined that some strategy is
+possible, the compiler then has to decide whether or not it is likely
+to be profitable.
+
+To do so, it has an (generally quite opaque) internal _cost model_.
+That is, it has some model that attempts to predict how certain
+optimisations will perform. For example, the cost model might say
+"switching from scalar code to 4-wide AVX vectors will provide a
+factor of 3x speedup". In which case, probably vectorisation would
+occur.
+
+Unfortunately, the cost models are always incomplete, and often do not
+choose wisely. In these situations we can help out by annotating our
+source code.
+
+To do so, we need to know what the compiler is deciding, and why. The
+incantations necessary to open this dialogue with the compiler are
+version-specific. I'll focus on the Intel compiler here, but also
+provide some advice for GCC.
+
+### Optimisation reports for Intel
+
+The Intel compiler will report information about the optimisation
+decisions it made with the `-qopt-report` flag. We can control the
+verbosity by saying `-qopt-report=n` for some `n=0..5`.
+
+Let's look at how this works for a loop we hope is vectorisable
+
+{{< code-include "optimisation-snippets/simple-vector.c" "c" >}}
+
+Running
+
+```sh
+$ icpc -qopt-report=5 -c -O3 -xCORE_AVX2 simple-vector.c
+```
+
+we get an optrpt file which we can inspect. You can also play along
+with the [compiler explorer](https://gcc.godbolt.org), which is often
+a more convenient way of doing things if you're just trying to check
+vectorisation for a small amount of code. This example is prefilled
+[here](https://gcc.godbolt.org/z/WG9xxE).
+
+Looking at the optimisation report we see
+
+```
+...
+LOOP BEGIN at <source>(5,3)
+   remark #15389: vectorization support: reference x[i] has unaligned access   [ <source>(6,5) ]
+   remark #15389: vectorization support: reference x[i] has unaligned access   [ <source>(6,12) ]
+   remark #15389: vectorization support: reference x[i] has unaligned access   [ <source>(6,21) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15305: vectorization support: vector length 4
+   remark #15309: vectorization support: normalized vectorization overhead 1.429
+   remark #15300: LOOP WAS VECTORIZED
+   remark #15442: entire loop may be executed in remainder
+   remark #15450: unmasked unaligned unit stride loads: 1
+   remark #15451: unmasked unaligned unit stride stores: 1
+   remark #15475: --- begin vector cost summary ---
+   remark #15476: scalar cost: 10
+   remark #15477: vector cost: 1.750
+   remark #15478: estimated potential speedup: 5.280
+   remark #15488: --- end vector cost summary ---
+LOOP END
+```
+
+So the loop was vectorised, and the cost model estimates a 5.2x
+speedup.
+
+Now let's look at example of [flow dependence]({{< ref
+"vectorisation#data-dep" >}}).
+
+{{< code-include "optimisation-snippets/flow-dep.c" "c" >}}
+
+This time, we get a report of no vectorisation
+
+```
+LOOP BEGIN at <source>(4,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed FLOW dependence between x[i] (5:5) and x[i-1] (5:5)
+   remark #25439: unrolled with remainder by 2
+   remark #25456: Number of Array Refs Scalar Replaced In Loop: 2
+LOOP END
+```
+
+This says, on line 5, there is a read-after-write dependence between
+the access to `x[i]` and `x[i-1]`.
+
+These are relatively simple examples. Now let's look at one where the
+compiler does the wrong thing.
+
+{{< code-include "optimisation-snippets/gemm-microkernel.c" "c" >}}
+
+Again, play along [on the compiler
+explorer](https://gcc.godbolt.org/z/7Pf9fK).
+
+At first glance, everything looks fine. The compiler reports
+vectorisation occurred, with a modest estimated speedup.
+
+```
+...
+         remark #15301: PERMUTED LOOP WAS VECTORIZED
+         remark #15452: unmasked strided loads: 2 
+         remark #15475: --- begin vector cost summary ---
+         remark #15476: scalar cost: 8 
+         remark #15477: vector cost: 5.250 
+         remark #15478: estimated potential speedup: 1.470 
+         remark #15488: --- end vector cost summary ---
+```
+
+However, this is a case where I expect more gains. And the "permuted"
+part gives me cause for concern[^1].
+
+[^1]: To understand why, take
+    [COMP52315](https://teaching.wence.uk/comp52315/) next term!
+    
+Reading the rest of the report, I see
+
+```
+   remark #25444: Loopnest Interchanged: ( 1 2 3 ) --> ( 2 3 1 )
+```
+
+So the compiler obviously decided to reorder the loops and then
+vectorised the (originally outermost) now innermost loop. It's cost
+model is wrong!
+
+### Controlling 
