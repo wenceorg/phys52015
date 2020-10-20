@@ -206,8 +206,8 @@ vectorisation occurred, with a modest estimated speedup.
          remark #15488: --- end vector cost summary ---
 ```
 
-However, this is a case where I expect more gains. And the "permuted"
-part gives me cause for concern[^1].
+However, this is a case where I, as the programmer, expect larger
+gains. And the "permuted" part gives me cause for concern[^1].
 
 [^1]: To understand why, take
     [COMP52315](https://teaching.wence.uk/comp52315/) next term!
@@ -222,4 +222,165 @@ So the compiler obviously decided to reorder the loops and then
 vectorised the (originally outermost) now innermost loop. It's cost
 model is wrong!
 
-### Controlling 
+What can we do to fix this?
+
+### Controlling what the compiler does
+
+In this instance, we know better than the compiler, and we want it to
+vectorise the original innermost loop. To do so, we can use
+[`#pragma`](https://en.wikipedia.org/wiki/Directive_(programming))
+annotation to give the compiler some extra information that will help
+guide its cost model (or just tell it what to do).
+
+These pragmas are generally compiler-specific. Although for
+vectorisation purposes a number are being standardised through
+[OpenMP](https://www.openmp.org).
+
+Since pragmas are compiler-specific, the canonical place to look for
+information is always the compiler manual, which details supported
+language extensions. Intel has [extensive
+documentation](https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/compiler-reference/pragmas/intel-specific-pragma-reference.html#intel-specific-pragma-reference),
+[GCC](https://gcc.gnu.org/onlinedocs/gcc/Pragmas.html) and
+[Clang](https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-selectively-disabling-optimization)
+somewhat less.
+
+A few relevant ones are
+
+1. Loop unrolling
+{{< tabs unroll >}}
+{{< tab Intel >}}
+```c
+/* Unroll, but use heuristics */
+#pragma unroll
+for (i = 0; i < N; i++)
+  ...
+  
+/* Unroll specified number of times. n must be a literal number */
+#pragma unroll(n)
+for (i = 0; i < N; i++)
+  ...
+  
+
+/* Don't unroll */
+#pragma nounroll
+for ...
+```
+
+See [the
+documentation](https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/compiler-reference/pragmas/intel-specific-pragma-reference/unroll-nounroll.html#unroll-nounroll)
+for details.
+{{< /tab >}}
+
+{{< tab GCC >}}
+```c
+/* Unroll specified number of times. n must be a literal number */
+#pragma GCC unroll n
+for (i = 0; i < N; i++)
+  ...
+
+/* Use n=0,1 for no unrolling */
+```
+
+See their
+[docs](https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas).
+{{< /tab >}}
+{{< tab clang >}}
+```c
+/* Unroll specified number of times. n must be a literal number */
+#pragma clang loop unroll_count(n)
+for (i = 0; i < N; i++)
+  ...
+
+/* Disable unrolling */
+#pragma clang loop unroll(disable)
+```
+See their [docs](https://clang.llvm.org/docs/LanguageExtensions.html#loop-unrolling).
+{{< /tab >}}
+{{< /tabs >}}
+2. Disregarding data dependencies
+{{< tabs data-dep >}}
+{{< tab Intel >}}
+```c
+/* Ignore assumed flow-dependence */
+#pragma ivdep
+for (i = k; i < N; i++)
+  a[i] = a[i-k] + a[i];
+```
+
+In this case, if `k` is a runtime value, the compiler must assume that
+there is a dependency (and will not vectorise). Using `#pragma ivdep`
+we promise "no no, it's all fine!". See [Intel's
+documentation](https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/compiler-reference/pragmas/intel-specific-pragma-reference/ivdep.html#ivdep)
+for details.
+
+{{< hint warning >}}
+You need to make sure that it actually is all fine! If `k = 1` then we
+would get bad code with `ivdep`.
+{{< /hint >}}
+
+{{< /tab >}}
+
+{{< tab GCC >}}
+```c
+#pragma GCC ivdep
+for (i = k; i < N; i++)
+  a[i] = a[i-k] + a[i];
+```
+
+See their
+[docs](https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas).
+{{< /tab >}}
+{{< tab clang >}}
+It does not appear to be possible to specify pragmas for clang right now.
+{{< /tab >}}
+{{< /tabs >}}
+3. Force SIMD vectorisation of loops.
+
+   This is enabled in a cross-compiler manner using the OpenMP
+   [`#pragma omp
+   simd`](https://www.openmp.org/spec-html/5.0/openmpsu42.html)
+   construct. You will need to enable recognition of these pragmas
+   by adding `-qomp-simd` (Intel) or `-fopenmp-simd` (GCC/Clang).
+
+
+Having done this, we can now go back and try annotating the code that
+was treated "badly" by the compiler.
+
+{{< code-include "optimisation-snippets/gemm-microkernel-annotated.c" "c" >}}
+
+[This time](https://gcc.godbolt.org/z/91qc1j), we see a better result.
+
+```
+LOOP BEGIN at <source>(10,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at <source>(12,5)
+      remark #15542: loop was not vectorized: inner loop was already vectorized
+      remark #25436: completely unrolled by 8  
+
+      LOOP BEGIN at <source>(14,12)
+         ...
+         remark #15427: loop was completely unrolled
+         remark #15309: vectorization support: normalized vectorization overhead 0.909
+         remark #15301: OpenMP SIMD LOOP WAS VECTORIZED
+```
+
+Was it worth it?
+
+This micro-kernel is at the core of fast dense matrix-matrix
+multiplication, and it (or assembly that is similar) is used in the
+fast [BLIS](https://github.com/flame/blis/) library.
+
+With GCC-10, rather than Intel, if I don't annotate the microkernel, I
+get throughput on square matrices of around 3.2 GFlops/s on my laptop.
+After appropriate annotations, I get around 37 GFlops/s for the same
+problem. A speedup of more than 11.
+
+## Summary
+
+Vectorisation is necessary for peak performance on modern hardware.
+Generally, unless your job is developing high-performance numerical
+libraries, it is best to leave the details to the compiler.
+
+That said, we sometimes have to help the compiler's cost model along
+with judicious use of pragma annotations. We saw some examples.
