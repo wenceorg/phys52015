@@ -365,7 +365,7 @@ LOOP BEGIN at <source>(10,3)
          remark #15301: OpenMP SIMD LOOP WAS VECTORIZED
 ```
 
-Was it worth it?
+### Was it worth it?
 
 This micro-kernel is at the core of fast dense matrix-matrix
 multiplication, and it (or assembly that is similar) is used in the
@@ -375,6 +375,15 @@ With GCC-10, rather than Intel, if I don't annotate the microkernel, I
 get throughput on square matrices of around 3.2 GFlops/s on my laptop.
 After appropriate annotations, I get around 37 GFlops/s for the same
 problem. A speedup of more than 11.
+
+### Flags for GCC and Clang
+
+GCC and Clang also have ways of requesting information on what the
+optimiser is doing. For GCC, use
+[`-fopt-info`](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html).
+For Clang, use
+[`-Rpass=vec`](https://clang.llvm.org/docs/UsersManual.html#rpass).
+See also the [LLVM vectoriser](https://llvm.org/docs/Vectorizers.html) docs.
 
 ## Summary
 
