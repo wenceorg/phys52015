@@ -21,6 +21,20 @@ you may wish to anyway).
 
 {{< /task >}}
 
+## Programming languages
+
+This course requires that you know, and can program in,
+[C](https://en.wikipedia.org/wiki/C_(programming_language)). If you're
+used to high-level languages like Python, this can be a bit of a
+struggle when first starting. For a very brief "orientation" to the
+ways in which C differs from other languages, I recommend Simon
+Tatham's [descent to
+C](https://www.chiark.greenend.org.uk/~sgtatham/cdescent/). For a
+textbook, I recommend
+[K&R](https://en.wikipedia.org/wiki/The_C_Programming_Language), of
+which there are a number of copies [in the
+library](https://library.dur.ac.uk/record=b1370073~S1).
+
 ## Why parallel computing?
 
 Computing in parallel is _more difficult_ than computing in serial. We

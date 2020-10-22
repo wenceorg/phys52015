@@ -41,7 +41,7 @@ These different compute nodes do not share a memory space, and so we
 must use a _distributed memory_ programming model to address the
 parallelism they offer.
 
-## Shared memory parallelism
+## Shared memory parallelism {#shared-memory}
 
 Zooming in to a single compute node, we still find multiple levels of
 parallelism here. As we saw when introducing [Moore's law]({{<

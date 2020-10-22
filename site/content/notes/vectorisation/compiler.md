@@ -372,9 +372,14 @@ multiplication, and it (or assembly that is similar) is used in the
 fast [BLIS](https://github.com/flame/blis/) library.
 
 With GCC-10, rather than Intel, if I don't annotate the microkernel, I
-get throughput on square matrices of around 3.2 GFlops/s on my laptop.
-After appropriate annotations, I get around 37 GFlops/s for the same
-problem. A speedup of more than 11.
+get throughput on \\(4096 \times 4096 \\) matrices of around
+3.5GFlops/s on my laptop (38 seconds per multiplication). After
+appropriate annotations, I get around 38GFlops/s for the same problem
+(3.6 seconds per multiplication). A speedup of more than 11.#
+
+In comparison, the highly-optimised
+[openblas](https://www.openblas.net) library achieves 51GFlops/s (2.7
+seconds per multiplication).
 
 ### Flags for GCC and Clang
 
