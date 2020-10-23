@@ -62,7 +62,7 @@ for (int i = N/2; i < N; i++)
 
 These two _partial_ sums must then be merged into a single result.
 
-## Synchronisation and data races
+## Synchronisation and data races {#sync-data-race}
 
 Conceptually this seems very straightforward, however there are some
 subtleties that we should be aware of. The major one is to note that

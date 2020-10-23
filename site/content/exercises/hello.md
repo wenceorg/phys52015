@@ -150,10 +150,10 @@ functions.
 
 OpenMP support is implemented in most modern compilers, but has to be
 explicitly requested. To do so we must add the additional flag
-`-fopenmp` to our compile command
+`-qopenmp` to our compile command
 
 ```
-$ icc -fopenmp -o hello-openmp openmp.c
+$ icc -qopenmp -o hello-openmp openmp.c
 ```
 
 Our submission script also looks a little different
@@ -187,8 +187,8 @@ Try changing the number of threads. What do you notice about the output?
 The other parallisation paradigm we will use is for programming
 _distributed memory_ systems. We will use
 [MPI](https://www.mpi-forum.org) for this. MPI is a specification for
-a library-based programming model. There standard specifies Fortran
-and C interfaces, and there are wrappers for many popular programming
+a library-based programming model. The standard specifies Fortran
+and C/C++ interfaces, and there are wrappers for many popular programming
 languages including
 [Python](https://mpi4py.readthedocs.io/en/stable/) and
 [Julia](https://github.com/JuliaParallel/MPI.jl).

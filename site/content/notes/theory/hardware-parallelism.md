@@ -132,5 +132,5 @@ the capital budget and ongoing power and cooling costs.
 At the present time, there is no one programming model that covers all
 of these levels, hence in this course we will explicitly look at how
 to program for [vectorisation]({{< ref "vectorisation.md" >}}), [shared
-memory]({{< ref "openmp-loop-parallelism.md" >}}), and [distributed
+memory]({{< ref "notes/openmp/loop-parallelism.md" >}}), and [distributed
 memory]({{< ref "mpi-ptp.md" >}}).
