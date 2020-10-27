@@ -8,8 +8,12 @@ static inline int min(int a, int b)
 
 int main(void)
 {
-  const int N = 15;
+  const int N = 16;
   int a[N];
+  for (int i = 0; i < N; i++) {
+    /* Sentinel for unhandled value */
+    a[i] = -1;
+  }
 #pragma omp parallel default(none) shared(N, a)
   {
     int tid = omp_get_thread_num();

@@ -51,7 +51,7 @@ flags.
 {{< /tab >}}
 {{< /tabs >}}
 
-We can parallelise a loop like so
+We can [parallelise a loop]({{< ref "loop-parallelism.md" >}}) like so
 
 ```c
 #pragma omp parallel for
