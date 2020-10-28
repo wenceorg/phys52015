@@ -1,10 +1,15 @@
 CC = mpicc
 # You may need to edit this location.
+
+# This is for MacOS + Homebrew
 OPENBLAS = /usr/local/opt/openblas
+# This is for Hamilton
+OPENBLAS = /ddn/apps/Cluster-Apps/openblas/gcc-8.2.0/0.2.20
+# COSMA shouldn't need anything
 
 # You should not need to change anything else.
-CFLAGS = -std=c99 -Wall -Wextra -I$(OPENBLAS)/include -I. -g -O2 -D_GNU_SOURCE
-LDFLAGS = -L$(OPENBLAS)/lib -Wl,-rpath,$(OPENBLAS)/lib -lopenblas -lm
+CFLAGS := $(CPPFLAGS) -std=c99 -Wall -Wextra -I$(OPENBLAS)/include -I. -g -O2 -D_GNU_SOURCE
+LDFLAGS := $(LDFLAGS) -L$(OPENBLAS)/lib -Wl,-rpath,$(OPENBLAS)/lib -lopenblas -lm
 
 SOLUTION ?= solution
 HDR = vec.h mat.h utils.h check.h bench.h

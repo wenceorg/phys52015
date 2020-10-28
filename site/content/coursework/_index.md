@@ -9,14 +9,15 @@ katex: true
 
 In this coursework you are to write parallel implementations of some
 dense linear algebra operations using MPI, and benchmark the scaling
-performance.
+performance. You should not use other forms of parallelism.
 
-I provide template code. that contains input/output routines and
+I provide template code that contains input/output routines and
 skeleton data structures. There are a number of functions that you
 need to provide an implementation for.
 
 You will implement a (simplified) case of a small number of the
-parallel BLAS routines using MPI.
+parallel [BLAS](https://www.netlib.org/blas/index.html) routines using
+MPI.
 
 In particular, you should implement the matrix-vector product
 
@@ -94,15 +95,40 @@ I provide a skeleton code in C which provides datatypes for vectors
 and matrices, some viewing facilities (for debugging), and has various
 options for benchmarking performance and testing correctness.
 
-Download it as a [tarball here]({{< static-ref "coursework.tgz" >}}), or else find the code in the
-`/coursework` subdirectory of the [course repository]({{< repo >}}).
+Download it as a [tarball here]({{< static-ref "coursework.tgz" >}}),
+or else find the code in the `/coursework` subdirectory of the [course
+repository]({{< repo >}}).
 
 You should do your implementation in the `solution.c` file, which
 contains three functions that you need to implement. They are correct
 when run in serial, but do not yet work correctly in parallel.
 
-Build the code with `make` and run the executable with `./main`, with
-no arguments, it reports usage information.
+{{< hint info >}}
+### Required modules
+Building on Hamilton or COSMA needs a few modules. On your own system
+you may need to edit the `Makefile`.
+{{< tabs "Modules" >}}
+{{< tab "Hamilton" >}}
+```
+$ module load intel/2019.5
+$ module load gcc/8.2.0
+$ module load openblas
+$ module load intelmpi/intel/2019.5
+```
+{{< /tab >}}
+{{< tab "COSMA" >}}
+```
+$ module load intel_comp/2020
+$ module load intel_mpi/2020
+$ module load openblas
+```
+{{< /tab >}}
+{{< /tabs >}}
+{{< /hint >}}
+
+Having set up the environment by loading the required modules, build
+the code with `make` and run the executable with `./main`, with no
+arguments, it reports usage information.
 
 ```
 $ cd coursework
@@ -197,11 +223,51 @@ All data in seconds. Min, Mean, Max, Standard deviation.
 0.0186729 0.0186729 0.0186729 0
 ```
 
+### Code details
+
+The data types are defined in `mat.h` and `vec.h` for the `Mat` and
+`Vec` types respectively.
+
+The `Mat` data type is a pointer to a struct
+```c
+struct _p_Mat {
+  MPI_Comm comm;                /* communicator */
+  int n, N;                     /* local and global size */
+  int np;                       /* process grid np x np */
+  double *data;                 /* matrix entries in row-major format */
+};
+```
+So if you have a `Mat A`, its local size is `A->n`.
+
+Similarly, the `Vec` data type is a pointer to a struct
+```c
+struct _p_Vec {
+  MPI_Comm comm;                /* communicator */
+  int n, N;                     /* local and global size */
+  int np;                       /* number of processes */
+  double *data;                 /* vector entries */
+};
+```
+
+All routines return an error code (`return 0` for no error) can be
+checked with the `CHKERR` macro as shown in the template code.
+
+For debugging purposes, I provide routines
+
+```c
+int MatView(Mat A, FILE *output);
+int VecView(Vec x, FILE *output);
+```
+
+which can be used to print the provided matrix or vector. You can pass
+`NULL` to print to standard output.
+
 ## Task
 
 You should implement matrix-vector multiplication, and two algorithms
-for parallel matrix-matrix multiplication in parallel. Using MPI for
-parallelisation.
+for parallel matrix-matrix multiplication in parallel. You should use
+MPI for parallelisation.
+
 
 Having checked the correctness of your implementation, you should
 perform a weak and strong scaling study of the three routines. Up to
