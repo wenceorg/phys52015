@@ -1,6 +1,7 @@
 ---
 title: "Vectorisation"
 weight: 2
+katex: true
 ---
 
 # Vectorisation
@@ -69,10 +70,15 @@ for (size_t i = 0; i < N; i += 4) {
 and now we do all the instructions in this loop body in one go. This
 is called _loop unrolling_ (because we unrolled the loop).
 
+{{< hint warning >}}
+You should basically never have to do loop unrolling by hand like
+this. Rely on your compiler to do it!
+{{< /hint >}}
+
 {{< details "What if N isn't evenly divisible by 4?" >}}
 
 In the case that N isn't evenly divisible by four, we have to have
-some cleanup code afterwards. So we would write something like
+some cleanup code afterwards. So we would have written something like
 
 ```c
 /* Main loop body (vectorisable) */
@@ -85,10 +91,7 @@ for (size_t i = 0; i < (N/4) * 4; i += 4) {
 
 /* Scalar cleanup code */
 for (size_t i = (N/4) * 4; i < N; i++) {
-  c[i+0] = a[i+0] + b[i+0];
-  c[i+1] = a[i+1] + b[i+1];
-  c[i+2] = a[i+2] + b[i+2];
-  c[i+3] = a[i+3] + b[i+3];
+  c[i] = a[i] + b[i];
 }
 ```
 
@@ -217,13 +220,6 @@ data-dependent mask.
     width="75%"
     caption="Conditional assignment can be vectorised by using masking to blend results together." >}}
 
-
-One necessary condition is that there are
-no _dependencies_ between the statements in the loop. We can ask
-ourselves, if we were to permute the order of statements (for example
-by swapping the `i+0` and `i+1` accesses), would we still get the
-right answer?
-
 ### Innermost loops
 
 Since we need straight-line code, the only loop in a loop nest that
@@ -260,7 +256,7 @@ into the loop), then the loop may be vectorised. Similarly, builtin
 mathematical functions are often recognised by compilers as
 vectorisable.
 
-### No data dependencies in the loop
+### No data dependencies in the loop {#data-dep}
 
 This is the most subtle, but also easy to get an intuition for.
 Remember that conceptually the way we vectorise a loop is to _unroll_
@@ -315,3 +311,13 @@ Explain your reasoning.
 Section 4.2 of Intel's [compiler vectorisation
 guide](https://software.intel.com/sites/default/files/m/4/8/8/2/a/31848-CompilerAutovectorizationGuide.pdf)
 has more details on these dependencies.
+
+## Summary
+
+To get best performance out of modern hardware, we need to employ
+vectorisation of loop-level computations. This is easiest if we have
+a [data parallel]({{< ref "concepts.md#data-parallelism" >}}) loop.
+
+Not all loops are vectorisable, we saw a set of requirements that they
+must satisfy. [Next]({{< ref "compiler.md" >}}), we'll look at
+different approaches to realising vector parallelism.

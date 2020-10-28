@@ -41,7 +41,7 @@ These different compute nodes do not share a memory space, and so we
 must use a _distributed memory_ programming model to address the
 parallelism they offer.
 
-## Shared memory parallelism
+## Shared memory parallelism {#shared-memory}
 
 Zooming in to a single compute node, we still find multiple levels of
 parallelism here. As we saw when introducing [Moore's law]({{<
@@ -132,5 +132,5 @@ the capital budget and ongoing power and cooling costs.
 At the present time, there is no one programming model that covers all
 of these levels, hence in this course we will explicitly look at how
 to program for [vectorisation]({{< ref "vectorisation.md" >}}), [shared
-memory]({{< ref "openmp-loop-parallelism.md" >}}), and [distributed
+memory]({{< ref "notes/openmp/loop-parallelism.md" >}}), and [distributed
 memory]({{< ref "mpi-ptp.md" >}}).

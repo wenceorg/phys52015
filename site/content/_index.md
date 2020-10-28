@@ -51,7 +51,7 @@ some clarification.
   "hardware-parallelism.md" >}})
 - [Vectorisation and loop parallelism]({{< ref "vectorisation.md" >}})
 - Shared memory parallelism, with [OpenMP]({{< ref
-  "openmp-loop-parallelism.md" >}})
+  "notes/openmp/loop-parallelism.md" >}})
 - Distributed memory parallelism, with [MPI]({{< ref  "mpi-ptp.md" >}})
 
 
