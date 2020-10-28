@@ -7,6 +7,11 @@ katex: true
 
 # Dense linear algebra in parallel
 
+{{< hint warning >}}
+You should submit your work for this coursework via DUO. The
+submission deadline is 2021/01/11 at 14:00UTC.
+{{< /hint >}}
+
 In this coursework you are to write parallel implementations of some
 dense linear algebra operations using MPI, and benchmark the scaling
 performance. You should not use other forms of parallelism.
