@@ -20,7 +20,7 @@
     <a href="{{ $url }}">Download</a>
   </div>
   <div class="book-include-content">
-    {{ (printf "```%s\n%s```" $lang $file) | markdownify }}
+    {{ (printf "```%s\n%s```" $lang $file) | markdownify | safeHTML }}
   </div>
 </div>
 
