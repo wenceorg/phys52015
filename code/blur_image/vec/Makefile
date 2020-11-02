@@ -1,6 +1,6 @@
-CC = gcc
+CC = icc
 
-CFLAGS = -Wall -Wextra -I. -O2 -std=c11
+CFLAGS = -I. -std=c11 -O2 -no-vec
 LIBS = -lm
 
 DEPS = proto.h

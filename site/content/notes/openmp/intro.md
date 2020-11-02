@@ -136,7 +136,7 @@ explicitly.
 ## Parallel constructs.
 
 The basic parallel construct is a _parallel region_. This is
-introduced with
+introduced with [`#pragma omp parallel`](https://computing.llnl.gov/tutorials/openMP/#ParallelRegion)
 
 ```c
 /* Some serial code on thread0 */

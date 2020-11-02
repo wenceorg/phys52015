@@ -1,10 +1,10 @@
-CC = gcc-10
+CC = icc
 
-CFLAGS = -I. -std=c11 -O3 -Wall -Wextra
+CFLAGS = -I. -std=c11 -O2
 LIBS = -lm
 
 DEPS = proto.h
-OBJ  = main.o  add_numbers.o io.o
+OBJ  = main.o add_numbers.o
 EXE = addnumbers
 
 .PHONY: all clean

@@ -28,10 +28,9 @@ Exercises look like this.
 {{< /exercise >}}
 
 You should make a list of questions you have on the notes (or from
-doing the exercises). Please try and bring _at least three_ questions
-to each sesion. Where the exercises ask you to produce plots or
-models, be prepared to show these to the class (there are no wrong
-answers here!).
+doing the exercises). Where the exercises ask you to produce plots or
+models, be prepared to show these to your group or the class (there
+are no wrong answers here!).
 
 In the live slots, I'll provide some high-level commentary and discuss
 any particular knotty points that have come up, we'll then also go
@@ -51,12 +50,17 @@ some clarification.
   "hardware-parallelism.md" >}})
 - [Vectorisation and loop parallelism]({{< ref "vectorisation.md" >}})
 - Shared memory parallelism, with [OpenMP]({{< ref
-  "notes/openmp/loop-parallelism.md" >}})
-- Distributed memory parallelism, with [MPI]({{< ref  "mpi-ptp.md" >}})
+  "openmp.md" >}})
+- Distributed memory parallelism, with [MPI]({{< ref  "mpi.md" >}})
+
+### Assessment
+
+Via a single piece of [summative coursework]({{< ref "coursework.md"
+>}}).
 
 
 ## Lecturers
 
-[Lawrence Mitchell](mailto:lawrence@wence.uk)
+- [Lawrence Mitchell](mailto:lawrence@wence.uk)
 
-[Christian Arnold](https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712)
+- [Christian Arnold](https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712)
