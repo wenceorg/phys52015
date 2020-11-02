@@ -1,16 +1,22 @@
 // HPC workshop - University of Durham
 // author: Alejandro Benitez-Llambay
 // data: November 2018
-// purpose: demonstrate the advantages of using OpenMP for image processing
 
 #include "proto.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+void free_image(struct Image *image)
+{
+  free(image->r);
+  free(image->g);
+  free(image->b);
+}
+
 int main(int argc, char *argv[]) {
-  struct Image myimage;
-  struct Image output;
+  struct Image myimage = {0};
+  struct Image output = {0};
 
   if (argc != 3) {
     fprintf(stderr, "Usage: %s INPUT OUTPUT\n", argv[0]);
@@ -20,10 +26,12 @@ int main(int argc, char *argv[]) {
   }
   read_ppm(argv[1], &myimage);
 
-  int n = 10;
+  int n = 1;
 
-  output = blur_mean(myimage, n);
+  blur_mean(myimage, n, &output);
 
   write_ppm(argv[2], output);
+  free_image(&myimage);
+  free_image(&output);
   return 0;
 }

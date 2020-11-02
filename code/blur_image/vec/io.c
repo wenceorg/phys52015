@@ -1,7 +1,6 @@
 // HPC workshop - University of Durham
 // author: Alejandro Benitez-Llambay
 // data: November 2018
-// purpose: demonstrate the advantages of using OpenMP for image processing
 
 #include "proto.h"
 #include <stdio.h>
@@ -13,11 +12,11 @@ void read_ppm(char *filename, struct Image *image) {
   unsigned char color[3];
   FILE *fp;
   if (!(fp = fopen(filename, "rb"))) {
-    printf(RED "ERROR: Cannot read file %s \n" RESET, filename);
+    printf("ERROR: Cannot read file %s\n", filename);
     return;
   }
 
-  printf(GRN "Reading image file: %s ... " RESET, filename);
+  printf("Reading image file: %s ... ", filename);
   fscanf(fp, "P6\n%d %d\n255\n", &dimx, &dimy);
 
   image->dimx = dimx;
@@ -26,21 +25,16 @@ void read_ppm(char *filename, struct Image *image) {
   image->r = malloc(sizeof(float) * dimx * dimy);
   image->g = malloc(sizeof(float) * dimx * dimy);
   image->b = malloc(sizeof(float) * dimx * dimy);
-  image->xcoord = malloc(sizeof(int) * dimx * dimy);
-  image->ycoord = malloc(sizeof(int) * dimx * dimy);
-
   for (j = 0; j < dimy; j++) {
     for (i = 0; i < dimx; i++) {
       fread(color, 1, 3, fp);
       image->r[i + dimx * j] = (float)color[0];
       image->g[i + dimx * j] = (float)color[1];
       image->b[i + dimx * j] = (float)color[2];
-      image->xcoord[i + dimx * j] = (int)i;
-      image->ycoord[i + dimx * j] = (int)j;
     }
   }
   fclose(fp);
-  printf(BLU "Done\n" RESET);
+  printf("Done\n");
   return;
 }
 
@@ -50,7 +44,7 @@ void write_ppm(char *filename, struct Image image) {
   int dimx, dimy;
   FILE *fp;
   if (!(fp = fopen(filename, "wb"))) {
-    printf(RED "ERROR: Cannot save file %s \n" RESET, filename);
+    printf("ERROR: Cannot save file %s \n", filename);
     return;
   }
 
@@ -62,8 +56,8 @@ void write_ppm(char *filename, struct Image image) {
     for (i = 0; i < dimx; i++) {
       static unsigned char color[3];
       color[0] = image.r[i + dimx * j]; /* red */
-      color[1] = image.g[i + dimx * j]; /* red */
-      color[2] = image.b[i + dimx * j]; /* red */
+      color[1] = image.g[i + dimx * j]; /* green */
+      color[2] = image.b[i + dimx * j]; /* blue */
 
       fwrite(color, 1, 3, fp);
     }

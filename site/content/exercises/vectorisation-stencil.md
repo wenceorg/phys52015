@@ -108,10 +108,10 @@ $ ./blur input_image.ppm outout_image.ppm
 ```
 There are some sample images in the `images` subdirectory.
 
-{{< task >}}
+{{< exercise >}}
 Compile the code and run it on an input picture. Have a look at the
 output.
-{{< /task >}}
+{{< /exercise >}}
 
 {{< question >}}
 How long does the blurring take? Note that you may need to run the
@@ -129,10 +129,12 @@ Did the runtime improve, or change in any other way?
 We can ask the compiler to provide us some information on what it was
 doing in the form of a _vectorisation report_.
 
-{{< task >}}
-Edit the compiler flags again to produce vectorisation reports and
-recompile.
-{{< /task >}}
+{{< exercise >}}
+
+Edit the compiler flags again to produce [vectorisation reports]({{<
+ref "compiler.md#opt-reports" >}}) and recompile.
+
+{{< /exercise >}}
 
 {{< question >}}
 Do the reports help to explain your observations about the runtime?
@@ -142,10 +144,15 @@ The main computational part of the code is in `filters.c`. Have a look
 at that file.
 
 {{< question >}}
-Why do you think the compiler is unable to vectorise the loops?
+Was the compiler able to vectorise the loops? If not, explain why.
 {{< /question >}}
 
-{{< question >}}
-Can you think of a way of rewriting the code (perhaps by padding
-arrays) to obtain a vectorisable loop?
-{{< /question >}}
+{{< exercise >}}
+
+Produce a plot of the runtime as a function of the size of the blur
+stencil (`n` in the `main` function).
+
+Have a look at the code in `filter.c`. How do you think the runtime
+should behave as a function of `n`. Does this match with your
+observations?
+{{< /exercise >}}

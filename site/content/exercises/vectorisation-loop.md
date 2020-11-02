@@ -98,15 +98,13 @@ $ ./add_numbers N
 This code performs some some floating point computations on an array
 of random numbers and then sums them up.
 
-{{< task >}}
+{{< exercise >}}
 Run the code in serial, it reports the time it needs to perform the
 calculations. Record this.
-{{< /task >}}
 
-{{< task >}}
 Switch on vectorisation, and turn on vectorisation reports, in the
 `Makefile` and recompile.
-{{< /task >}}
+{{< /exercise >}}
 
 {{< question >}}
 Does the compiler report whether it successfully vectorised any loops?
@@ -117,10 +115,10 @@ Run the code again, is it faster than the unvectorised version?
 Now we are going to edit the main computational loop to see under what
 circumstances the compiler can still vectorise the loop.
 
-{{< task >}}
+{{< exercise >}}
 Edit the main loop in `add_numbers.c` and modify it so that `result_i`
 is only added to the final `result` if it is greater than zero.
-{{< /task >}}
+{{< /exercise >}}
 
 {{< question >}}
 Compile the code again, can the compiler still vectorise the loop?
@@ -128,7 +126,7 @@ Compile the code again, can the compiler still vectorise the loop?
 What type of transformation is this an example of?
 {{< /question >}}
 
-{{< task >}}
+{{< exercise >}}
 Now edit the main loop in `add_number.c` further and add an additional
 conditional that exits the loop _early_ as soon as `result` exceeds
 \\(10^{20}\\). 
@@ -144,7 +142,7 @@ for (i = 0; i < 100; i++) {
 ```
 Will exit the loop as soon as `i*i` is larger than 10.
 {{< /details >}}
-{{< /task >}}
+{{< /exercise >}}
 
 {{< question >}}
 Compile this new version of the code. Is vectorisation of the loop

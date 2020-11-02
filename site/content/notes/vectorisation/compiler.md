@@ -117,7 +117,7 @@ incantations necessary to open this dialogue with the compiler are
 version-specific. I'll focus on the Intel compiler here, but also
 provide some advice for GCC.
 
-### Optimisation reports for Intel
+### Optimisation reports for Intel {#opt-reports}
 
 The Intel compiler will report information about the optimisation
 decisions it made with the `-qopt-report` flag. We can control the

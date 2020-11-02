@@ -272,10 +272,3 @@ Try running on two compute nodes, by changing the `--nodes=1` line to
 notice about the node names?
 
 {{< /question >}}
-
-{{< hint info >}}
-
-Notice how the output is not ordered. This is because there is no
-synchronisation between processes in this example.
-
-{{< /hint >}}
