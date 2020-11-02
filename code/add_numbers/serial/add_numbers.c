@@ -1,11 +1,9 @@
 // This file is part of the HPC workshop 2019 at Durham University
 // Author: Christian Arnold
 
-#define _XOPEN_SOURCE
 #include "proto.h"
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 /* This function the numbers and prints the result. */

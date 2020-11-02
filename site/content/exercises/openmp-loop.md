@@ -11,16 +11,15 @@ remind yourself of how to log in and transfer code [if you need
 to]({{< ref hamilton-quickstart.md >}}).
 
 
-
 ## Obtaining the code
 
-We're going to use the same code as we did in the previous
-[vectorisation exercise]({{< ref vectorisation-loop.md >}}). You
-should undo your edits from that exercise. If you can't remember what
-you changed just [download]({{< code-ref add_numbers.tgz >}}) and
+We're going to use the same `add_numbers` code as we did in the
+previous [vectorisation exercise]({{< ref vectorisation-loop.md >}}).
+You should undo your edits from that exercise. If you can't remember
+what you changed just [download]({{< code-ref add_numbers.tgz >}}) and
 unpack the code again.
 
-As before, we'll be working in the `serial` subdirectory.
+This time, we'll be working in the `openmp` subdirectory.
 
 {{< details "Working from the repository" >}}
 
@@ -30,60 +29,42 @@ changes on branches for the previous exercises, just checkout the
 
 {{< /details >}}
 
-{{< task >}}
+## Parallelising the loop
 
-Compile and run the code with profiling enabled using `gprof` to
-identify the hotspots.
+{{< exercise >}}
 
-{{< /task >}}
+Compile and run the code with OpenMP enabled.
 
-{{< question >}}
-Which functions take most of the runtime? 
+Try running with different numbers of threads. Does the runtime
+change?
 
-Which part of the code would you parallelise to speed it up?
-{{< /question >}}
+You should use a reasonably large value for `N`.
 
-{{< task >}}
-Having identified the appropriate hotspots, parallelise it using
-OpenMP.
+{{< /exercise >}}
 
-{{< details Hint >}}
-If you are struggling, there's a solution in the `openmp`
-subdirectory, but try and figure out the solution for yourself first.
-{{< /details >}}
 
-{{< /task >}}
+Check the `add_numbers` routine in `add_numbers.c`. Annotate it with
+appropriate OpenMP pragmas to parallelise the loop.
 
 {{< question >}}
-Run your code using four threads. What is the change in the total
-runtime?
+
+Does the code now have different runtimes when using different numbers
+of threads?
+
 {{< /question >}}
 
-We'll now use the VTune profiler to gather some more detailed
-information. On COSMA you need to load the `vtune` module to gain
-access to it.
+### Different schedules
 
-{{< task >}}
-Run the code using four threads performing and HPC analysis
+Experiment with different [loop schedules]({{< ref
+"loop-parallelism.md#loop-schedules" >}}). Which work best? Which work
+worst?
 
-```sh
-$ amplxe-cl -collect hpc-performance ./add_numbers
-```
+{{< exercise >}}
 
-Don't forget that you should do this on the compute node!
+Produce a [strong scaling]({{< ref "scaling-laws.md#amdahl" >}}) plot
+for the computation as a function of the number of threads using the
+different schedules you investigated.
 
-{{< /task >}}
+What do you observe?
 
-You can then use the graphical interface `amplxe-gui` to inspect the
-profiling report. To do so, you'll need to log in with _X forwarding_
-enabled. Run `ssh -Y` rather than just `ssh` to log in.
-
-An alternative is to have the Intel tools available locally on your
-system. A student license is available free. You should then transfer
-the results of the profiling to your local machine with `scp` and
-analyse them there.
-
-{{< question >}}
-Which functions are reported as being the main hotspots in the serial
-and parallel parts of the code?
-{{< /question >}}
+{{< /exercise >}}

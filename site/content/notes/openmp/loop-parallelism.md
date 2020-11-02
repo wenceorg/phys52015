@@ -146,7 +146,7 @@ To remove the synchronisation at the end, we can use an additional
 }
 ```
 
-### Doling out iterations
+### Doling out iterations {#loop-schedules}
 
 The `for` directive takes a number of additional clauses that allow us
 to control _how_ the loop iterations are divided between threads.
