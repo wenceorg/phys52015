@@ -68,6 +68,7 @@ correct answer in parallel? Do you always get the same wrong answer?
 The solution to this problem is to create partial sums on each thread,
 and the accumulate them in a thread-safe way. We could do this like so
 
+{#reduction-hand}
 {{< code-include "openmp-snippets/reduction-hand.c" "c {linenos=table}" >}}
 
 As the comments indicate, all the barriers are quite delicate.
@@ -149,8 +150,207 @@ appropriate here too.
 
 Sometimes, we'll want to do something other than just compute a
 reduction. In these cases, if we want to pass information between
-threads, we need to synchronise on reading and writing to shared memory.
+threads, we need to synchronise on reading and writing to shared
+memory.
+
+### Barriers
+
+OpenMP has a number of constructs for this purpose. We've already
+implicitly seen one of them, namely barriers. In a parallel region,
+[`#pragma omp
+barrier`](https://computing.llnl.gov/tutorials/openMP/#BARRIER) can be
+used to synchronise all threads in the team.
+
+```c
+#pragma omp parallel for shared(a) default(none)
+{
+  int tid = omp_get_thread_num();
+  int nthread = omp_get_num_threads();
+  /* Produce some thread-specific data */
+  a[tid] = some_computation(tid, ...);
+  #pragma omp barrier
+  /* Read data from a neighbouring thread */
+  b[tid] = a[(tid+1)%nthread] + ...;
+}
+```
+
+Without the barrier, there is no synchronisation between the writes to
+`a` and the reads when updating `b`. We would therefore likely get the
+wrong answer.
+
+The barrier ensures that no thread attempts the update to `b` before
+all threads have arrived at the barrier (after updating `a`).
+
+{{< hint warning >}}
+
+Either **all** threads must encounter the barrier, or none, otherwise
+we get a deadlock.
+
+{{< /hint >}}
+
+{{< code-include "openmp-snippets/bad-barrier.c" "c" >}}
+
+{{< exercise >}}
+
+Try this deadlock situation out with the above code.
+
+{{< /exercise >}}
+
+Recall that often barriers are implicit in worksharing constructs. So
+if we are in a parallel region we do not need a barrier between two
+`#pragma omp for` directives for synchronisation (because `#pragma omp
+for` has an implicit barrier at the end of the loop).
+
+### Critical sections and atomics
+
+Sometimes a barrier synchronisation is a little heavy-handed. For this
+OpenMP provides us two further constructions. For protecting _code_
+and _variables_ respectively.
+
+The first is the critical section [`#pragma omp
+critical`](https://computing.llnl.gov/tutorials/openMP/#CRITICAL).
+This directive specifies that a region of code must be executed by
+only one thread at a time.
+
+Here's a trivial example, counting the number of threads in a parallel
+region (don't do this, use `omp_get_num_threads()`).
+
+```c
+int nthread = 0;
+#pragma omp parallel default(none) shared(nthread)
+{
+  #pragma omp critical
+  {
+    nthread += 1;
+  }
+}
+```
+
+Critical sections are more useful if you're parallelising over a
+shared data structure.
+
+For example, consider a shared task stack of work from which we can
+pop work and push work. In pseudo-code, this looks approximately like
+the below.
+
+```c
+stack = ...;              /* Create initial work */
+while (1) {
+  task = pop(stack);      /* Get the next work item */
+  if (task == NULL) {
+    break;                /* No work left, exit loop */
+  }
+  newtask = work(task);   /* Do work, potentially producing a new task */
+  if (newtask != NULL) {
+    push(newtask, stack); /* If there's a new task, add it to the stack */
+  }
+}
+```
+
+We can parallelise this with OpenMP, but we need to make sure there
+are no race conditions when pushing and popping from the shared
+`stack` data structure. This can be achieved with `critical` sections
+
+```c
+stack = ...;
+#pragma omp parallel default(none) shared(stack)
+{
+  while (1) {
+#pragma omp critical modifystack
+    {
+      task = pop(stack);
+    }
+    if (task == NULL) {
+      break;
+    }
+    newtask = work(task);
+    if (newtask != NULL) {
+#pragma omp critical modifystack
+      push(newtask, stack);
+    }
+  }
+}
+```
+
+Here we protect the modification of the stack by critical sections. 
+
+Points to note:
+
+1. I gave the critical sections an optional name (`modifystack`). All
+   critical sections with the _same name_ synchronise. If no name is
+   provided this matches any other critical section without a name.
+2. We need the critical sections to have the same name for the push and pop
+   because both of these sections modify the same shared data
+   structure.
+3. This probably isn't a very good implementation because threads
+   might exit the loop too early (if they pop from an empty stack
+   before new work is pushed by another thread).
+
+{{< hint info >}}
+
+Design of high-performance datastructures for these kind of irregular
+computations is actually an ongoing area of research. If you're
+interested, look at some of the work that the [Galois
+team](https://iss.oden.utexas.edu/?p=projects/galois) are doing.
+
+{{< /hint >}}
+
+{{< exercise >}}
+
+Modify the [`reduction-hand.c`]({{< ref "#reduction-hand" >}}) example
+to use a critical section to ensure the result is always correct.
+
+{{< /exercise >}}
+
+### Atomics
+
+Even finer-grained than critical sections are [`#pragma omp
+atomic`](https://computing.llnl.gov/tutorials/openMP/#ATOMIC)
+directives. These can be used to protect (some) updates to shared
+variables.
+
+```c
+int nthread = 0;
+#pragma omp parallel default(none) shared(nthread)
+{
+  #pragma omp atomic
+    nthread += 1;
+}
+```
+
+An atomic directive protects variables (not code, like critical
+sections). In particular, it protects the **write** to the variable on
+the left hand side of an assignment. The allowed form is one of
+
+1. `x op= expr` where `op` is one of `+`, `-`, `*`, `/`, `&`, `^`,
+   `<<`, or `>>`
+2. `x++`, `++x`, `x--`, `--x`.
+
+Note that the evaluation of `expr` in the first form is not protected,
+it is _only_ the write to `x` that is protected.
+
+{{< exercise >}}
+
+Modify the [`reduction-hand.c`]({{< ref "#reduction-hand" >}}) example
+to use an atomic directive to ensure the result is always correct.
+
+{{< /exercise >}}
+
 ## Summary
+
+As well as straightforward loop parallelisation, OpenMP also provides
+a number of constructs to help with accumulation of results and
+synchronisation when updating shared variables. The biggest hammer is
+a `barrier`, but these can often be avoided in favour of more
+fine-grained directives. The most useful is probably the `reduction`
+clause for loops.
+
+We need to be careful when writing parallel code that we do not
+accidentally introduce race conditions that produce incorrect results.
+There are some tools available to help with this. On Linux-based
+systems you can use
+[helgrind](https://www.valgrind.org/docs/manual/hg-manual.html). But
+often, thinking hard is your best bet.
 
 
 [^1]: Yes, subtraction isn't associative, so doesn't give us a

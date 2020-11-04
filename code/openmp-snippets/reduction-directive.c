@@ -23,7 +23,7 @@ int main(void)
 #pragma omp parallel for schedule(static) default(none) \
   shared(a, b, N) reduction(+:dotabparallel)
   for (int i = 0; i < N; i++) {
-    dotabparallel -= a[i]*b[i];
+    dotabparallel += a[i]*b[i];
   }
   printf("Parallel a.b = %d\n", dotabparallel);
   free(a);
