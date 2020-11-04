@@ -1,6 +1,6 @@
 CC = mpicc
 
-CFLAGS = -I. -std=c11 -O3 -Wall -Wextra
+CFLAGS = -I. -std=c11 -O2
 LIBS = -lm
 
 DEPS = proto.h

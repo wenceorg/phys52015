@@ -1,6 +1,6 @@
 CC = icc
 
-CFLAGS = -I. -std=c11 -O2
+CFLAGS = -D_GNU_SOURCE -I. -std=c11 -O2
 LIBS = -lm
 
 DEPS = proto.h
