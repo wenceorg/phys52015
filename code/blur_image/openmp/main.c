@@ -12,10 +12,17 @@
 #include <stdlib.h>
 #include <time.h>
 
+void free_image(struct Image *image)
+{
+  free(image->r);
+  free(image->g);
+  free(image->b);
+}
+
 int main(int argc, char *argv[]) {
-  struct Image myimage;
-  int n_threads;
-  struct Image output;
+  struct Image myimage = {0};
+  struct Image output = {0};
+  int nthread;
 
   if (argc != 3) {
     fprintf(stderr, "Usage: %s INPUT OUTPUT\n", argv[0]);
@@ -26,18 +33,20 @@ int main(int argc, char *argv[]) {
 
 #ifdef _OPENMP
 #pragma omp parallel
-  { n_threads = omp_get_num_threads(); }
-  printf("number of threads=%d \n", n_threads);
+  { nthread = omp_get_num_threads(); }
+  printf("number of threads=%d \n", nthread);
 #else
   printf("Serial version\n");
 #endif
 
   read_ppm(argv[1], &myimage);
 
-  int n = 10;
+  int n = 1;
 
-  output = blur_mean_automatic(myimage, n);
+  blur_mean(myimage, n, &output);
 
   write_ppm(argv[2], output);
+  free_image(&myimage);
+  free_image(&output);
   return 0;
 }

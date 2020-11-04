@@ -1,4 +1,4 @@
-CC = gcc
+CC = icc
 
 CFLAGS = -I. -O2 -std=c11
 LIBS = -lm
