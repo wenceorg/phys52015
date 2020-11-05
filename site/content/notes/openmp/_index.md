@@ -118,3 +118,8 @@ The other concept is that of a _task_, which we can describe as some
 piece of computation that can be executed independently of, and hence
 potentially in parallel with, other tasks.
 
+As with most parallel programming, the major idea is to figure out how
+to distribute the computational work across the available resources.
+[OpenMP]({{< ref "intro.md" >}}) provides facilities for doing this
+for [loop-based computations]({{< ref
+"loop-parallelism.md" >}}).
