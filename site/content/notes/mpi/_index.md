@@ -38,12 +38,44 @@ Our MPI programs always start by initialising MPI with `MPI_Init`.
 They must finish by shutting down, with `MPI_Finalize`. Inside, it
 seems like there is no explicit parallelism written anywhere.
 
-Motivation
+## Concepts
 
-What is it
+The message passing model is based on the notion of processes (rather
+than the threads in OpenMP). Processes are very similar, but do not
+share an address space (and therefore do not share memory).
 
-How does it work
+{{< columns >}}
 
-Some API
+{{< manfig
+    src="shared-memory-sketch.svg"
+    width="100%"
+    caption="Threads can share memory." >}}
 
-Point to point basics
+<--->
+
+{{< manfig
+    src="processes-private-memory-sketch.svg"
+    width="100%"
+    caption="Processes do not share memory." >}}
+
+{{< /columns >}}
+
+Like in OpenMP programming, we achieve parallelism by having many
+processes cooperate to solve the same task. We must come up with some
+way of dividing the data and computation between the processes.
+
+Since processes do not share memory, they must instead send messages
+to communicate information. This is implemented in MPI through library
+calls that we can make from our sequential programming language.
+This is in contrast to OpenMP which defines pragma-based extensions to
+the language.
+
+The core difficulty in writing message-passing programs is the
+conceptual model. This is a very different model to that required for
+sequential programs. Becoming comfortable with this model is key to
+understanding MPI programs. A key idea, which is different from the
+examples we've seen with OpenMP, is that there is much more focus on
+the _decomposition of the data and work_. That is, we must think about
+how we divide the data (and hence work) in our parallel program. I
+will endeavour to emphasise this through the examples and description
+when we encounter MPI functions.
