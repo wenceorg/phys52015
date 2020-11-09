@@ -133,6 +133,7 @@ The number of threads used by an OpenMP program if you do not set
 I therefore recommend that you _always_ set `OMP_NUM_THREADS`
 explicitly.
 {{< /hint >}}
+
 ## Parallel constructs.
 
 The basic parallel construct is a _parallel region_. This is

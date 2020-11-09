@@ -182,7 +182,7 @@ interval [0, 2).
 Try changing the number of threads. What do you notice about the output?
 {{< /question >}}
 
-## An MPI version
+## An MPI version {#mpi}
 
 The other parallisation paradigm we will use is for programming
 _distributed memory_ systems. We will use
