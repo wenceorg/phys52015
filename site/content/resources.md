@@ -9,10 +9,10 @@ There are many excellent textbooks and tutorials on parallel
 programming. Here are some I like, with brief commentary.
 
 - Victor Eijkhout, [_Introduction to High Performance
-  Computing_](https://pages02.tacc.utexas.edu/istc/istc.html). This is
+  Computing_](https://pages.tacc.utexas.edu/~eijkhout/istc/istc.html). This is
   a gentle, and quite comprehensive, introduction to parallel
   computing. The author has a
-  [separate](https://pages02.tacc.utexas.edu/pcse/html/index.html), in
+  [separate](https://pages.tacc.utexas.edu/~eijkhout/pcse/html/index.html), in
   progress, book which contains more details on OpenMP and MPI
   programming models.
   
