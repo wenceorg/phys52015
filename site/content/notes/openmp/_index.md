@@ -101,6 +101,13 @@ is "slower" then wins.
 This is an example of a _data race_, and is the cause of most bugs in
 shared memory programming.
 
+{{< hint info >}}
+
+A **data race** occurs whenever two or more threads access _the same_
+memory location, and _at least one_ of those accesses is a write.
+
+{{< /hint >}}
+
 ## Programming with shared memory
 
 The operating system level object that facilitates shared memory
