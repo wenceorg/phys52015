@@ -41,6 +41,24 @@ programming exercises. You're encouraged to collaborate in groups and
 ask questions of the lecturers and tutors if you get stuck, or want
 some clarification.
 
+### Reading for 2020-11-12
+
+Please look through the two sections on vectorisation:
+
+1. [overview]({{< ref "vectorisation.md" >}}); and
+2. [compiler autovectorisation]({{< ref "compiler.md" >}}).
+
+and attempt the boxed exercises. To see where this fits in the levels
+of parallelism we will encounter in the course, you could also look at
+the background on [parallelism in hardware]({{< ref
+"hardware-parallelism.md" >}}).
+
+In the live session we will work through the two vectorisation
+exercises on [loops]({{< ref "vectorisation-loop.md" >}}) and
+[stencils]({{< ref "vectorisation-stencil.md" >}}), as well as
+covering any questions or comments you had about the notes and your
+observations and answers to the boxed exercises.
+
 ## Syllabus
 
 - A brief [introduction to parallel computing]({{< ref
