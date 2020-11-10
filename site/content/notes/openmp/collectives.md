@@ -68,7 +68,8 @@ correct answer in parallel? Do you always get the same wrong answer?
 The solution to this problem is to create partial sums on each thread,
 and the accumulate them in a thread-safe way. We could do this like so
 
-{#reduction-hand}
+<a name="reduction-hand"></a>
+
 {{< code-include "openmp-snippets/reduction-hand.c" "c {linenos=table}" >}}
 
 As the comments indicate, all the barriers are quite delicate.
@@ -331,8 +332,9 @@ it is _only_ the write to `x` that is protected.
 
 {{< exercise >}}
 
-Modify the [`reduction-hand.c`]({{< ref "#reduction-hand" >}}) example
-to use an atomic directive to ensure the result is always correct.
+We can use these synchronisation constructs to implement different
+approaches to the reduction example. The [openmp exercise on
+reductions]({{< ref "openmp-reduction.md" >}}) does this.
 
 {{< /exercise >}}
 
