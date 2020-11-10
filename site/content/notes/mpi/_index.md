@@ -77,5 +77,7 @@ understanding MPI programs. A key idea, which is different from the
 examples we've seen with OpenMP, is that there is much more focus on
 the _decomposition of the data and work_. That is, we must think about
 how we divide the data (and hence work) in our parallel program. I
-will endeavour to emphasise this through the examples and description
+will endeavour to emphasise this through the examples and exposition
 when we encounter MPI functions.
+
+
