@@ -372,7 +372,7 @@ for more information.
 {{< exercise >}}
 
 Try compiling and running the [`reduction-race.c`]({{< code-ref
-"openmp-snippets/reduction-race.c" >})) example using GCC and thread
+"openmp-snippets/reduction-race.c" >}})) example using GCC and thread
 sanitizer enabled. Run with two threads, does it help you to
 understand the race condition?
 
