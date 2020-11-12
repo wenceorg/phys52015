@@ -51,6 +51,13 @@ updated by multiple threads, and so we are not guaranteed that all
 increments will be seen since there is a [write race]({{< ref
 "openmp.md#sync-data-race" >}}) in the increment of `dot`.
 
+{{< hint info >}}
+
+I discuss some [tools]({{< ref "#data-race-tools" >}}) for detecting
+data races below.
+
+{{< /hint >}}
+
 We can test this out with the following code
 
 {{< code-include "openmp-snippets/reduction-race.c" "c" >}}
@@ -68,7 +75,8 @@ correct answer in parallel? Do you always get the same wrong answer?
 The solution to this problem is to create partial sums on each thread,
 and the accumulate them in a thread-safe way. We could do this like so
 
-{#reduction-hand}
+<a name="reduction-hand"></a>
+
 {{< code-include "openmp-snippets/reduction-hand.c" "c {linenos=table}" >}}
 
 As the comments indicate, all the barriers are quite delicate.
@@ -331,8 +339,52 @@ it is _only_ the write to `x` that is protected.
 
 {{< exercise >}}
 
-Modify the [`reduction-hand.c`]({{< ref "#reduction-hand" >}}) example
-to use an atomic directive to ensure the result is always correct.
+We can use these synchronisation constructs to implement different
+approaches to the reduction example. The [openmp exercise on
+reductions]({{< ref "openmp-reduction.md" >}}) does this.
+
+{{< /exercise >}}
+
+## Tools for detecting data races {#data-race-tools}
+
+We need to be careful when writing parallel code that we do not
+accidentally introduce race conditions that produce incorrect results.
+There are some tools available to help with this. On Linux-based
+systems you can use
+[helgrind](https://www.valgrind.org/docs/manual/hg-manual.html).
+
+Modern versions of GCC and Clang also offer a [thread sanitizer
+mode](https://github.com/google/sanitizers/wiki#threadsanitizer)
+enabled with `-fsanitize=thread`. Again, this is transparently
+supported on Linux, but seemingly not on MacOS.
+
+Often, thinking hard is your best bet.
+
+{{< hint warning >}}
+
+Sometimes these tools will report _false positives_, and you need to
+work a little bit to eliminate them. See [this nice
+article](https://medium.com/@joshisameeran/using-tsan-threadsanitizer-and-ways-to-avoid-false-sharing-in-clang-and-gcc-15fae5283ad1)
+for more information.
+
+{{< /hint >}}
+
+{{< exercise >}}
+
+Try compiling and running the [`reduction-race.c`]({{< code-ref
+"openmp-snippets/reduction-race.c" >}})) example using GCC and thread
+sanitizer enabled. Run with two threads, does it help you to
+understand the race condition?
+
+On Hamilton load the `gcc/9.3.0` module, on COSMA load the
+`gnu_comp/10.2.0` module. You should then compile with
+
+```
+$ gcc -fopenmp -g -fsanitize=thread -o race reduction-race.c
+```
+
+The `-g` adds debug symbols so that we see line numbers in the error
+reports.
 
 {{< /exercise >}}
 
@@ -345,18 +397,8 @@ a `barrier`, but these can often be avoided in favour of more
 fine-grained directives. The most useful is probably the `reduction`
 clause for loops.
 
-We need to be careful when writing parallel code that we do not
-accidentally introduce race conditions that produce incorrect results.
-There are some tools available to help with this. On Linux-based
-systems you can use
-[helgrind](https://www.valgrind.org/docs/manual/hg-manual.html). But
-often, thinking hard is your best bet.
-
 
 [^1]: Yes, subtraction isn't associative, so doesn't give us a
     [monoid](https://en.wikipedia.org/wiki/Monoid). The behaviour of
     OpenMP is to treat this like `+`, sum all the partial results and
     then multiply by -1 at the end.
-    
-
-

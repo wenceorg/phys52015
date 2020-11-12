@@ -1,6 +1,6 @@
 ---
 title: "MPI: Calculating π"
-weight: 6
+weight: 7
 katex: true
 ---
 

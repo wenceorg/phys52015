@@ -11,7 +11,8 @@ int main(void)
   }
 #pragma omp parallel for default(none) shared(a, N)
   for (int i = 0; i < N; i++) {
-    a[i] = omp_get_thread_num();
+    a[i] = i;
+    i++;
   }
 
   for (int i = 0; i < N; i++) {
