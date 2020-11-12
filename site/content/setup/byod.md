@@ -71,7 +71,9 @@ as a student.
 
 If you have Windows 10, you might be able to to use
 [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) and
-then follow the instructions for Linux-based systems. The Intel
-toolchain is [available on
+then follow the instructions for Linux-based systems. See also [this
+tutorial](https://www.laptopmag.com/articles/use-bash-shell-windows-10)
+on enabling the bash shell in Windows 10. The Intel toolchain is
+[available on
 Windows](https://software.intel.com/content/www/us/en/develop/articles/qualify-for-free-software.html#student),
 but I have no experience of it.
