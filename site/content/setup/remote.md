@@ -66,4 +66,33 @@ repository then you probably want to know how to
 2. Make sure your changes are saved
 3. Move your changes between computers (for example off Hamilton)
 
+To do this, I recommend the following workflow. You will need a
+[GitHub account](https://github.com), so if you don't have one, go
+away and register.
 
+{{< hint info >}}
+
+The free tier of GitHub disables some useful features. Fortunately,
+as a student, you can sign up to an educational license which upgrades
+your account for free. After creating your github account, sign up for
+the [student developer pack](https://education.github.com/pack). Your
+Durham email will need to be associated with your account, follow
+instructions
+[here](https://docs.github.com/en/enterprise/2.15/user/articles/adding-an-email-address-to-your-github-account)
+if it isn't already.
+
+{{< /hint >}}
+
+With your new account available, "fork" the course repository. This
+creates a copy associated with your account which you have edit access
+in.
+
+Now you can edit and commit away in the repository and push and pull
+any changes to your fork.
+
+To synchronise with my version, you can either do it [on the
+commandline](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/syncing-a-fork),
+or in the GitHub web interface with pull requests. The [Earth
+Lab](https://www.earthdatascience.org) have a [nice
+tutorial](https://www.earthdatascience.org/courses/intro-to-earth-data-science/git-github/github-collaboration/update-github-repositories-with-changes-by-others/)
+for the latter approach.
