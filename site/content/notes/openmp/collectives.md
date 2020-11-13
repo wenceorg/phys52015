@@ -202,6 +202,14 @@ we get a deadlock.
 
 Try this deadlock situation out with the above code.
 
+Does it run successfully with one thread? What about two or three?
+
+{{< details Hint >}}
+
+To terminate the hanging program, type `Control-c` at the commandline.
+
+{{< /details >}}
+
 {{< /exercise >}}
 
 Recall that often barriers are implicit in worksharing constructs. So
