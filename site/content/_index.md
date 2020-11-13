@@ -41,6 +41,30 @@ programming exercises. You're encouraged to collaborate in groups and
 ask questions of the lecturers and tutors if you get stuck, or want
 some clarification.
 
+### Reading for 2020-11-16 & 2020-11-19
+
+This week, we will cover OpenMP. For the Monday session, please look
+through the introductory sections on OpenMP and on loop parallelism:
+
+1. [Overview of shared memory programming]({{< ref "openmp.md" >}})
+1. [What OpenMP is]({{< ref "notes/openmp/intro.md" >}})
+1. [Loop parallelism in OpenMP]({{< ref "notes/openmp/loop-parallelism.md"
+   >}})
+
+and again have a go at the boxed exercises. In the live session we'll
+work through the first two OpenMP exercises on [parallel loops]({{<
+ref "openmp-loop.md" >}}) and [stencils]({{< ref "openmp-stencil.md"
+>}}). Both of these exercises look at some strong scaling, so you may
+wish to remind yourself of [that]({{< ref "scaling-laws.md" >}})
+
+For the Thursday session, we'll look at synchronisation constructs:
+how multiple threads can collaborate when producing a shared result.
+This type of operation can broadly be termed ["collective"]({{< ref
+"notes/openmp/collectives.md" >}}). In the live session we will
+continue with the first two OpenMP exercises (if you still have
+questions) and also look at the [synchronisation exercise]({{< ref
+"openmp-reduction.md" >}}).
+
 ### Reading for 2020-11-12
 
 Please look through the two sections on vectorisation:

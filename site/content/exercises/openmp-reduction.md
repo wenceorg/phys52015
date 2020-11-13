@@ -37,7 +37,7 @@ You should implement a correct reduction using the four different
 approaches listed in the code:
 
 1. "By hand", using the same kind of approach as in
-`openmp-snippets/reduction.hand.c`;
+`openmp-snippets/reduction-hand.c`;
 1. Using an atomic directive to protect the shared updates;
 1. Using a critical section to protect the shared updates;
 1. Using the reduction clause on a parallel loop.
