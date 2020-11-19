@@ -112,7 +112,7 @@ For our loop to be vectorisable, it needs to satisfy six conditions:
 
 Let's treat these in more details in turn.
 
-### Countable loops
+### Countable loops {#countable-loops}
 
 A countable loop is one with no data-dependent exits. For example,
 this loop is not countable
@@ -191,7 +191,7 @@ data-dependent exits. Single-entry is similar, we can't jump into the
 loop from somewhere (but you don't write `goto` anyway, so that's
 fine).
 
-### No branching ("straight-line" code)
+### No branching ("straight-line" code) {#masked-assignment}
 
 Since vector instructions carry out the same operation on data from
 multiple elements of the original loop, different iterations should
