@@ -181,6 +181,38 @@ for i in range(len(a)):
         break
 print(c)
 ```
+
+{{< details Solution >}}
+The original code produces the output:
+```
+[ 2.  4.  7. 12. 21.  0.  0.  0.]
+```
+
+Let's just unroll by 4 and see what happens
+```python
+import numpy as np
+a = np.logspace(0, 7, base=2, num=8)
+b = np.linspace(1, 8, num=8)
+c = np.zeros_like(a)
+for i in range(0, len(a), 4):
+    for j in range(min(4, len(a) - i)):
+        c[i+j] = a[i+j] + b[i+j]
+    breakp = False
+    for j in range(min(4, len(a) - i)):
+        if c[i+j] > 15:
+            breakp = True
+            break
+    if breakp:
+        break
+print(c)
+=> [  2.   4.   7.  12.  21.  38.  71. 136.]
+```
+
+So we fill up three more array entries at the end. The reason being
+that we should break when computing the entry at `c[4]`, but we don't
+realise that until we've executed another three iterations.
+
+{{< /details >}}
 {{< /exercise >}}
 
 ### Single-entry single-exit loops
@@ -279,6 +311,12 @@ Write out the unrolled loop (unrolling by 4) and convince yourself
 that you can't reorder the statements in the loop body while
 maintaining the same semantics.
 
+{{< details Solution >}}
+
+Since there is a dependency between neighbouring iterations, any
+reordering of the statements results in a different result.
+
+{{< /details >}}
 {{< /exercise >}}
 
 This particular loop exhibits a _read-after-write_ dependency, some
@@ -305,6 +343,20 @@ for (size_t i = 4; i < N; i++) {
 ```
 
 Explain your reasoning.
+
+{{< details Solution >}}
+
+This one can be vectorised. Although there is a dependency, it is
+at a distance of four statements away. So if we chunk the statements
+into blocks of four, we see that we can reorder within the blocks
+without changing the answer. So if we're vectorising four statements
+at a time, this code is fine.
+
+See the optimisation report from the Intel compiler
+[here](https://gcc.godbolt.org/z/5Y8oP4).
+
+{{< /details >}}
+
 {{< /exercise >}}
 
 
