@@ -47,16 +47,15 @@ share an address space (and therefore do not share memory).
 {{< columns >}}
 
 {{< manfig
-    src="shared-memory-sketch.svg"
-    width="100%"
-    caption="Threads can share memory." >}}
-
-<--->
-
-{{< manfig
     src="processes-private-memory-sketch.svg"
     width="100%"
     caption="Processes do not share memory." >}}
+
+<--->
+{{< manfig
+    src="shared-memory-sketch.svg"
+    width="100%"
+    caption="Threads can share memory." >}}
 
 {{< /columns >}}
 
@@ -98,6 +97,62 @@ separate copy of data (there is no sharing like in OpenMP).
 So that this is useful, processes have a unique identifier, their
 _rank_. We can then write code that sends different ranks down
 different paths in the control flow.
+
+The way to think about this is as if we had written a number of
+different copies of a program and each process gets its own copy. They
+then execute at the same time and can pass messages to each other.
+
+Suppose we have a function
+
+```c
+void print_hello(MPI_Comm comm)
+{
+  int rank;
+  int size;
+
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &size);
+
+  printf("Hello, I am rank %d of %d\n", rank, size);
+}
+```
+
+Then if we execute it with two processes we have
+
+{{< columns >}}
+Process 0
+
+```c
+void print_hello(MPI_Comm comm)
+{
+  int rank;
+  int size;
+
+  rank = 0;
+  size = 2;
+  printf("Hello, I am rank %d of %d\n", rank, size);
+}
+```
+<--->
+
+Process 1
+```c
+void print_hello(MPI_Comm comm)
+{
+  int rank;
+  int size;
+
+  rank = 1;
+  size = 2;
+  printf("Hello, I am rank %d of %d\n", rank, size);
+}
+```
+
+{{< /columns >}}
+
+Of course, on its own, this is not that useful. So the real power in
+MPI comes through the ability to send messages between the processes.
+These are facilitated by communicators.
 
 ## Communicators
 
@@ -162,4 +217,5 @@ represent, are at the core of MPI programming. This is in contrast to
 OpenMP where we generally don't think about which threads are in
 involved in a parallel region.
 
-We'll revisit these ideas as we learn more MPI functions.
+We'll revisit these ideas as we learn more MPI functions. Next, we'll
+look at [point-to-point]({{< ref "point-to-point.md" >}}) messaging.

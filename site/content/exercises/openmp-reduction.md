@@ -16,7 +16,7 @@ to see if there are any differences
 ## Template code and benchmarking
 
 In [`openmp-snippets/reduction-template.c`]({{< code-ref
-"openmp-snippets/reduction.template.c" >}}) is some code that times
+"openmp-snippets/reduction-template.c" >}}) is some code that times
 how long it takes to run the reduction.
 
 You can select the length of the vector the compute the dot product of

@@ -133,4 +133,4 @@ At the present time, there is no one programming model that covers all
 of these levels, hence in this course we will explicitly look at how
 to program for [vectorisation]({{< ref "vectorisation.md" >}}), [shared
 memory]({{< ref "notes/openmp/loop-parallelism.md" >}}), and [distributed
-memory]({{< ref "mpi-ptp.md" >}}).
+memory]({{< ref "notes/mpi/point-to-point.md" >}}).
