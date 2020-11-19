@@ -110,6 +110,35 @@ Switch on vectorisation, and turn on vectorisation reports, in the
 Does the compiler report whether it successfully vectorised any loops?
 
 Run the code again, is it faster than the unvectorised version?
+
+{{< details Solution >}}
+For me, the loop is vectorised by the Intel compiler, but not by GCC.
+See the [compiler explorer](https://gcc.godbolt.org/z/orKMsz). I think
+this is because GCC does not have vectorised versions of the maths
+functions in the standard library, but Intel does.
+
+For me on Hamilton with flags:
+
+```
+# CFLAGS = -O2 -no-vec
+$ ./addnumbers 10000000
+Adding 10000000 numbers ...
+The result is: 3.14654e+07
+Doing 10000000 calculations took 0.87 s
+```
+
+If I turn on vectorisation and add a few more architecture-specific
+flags
+```
+# CFLAGS = -O3 -xCORE_AVX2
+$ ./addnumbers 10000000
+Adding 10000000 numbers ...
+The result is: 3.17422e+07
+Doing 10000000 calculations took 0.22 s
+```
+
+So it does make a difference.
+{{< /details >}}
 {{< /question >}}
 
 Now we are going to edit the main computational loop to see under what
@@ -124,6 +153,22 @@ is only added to the final `result` if it is greater than zero.
 Compile the code again, can the compiler still vectorise the loop?
 
 What type of transformation is this an example of?
+
+{{< details Solution >}}
+
+We need to change the code so that the increment is guarded
+
+```c
+if (result_i > 0)
+  result += result_i
+```
+
+This kind of branching can be vectorised by the compiler as a [masked
+assignment]({{< ref "vectorisation.md#masked-assignment" >}}).
+
+Here's a [simplified example](https://gcc.godbolt.org/z/snqxr3) on the
+compiler explorer.
+{{< /details >}}
 {{< /question >}}
 
 {{< exercise >}}
@@ -149,4 +194,28 @@ Compile this new version of the code. Is vectorisation of the loop
 still possible?
 
 If not, why is this?
+
+{{< details Solution >}}
+
+In this case, we modify the loop to add
+
+```c
+if (result > 1e20) {
+  break;
+}
+```
+
+Vectorisation of this loop is _not_ possible. The reason is that the
+loop is no longer [countable]({{< ref
+"vectorisation.md#countable-loops" >}}) because it has multiple exits.
+
+Here's [an example](https://gcc.godbolt.org/z/qhsdE4) on the compiler
+explorer.
+
+The relevant extract from the optimisation report:
+
+> remark #15520: loop was not vectorized: loop with multiple exits
+> cannot be vectorized unless it meets search loop idiom criteria
+
+{{< /details >}}
 {{< /question >}}

@@ -15,10 +15,10 @@ void add_numbers(int n_numbers, float *numbers) {
 
   /* do the actual calculation */
   for (int i = 0; i < n_numbers; i++) {
-    double result_i = fabs(log(pow(fabs(numbers[i]), 2.1))) +
-                      log(pow(fabs(numbers[i]), 1.9)) +
-                      log(pow(fabs(numbers[i]), -1.97)) +
-                      fabs(log(pow(fabs(numbers[i]), -1.005)));
+    float result_i = fabsf(logf(powf(fabsf(numbers[i]), 2.1))) +
+                      logf(powf(fabsf(numbers[i]), 1.9)) +
+                      logf(powf(fabsf(numbers[i]), -1.97)) +
+                      fabsf(logf(powf(fabsf(numbers[i]), -1.005)));
 
     result += result_i;
   }

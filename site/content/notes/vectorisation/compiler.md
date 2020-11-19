@@ -131,7 +131,7 @@ Let's look at how this works for a loop we hope is vectorisable
 Running
 
 ```sh
-$ icpc -qopt-report=5 -c -O3 -xCORE_AVX2 simple-vector.c
+$ icc -qopt-report=5 -c -O3 -xCORE_AVX2 simple-vector.c
 ```
 
 we get an optrpt file which we can inspect. You can also play along
