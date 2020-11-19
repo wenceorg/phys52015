@@ -19,7 +19,7 @@ In [`openmp-snippets/reduction-template.c`]({{< code-ref
 "openmp-snippets/reduction-template.c" >}}) is some code that times
 how long it takes to run the reduction.
 
-You can select the length of the vector the compute the dot product of
+You can select the length of the vector to compute the dot product of
 by passing a size on the commandline. For example, after compiling with
 
 ```
