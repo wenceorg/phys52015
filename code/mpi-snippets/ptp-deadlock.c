@@ -14,7 +14,7 @@ int main(int argc, char **argv)
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  int nentries = argc ? atoi(argv[1]) : 1;
+  int nentries = argc > 1 ? atoi(argv[1]) : 1;
 
   sendbuf = calloc(nentries, sizeof(*sendbuf));
   recvbuf = malloc(nentries * sizeof(*recvbuf));

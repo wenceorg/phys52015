@@ -1,6 +1,6 @@
 ---
 title: "Point-to-point messaging in MPI"
-weight: 7
+weight: 1
 katex: true
 ---
 
@@ -32,7 +32,26 @@ int MPI_Send(const void *buffer, int count, MPI_Datatype dtype, int dest, int ta
 int MPI_Recv(void *buffer, int count, MPI_Datatype dtype, int src, int tag, MPI_Comm comm, MPI_Status *status);
 ```
 
-We will now describe how this works.
+We first note a few things about the interface, and then describe the
+details. All input and output variables are as arguments to the
+functions.
+
+{{< hint info >}}
+
+The return value is always an error code. As with normal C
+conventions, the return value `0` means that no error occurred. you
+can set an error handler in MPI, the default is to abort the program
+when an error is encountered. 
+
+Sometimes you will encounter a programming library that does not do
+this, so they can handle and provide better error messages. In those
+circumstances you should always check the error code.
+
+{{< /hint >}}
+
+
+
+Let's look at how this works in more detail.
 
 ## Describing the data
 
@@ -150,21 +169,110 @@ $N$ processes.
 
 ## When are sends (receives) complete?
 
-`MPI_Send` and `MPI_Recv` are _blocking_, that is, `MPI_Send` does not
-complete until the send buffer is available for use again, and
-`MPI_Recv` does not complete until the receive buffer is full (all of
-the message has been received).
+Let us think about how MPI might implement sending a message over a
+network. One option is that MPI copies the user data to be sent into a
+buffer, sends it over the network into another buffer, and then copies
+it out into the user-level receive buffer. This is shown in the figure
+below.
 
-We therefore have to be a little bit careful about deadlocks. If we
-send a large message from rank 0 to rank 1 (say), and rank 1 is doing
-something else (perhaps also sending a message) such that the receive
-does not appear, then the processes can get stuck.
+{{< manfig
+    src="mpi-send-recv-with-buffers.svg"
+    width="50%"
+    caption="Send-receive pair with MPI-provided buffers." >}}
+    
+To avoid this copy, we would like to directly send through the network
 
-For small messages, we might not observe this phenomenon, since the
-MPI library might maintain some internal buffers for copying and
-managing in-flight messages. We can see the problem if we consider
-code that just exchanges values:
+{{< manfig
+    src="mpi-send-recv-no-buffer.svg"
+    width="50%"
+    caption="Send-receive with no buffers." >}}
+    
+For this to be possible, the send has to wait for the receive to be
+available. MPI provides us with sending modes that support both of
+these mechanisms.
 
+## Different types of send calls
+
+### Synchronous send: `MPI_Ssend`
+
+This send mode covers the case with no buffers. The program will wait
+inside the [`MPI_Ssend`](https://rookiehpc.com/mpi/docs/mpi_ssend.php) call until the matching receive is ready. The
+figure below shows a timeline on two processes.
+
+{{< manfig
+    src="mpi-ssend-cartoon.svg"
+    width="50%"
+    caption="Sketch of synchronous send between two processes." >}}
+    
+### Buffered send `MPI_Bsend`
+
+This send mode allows the user to provide a buffer for MPI to copy
+into. The call to
+[`MPI_Bsend`](https://rookiehpc.com/mpi/docs/mpi_bsend.php) will
+return as soon as the data are copied into the buffer. If the buffer
+is too small, an error occurs.
+
+{{< manfig
+    src="mpi-bsend-cartoon.svg"
+    width="50%"
+    caption="Sketch of buffered send between two processes." >}}
+
+{{< hint info >}}
+#### Points to note
+
+The receive `MPI_Recv` is always synchronous: it waits until the
+buffer is filled up with the complete received message.
+
+In the `Bsend` case, it the receive is issued on process 1 before
+process 0 starts the send, then process 1 waits in the `MPI_Recv`
+call.
+
+{{< /hint >}}
+
+### I don't want to decide: `MPI_Send`
+
+Managing send buffers by hand for `Bsend` is somewhat tedious, so MPI
+provides a get-out option:
+[`MPI_Send`](https://rookiehpc.com/mpi/docs/mpi_send.php).
+
+In `MPI_Send`, the buffer space is provided by the MPI implementation.
+If enough buffer space is available for the message, it is used (so
+the send behaves like `Bsend` and returns as soon as the copy is
+complete). If the buffer is full, then `MPI_Send` turns into
+`MPI_Ssend`.
+
+{{< hint warning >}}
+
+You can't rely on any particular size of buffer from the MPI
+implementation, so you should really treat `MPI_Send` like `MPI_Ssend`.
+
+{{< /hint >}}
+
+{{< hint info >}}
+
+#### Recommendation
+
+`MPI_Bsend` is really an optimisation that you should apply once you
+really want to squeeze the last little bit out of your implementation.
+
+Therefore, I would only worry about `MPI_Send` and `MPI_Ssend`.
+`MPI_Ssend` is _less forgiving_ of incorrect code, so I recommend
+`MPI_Ssend` to catch any deadlock errors.
+{{< /hint >}}
+
+### A concrete example
+
+Let us look at the difference in behaviour between `MPI_Ssend` and
+`MPI_Send` to observe how `MPI_Send` can hide deadlocks in some
+circumstances.
+
+Remember that `MPI_Send` returns immediately if there is enough buffer
+space available, but turns into `MPI_Ssend` when the buffer space runs
+out.
+
+Here is a short snippet that illustrates the kind of problematic code.
+Rank 0 will send a message to rank 1, and then receive a message from
+rank 1. At the same time, rank 1 first sends a message to rank 0.
 ```c
 if (rank == 0) {
   MPI_Send(sendbuf, nentries, MPI_INT, 1, 0, ...);
@@ -175,33 +283,88 @@ if (rank == 0) {
 }
 ```
 
-Here both ranks try and send messages to each other before receiving
-them. For small messages this often works, but for larger ones it
-doesn't.
-
 {{< exercise >}}
 
 The code [`mpi-snippets/ptp-deadlock.c`]({{< code-ref
 "mpi-snippets/ptp-deadlock.c" >}}) implements this message passing
 deadlock.
 
-It takes one argument, which is the size of message to send. Run it on
-two processes. How big can you make this message before you observe a
-deadlock? 
+It takes one argument, which is the size of message to send. Compile
+with
+
+```
+mpicc -o ptp-deadlock deadlock.c
+```
+
+{{< details Hint >}}
+Don't forget to load the [relevant MPI module]({{< ref "hello.md#mpi" >}}).
+{{< /details >}}
+
+Run it on two processes. 
+
+How big can you make this message before you observe a
+deadlock?
+
+{{< details "Cancelling the process" >}}
+
+If you launched the run interactively, type `Control-c` to quite the
+hanging process.
+
+If you used the batch system you can use `scancel` followed by the ID
+of the job to cancel the job (or set a short timeout in your slurm script).
+
+{{< /details >}}
+
+Try changing the `MPI_Send` calls to `MPI_Ssend`, is there now any
+value of the buffer size that completes successfully?
 
 {{< /exercise >}}
 
+## Avoiding deadlocks
 
+### Pairwise communication: `MPI_Sendrecv`
+
+For simple pairwise communication, like our example of exchanging
+messages, MPI offers an function that does the equivalent of executing
+a send and a receive _simultaneously_ (avoiding the deadlock problem
+of sends coming before receives).
+
+[`MPI_Sendrecv`](https://rookiehpc.com/mpi/docs/mpi_sendrecv.php)
+pairs up a send and a receive in one call.
+
+{{< exercise >}}
+
+Rewrite the code of [`mpi-snippets/send-message.c`]({{< code-ref
+"mpi-snippets/send-message.c" >}}) to use `MPI_Sendrecv`.
+
+{{< /exercise >}}
+
+### Non-blocking communication
+
+The pairwise send-receive is useful. but not general enough to cover
+all point-to-point communication patterns we might encounter. MPI
+therefore offers "non-blocking" communication modes that return
+immediately and allow us to later test if the message has been
+sent/received.
+
+This page is already long enough, so they're described in detail
+[separately]({{< ref "point-to-point-nb.md" >}}.
+
+## Summary
+
+MPI has flexible point-to-point messaging. The message contents are
+described by a pointer to a buffer (to send from/receive into) along
+with a count and datatype.
+
+The source or destination of a message is specified by providing the
+communicator and a rank.
+
+Messages can be distinguished by tags. Often don't need them for
+simple processes, but can be used in advanced usage, or to make sure
+that messages don't accidentally match.
+
+You should now know enough to attempt the exercise [sending messages
+in a ring]({{< ref "mpi-ring.md" >}}).
 
 [^1]: MPI does have some facility for one-sided message passing, but
       we won't cover it in this course.
-
-Motivation
-
-What is it
-
-How does it work
-
-Some API
-
-Point to point basics
