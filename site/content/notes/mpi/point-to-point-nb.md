@@ -8,7 +8,7 @@ weight: 2
 
 Rationale.
 
-## Wildcard matching
+## Wildcard matching {#wildcards}
 
 
 ## Examples

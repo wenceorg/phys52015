@@ -1,6 +1,6 @@
 ---
 title: "MPI: Calculating π"
-weight: 7
+weight: 8
 katex: true
 ---
 
@@ -68,7 +68,7 @@ of random points.
 
 ## Convergence
 
-{{< task >}}
+{{< exercise >}}
 
 Run the code for different choices of `N` and plot the error as a
 function of `N`.
@@ -82,7 +82,7 @@ sure to allocate enough time in the queue for them all), rather than
 running each one in its own job.
 {{< /details >}}
 
-{{< /task >}}
+{{< /exercise >}}
 
 ## Parallelisation with MPI
 
@@ -113,7 +113,7 @@ and the final thing they should do is _finalise_ MPI with
 
 So do that in the `main` function (in `main.c`).
 
-{{< task >}}
+{{< exercise >}}
 
 Add code in `main` to determine the
 [size](https://www.mpi-forum.org/docs/mpi-3.1/mpi31-report/node155.htm)
@@ -125,7 +125,7 @@ process.
 Now compile and then run the code with two processes using `mpirun`.
 Does what you observe make sense?
 
-{{< /task >}}
+{{< /exercise >}}
 
 ### Parallelising the random number generation
 
@@ -137,7 +137,7 @@ _different_ random numbers. These are generated using the C standard
 library's pseudo-random number generator. The initial state is
 _seeded_ in `calculate_pi`. 
 
-{{< task >}}
+{{< exercise >}}
 Modify the code so that the seed depends on which process is
 generating the random numbers.
 
@@ -147,7 +147,7 @@ The `rank` of a process is a unique identifier.
 
 Run again on two processes, do you now see that the results are
 different depending on the process?
-{{< /task >}}
+{{< /exercise >}}
 
 {{< details "Note: parallel random numbers" >}}
 The approach we use here does not produce statistically uncorrelated
@@ -177,9 +177,13 @@ summing the number of points found to be in the circle across all
 processes.
 
 {{< details Hint >}}
-You may find the function
-[`MPI_Allreduce`](https://www.mpi-forum.org/docs/mpi-3.1/mpi31-report/node117.htm)
-to be useful.
+
+Remember that you wrote a function in the [ring reduction]({{< ref
+"mpi-ring.md" >}}) exercise to add up partial values from all the
+processes.
+
+Alternately, you may find the function
+[`MPI_Allreduce`](https://rookiehpc.com/mpi/docs/mpi_allreduce.php) useful.
 {{< /details >}}
 
 {{< question >}}

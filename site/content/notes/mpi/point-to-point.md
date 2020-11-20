@@ -159,7 +159,8 @@ MPI_Status status;
 ...;
 MPI_Recv(..., &status);
 ```
-We will revisit this when we look at [wildcard matching]().
+We will revisit this when we look at [wildcard matching]({{< ref
+"point-to-point-nb.md#wildcards" >}}).
 
 {{< exercise >}}
 The code above sends a message from rank 0 to rank 1. Modify it so
@@ -348,7 +349,7 @@ immediately and allow us to later test if the message has been
 sent/received.
 
 This page is already long enough, so they're described in detail
-[separately]({{< ref "point-to-point-nb.md" >}}.
+[separately]({{< ref "point-to-point-nb.md" >}}).
 
 ## Summary
 

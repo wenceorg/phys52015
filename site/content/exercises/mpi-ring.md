@@ -15,7 +15,9 @@ To compute a global summation a simple method is to rotate each piece
 of data all the way round the ring: at each step, a process receives
 from the left and sends to the right.
 
-This is illustrated for five processes in the figure below.
+This is illustrated for five processes in the figure below. The
+accumulation happens in the red boxes, and the message at each step is
+shown by the arrow between processes.
 
 {{< manfig
     src="mpi-ring-reduction.svg"
