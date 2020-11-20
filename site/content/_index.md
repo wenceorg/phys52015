@@ -41,6 +41,21 @@ programming exercises. You're encouraged to collaborate in groups and
 ask questions of the lecturers and tutors if you get stuck, or want
 some clarification.
 
+### Reading for 2020-11-23
+
+This week we'll start looking at MPI. For the Monday session we will
+look at basic concepts and point-to-point messaging with blocking
+communication. Please therefore look at
+
+1. [The MPI overview]({{< ref "mpi.md" >}})
+1. [Point to point messaging]({{< ref "notes/mpi/point-to-point.md"
+   >}})
+
+In the live session, we'll look at the mini exercises from those notes
+and then work on the exercise sending [messages round a ring]({{< ref
+"mpi-ring.md" >}}) and [calculating π]({{< ref "mpi-pi.md" >}}) using
+a very simple to parallelise Monte Carlo method.
+
 ### Reading for 2020-11-16 & 2020-11-19
 
 This week, we will cover OpenMP. For the Monday session, please look
