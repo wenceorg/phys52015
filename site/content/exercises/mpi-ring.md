@@ -27,9 +27,10 @@ shown by the arrow between processes.
 
 ## Code
 
-I provide a template file in the `code/mpi/ring` subdirectory. It
-initialises and finalises MPI and provides a stub `ring_reduce`
-function which you should implement.
+I provide a template file [`ring.c`]({{< code-ref "mpi/ring/ring.c"
+>}}) in the `code/mpi/ring` subdirectory. It initialises and finalises
+MPI and provides a stub `ring_reduce` function which you should
+implement.
 
 The initial local value is set to the rank. This gives us a nice way
 of checking if the summed value is correct, since on $P$ processes,
@@ -41,7 +42,9 @@ the final value should be $P(P-1)/2$.
 
 Implement the `ring_reduce` function. If you're already comfortable
 with non-blocking messages, you can use those, otherwise, you will
-probably find `MPI_Sendrecv` useful.
+probably find
+[`MPI_Sendrecv`](https://www.rookiehpc.com/mpi/docs/mpi_sendrecv.php)
+useful.
 
 Ensure that your function does not modify the value in the `sendbuf`
 argument.
@@ -64,7 +67,7 @@ function of the total number of processes.
 {{< question >}}
 If each message takes a constant amount of time, what algorithmic
 complexity do you expect for your implementation as a function of the
-total number of proceses $P$?
+total number of processes $P$?
 {{< /question >}}
 
 {{< exercise >}}

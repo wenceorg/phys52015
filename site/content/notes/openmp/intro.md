@@ -247,6 +247,30 @@ Can you explain what is happening?
 {{< details Hint >}}
 Think about the potential [data races]({{< ref "openmp#sync-data-race" >}}).
 {{< /details >}}
+
+{{< details Solution >}}
+If I run this code on eight processes, I see:
+
+```
+$ OMP_NUM_THREADS=8 ./bad-region
+a[ 0] = 7
+a[ 1] = 1
+a[ 2] = 7
+a[ 3] = 3
+a[ 4] = 7
+a[ 5] = 5
+a[ 6] = 6
+a[ 7] = 7
+```
+
+Although sometimes the values change.
+
+What is happening is that the `i` variable which records the thread
+number in the parallel region is _shared_ (rather than being private).
+So by the time we get to the point where we write it into the output
+array, it is probably overwritten by a value from another thread.
+
+{{< /details >}}
 {{< /exercise >}}
 
 
@@ -308,6 +332,11 @@ $ OMP_NUM_THREADS=8 ./uninitialised
 {{< exercise >}}
 If you do this, do you always see the same nonsense values? Does it
 depend on the compiler?
+
+{{< details Solution >}}
+I, at least, don't always see the same values. Although it seems for
+me, thread0 always gets initialised to zero.
+{{< /details >}}
 {{< /exercise >}}
 
 If you _really_ need a private variable that takes its initial value
