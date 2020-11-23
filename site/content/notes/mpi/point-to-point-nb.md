@@ -1,6 +1,6 @@
 ---
 title: "Non-blocking point-to-point messaging"
-katex: false
+katex: true
 weight: 2
 ---
 
@@ -27,6 +27,23 @@ Notice how the send gets an extra output argument (the request), and
 the receive loses the `MPI_Status` output argument and gains a request
 output argument.
 
+
+{{< hint warning >}}
+
+With the [blocking versions]({{< ref "point-to-point.md" >}})
+(`MPI_Send`, `MPI_Ssend`, `MPI_Bsend`), the buffer argument is safe to
+reuse _as soon as the function returns_. Equally, as soon as
+`MPI_Recv` returns, we know the message has been received and we can
+inspect the contents.
+
+**This is not the case** for non-blocking calls.
+
+We are not allowed to reuse the buffer (or rely on its contents being
+ready) until we have "waited" on the `request` handle.
+
+See below for details on how to do this.
+
+{{< /hint >}}
 
 If we have a request, we can check whether the message it corresponds
 to has been completed with [`MPI_Test`](https://rookiehpc.com/mpi/docs/mpi_test.php)
@@ -99,12 +116,143 @@ $$
 \max(T_{\text{compute}}, T_{\text{communicate}}) < T_{\text{compute}} + T_{\text{communicate}}
 $$
 
-We will look at this concretely in doing the [halo exchange]({{< ref
-"mpi-stencil" >}}) exercise.
+We will look at a concrete implementation of this idea when doing the
+[halo exchange]({{< ref "mpi-stencil" >}}) exercise.
+
+## Waiting for multiple messages
+
+The advantage of the non-blocking communication mode becomes more
+apparent when we look at waiting or testing for completion of multiple
+messages simultaneously.
+
+A typical pseudo-code with non-blocking communication might look
+something like this
+
+```c
+MPI_Request *requests;
+MPI_Request *requests;
+
+nsend = ...;
+nrecv = ...;
+
+requests = malloc((nsend+nrecv)*sizeof(*requests));
+
+for (int i = 0; i < nrecv; i++) {
+  MPI_Irecv(..., &requests[i]);
+}
+
+for (int i = 0; i < nsend; i++) {
+  MPI_Isend(..., &requests[i + nrecv]);
+}
+
+/* Some work that doesn't depend on the messages */
+...;
+
+```
+
+Having done the work that doesn't depend on messages, we now need to
+wait for message completion.
+
+Perhaps we need all the messages to complete, in which case we can use
+[`MPI_Waitall`](https://rookiehpc.com/mpi/docs/mpi_waitall.php)
+
+```c
+MPI_Waitall(nsend+nrecv, requests, MPI_STATUSES_IGNORE);
+```
+
+This approach is preferred over a loop calling `MPI_Wait` on each
+request, since the MPI implementation is free to process the arriving
+messages in any order when we call `MPI_Waitall` which might speed
+things up.
+
+
+Perhaps we just want a message to have arrived, in which case we can
+use [`MPI_Waitany`](https://rookiehpc.com/mpi/docs/mpi_waitany.php)
+
+```c
+int which;
+MPI_Waitany(nsend+nrecv, requests, &which, MPI_STATUSES_IGNORE);
+```
+
+Now the `which` variable tells us which of the requests completed.
+
+Finally, suppose we want to wait until _at least one_ message has
+completed, we can use
+[`MPI_Waitsome`](https://rookiehpc.com/mpi/docs/mpi_waitsome.php)
+
+```c
+int *indices = malloc((nsend+nrecv)*sizeof(*indices));
+int nfinished;
+MPI_Waitsome(nsend+nrecv, requests, &nfinished, indices, MPI_STATUSES_IGNORE);
+/* Now nfinished tells us how many requests are completed,
+ * and indices[0..nfinished-1] tells us which requests they are */
+```
+
+A high quality MPI implementation will provide optimised code for
+these routines that is more efficient than a loop with
+`MPI_Test`/`MPI_Wait` pairs.
+
+{{< exercise >}}
+### Gathering data from every process
+
+Write an MPI code in which rank-0 gathers a message from every process
+and places it in an array at a position corresponding to the rank of
+the sender.
+
+So if running with $P$ processes, rank-0 should allocate an array with
+space for $P$ entries, and after collecting the messages.
+
+Compare the performance of two versions.
+
+1. rank-0 uses a blocking `MPI_Recv` for all receives
+2. rank-0 uses non-blocking `MPI_Irecv` followed by `MPI_Waitall`.
+
+Which performs better as a function of the total number of messages, $P$?
+
+{{< /exercise >}}
 
 ## Wildcard matching {#wildcards}
 
+So far, we've always specified specific `source` and `tag` arguments in
+the arguments to `MPI_Recv` and `MPI_Irecv`. MPI also provides us with
+the option to say "receive a message, I don't care who its from, or
+what the tag is".
 
-## Examples
+We do that by providing `MPI_ANY_SOURCE` and/or `MPI_ANY_TAG` as the
+source and tag arguments respectively.
+
+We can subsequently, find out where we got the message from, and what
+its tag was, by inspecting the `status` object that `MPI_Recv`
+returns.
+
+Up to now, we've just said `MPI_STATUS_IGNORE`, but we can also do
+
+```c
+MPI_Status status;
+MPI_Recv(..., MPI_ANY_SOURCE, MPI_ANY_TAG, &status);
+
+status.MPI_SOURCE; /* The source rank */
+status.MPI_TAG; /* The tag */
+```
+
+There actually aren't that many reasons you would use wildcards in
+receives. They can be useful when implementing [dynamic sparse data
+exchange](http://htor.inf.ethz.ch/publications/index.php?pub=99).
+
+{{< hint info >}}
+Typically, the implementation of "wildcard" matching is less efficient
+than message matching with given source and tag arguments.
+{{< /hint >}}
 
 ## Summary
+
+As well as providing blocking send/receive options, MPI provides
+non-blocking versions.
+
+These allow us to potentially improve performance of message exchange,
+and simplify writing algorithms that need to match many pairs of
+messages, without thinking as hard about potential deadlocks.
+
+The critical thing to recall is that **we are not allowed** to look at
+the buffers we pass into non-blocking sends/receives until after
+calling `MPI_Wait` (or similar).
