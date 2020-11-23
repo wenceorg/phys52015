@@ -70,6 +70,12 @@ parallel. But the parallel version has race conditions.
 Try running with different numbers of threads. Do you always get the
 correct answer in parallel? Do you always get the same wrong answer?
 
+{{< details Solution >}}
+
+I, at least, don't always get the same wrong answer (but I generally
+get the wrong answer).
+
+{{< /details >}}
 {{< /exercise >}}
 
 The solution to this problem is to create partial sums on each thread,
@@ -94,6 +100,18 @@ wrong.
 2. What happens if you add `nowait` to the `for` directive on line 32?
    (Remove the `nowait` from line 28 again!)
 
+{{< details Solution >}}
+
+For 1., you probably get a `Segmentation fault`, because we need to
+wait for the array to be allocated, this means we need to synchronise
+after the allocation.
+
+For 2., you probably get the wrong answer. The reason is that if one
+thread finishes in the parallel loop before the others, it will
+immediately go ahead and start adding up the contributions, so it'll
+pick up whatever happens to be the current value in the other entries
+in `dotlocal` (which will likely be incomplete).
+{{< /details >}}
 {{< /exercise >}}
 
 ### Directives to the rescue
@@ -210,6 +228,11 @@ To terminate the hanging program, type `Control-c` at the commandline.
 
 {{< /details >}}
 
+{{< details Solution >}}
+
+It should work fine with one thread, but not more than one.
+
+{{< /details >}}
 {{< /exercise >}}
 
 Recall that often barriers are implicit in worksharing constructs. So
@@ -316,6 +339,11 @@ team](https://iss.oden.utexas.edu/?p=projects/galois) are doing.
 Modify the [`reduction-hand.c`]({{< ref "#reduction-hand" >}}) example
 to use a critical section to ensure the result is always correct.
 
+{{< details Solution >}}
+
+This was actually the topic of the [synchronisation]({{< ref
+"openmp-reduction.md" >}}) exercise, so see the solutions there.
+{{< /details >}}
 {{< /exercise >}}
 
 ### Atomics
@@ -394,6 +422,36 @@ $ gcc -fopenmp -g -fsanitize=thread -o race reduction-race.c
 The `-g` adds debug symbols so that we see line numbers in the error
 reports.
 
+{{< details Solution >}}
+If I do this and then run with two threads, I see output like the
+following:
+
+```
+WARNING: ThreadSanitizer: data race (pid=8685)
+  Read of size 4 at 0x7ffcc8e32e54 by thread T1:
+    #0 main._omp_fn.0 /ddn/home/vtdb72/phys52015/code/openmp-snippets/reduction-race.c:27 (foo+0x400d35)
+    #1 gomp_thread_start ../../../gcc-9.3.0/libgomp/team.c:123 (libgomp.so.1+0x19ec5)
+
+  Previous write of size 4 at 0x7ffcc8e32e54 by main thread:
+    #0 main._omp_fn.0 /ddn/home/vtdb72/phys52015/code/openmp-snippets/reduction-race.c:27 (foo+0x400d4f)
+    #1 GOMP_parallel ../../../gcc-9.3.0/libgomp/parallel.c:171 (libgomp.so.1+0x10fc1)
+    #2 __libc_start_main <null> (libc.so.6+0x22504)
+
+  Location is stack of main thread.
+
+  Location is global '<null>' at 0x000000000000 ([stack]+0x00000001fe54)
+
+  Thread T1 (tid=8687, running) created by main thread at:
+    #0 pthread_create ../../../../gcc-9.3.0/libsanitizer/tsan/tsan_interceptors.cc:964 (libtsan.so.0+0x2cd6b)
+    #1 gomp_team_start ../../../gcc-9.3.0/libgomp/team.c:836 (libgomp.so.1+0x1a4e5)
+    #2 __libc_start_main <null> (libc.so.6+0x22504)
+
+```
+
+This tells me that multiple threads had a write-race on line 27, which
+is where the `dotabparallel` variable is updated.
+
+{{< /details >}}
 {{< /exercise >}}
 
 ## Summary

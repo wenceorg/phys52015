@@ -40,6 +40,18 @@ change?
 
 You should use a reasonably large value for `N`.
 
+{{< details Solution >}}
+
+Remember that to compile with OpenMP, we shuold add the appropriate
+flag to the compile command, so we need to add `-qopenmp` to the
+`CFLAGS` variable in the `Makefile` and then recompile (`make clean`
+followed by `make all`).
+
+Having done that, I see no change in runtime, because the code is not
+yet parallelised.
+
+{{< /details >}}
+
 {{< /exercise >}}
 
 
@@ -51,7 +63,22 @@ appropriate OpenMP pragmas to parallelise the loop.
 Does the code now have different runtimes when using different numbers
 of threads?
 
+{{< details Solution >}}
+
+This code can be parallelised using a simple parallel for.
+
+In `add_numbers.c` we annotate the for loop with
+
+```c
+#pragma omp parallel for default(none) shared(n_numbers, numbers) reduction(+:result) schedule(static)
+```
+
+If I do this, I see that the code now takes less time with fewer
+threads.
+
+{{< /details >}}
 {{< /question >}}
+
 
 ### Different schedules
 
@@ -67,4 +94,13 @@ different schedules you investigated.
 
 What do you observe?
 
+{{< details Solution >}}
+
+This is what I get for some different schedules, I did not run
+multiple times to avoid timing variability.
+
+{{< autofig
+    src="add-numbers-scaling.svg"
+    caption="Strong scaling of OpenMP parallelisation of add_numbers with different schedule choices." >}}
+{{< /details >}}
 {{< /exercise >}}
