@@ -197,7 +197,7 @@ $ mpicc -o comm-world-self comm-world-self.c
 {{< details Hint >}}
 
 Don't forget than in addition to loading the normal compiler modules
-you also need to load the `intelmpi/2018.2` module.
+you also need to load the `intelmpi/intel/2018.2` module.
 
 {{< /details >}}
 
