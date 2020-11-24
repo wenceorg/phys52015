@@ -1,6 +1,6 @@
 ---
 title: "MPI: halo exchanges"
-weight: 9
+weight: 10
 katex: false
 ---
 
