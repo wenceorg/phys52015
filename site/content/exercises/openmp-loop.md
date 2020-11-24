@@ -96,8 +96,9 @@ What do you observe?
 
 {{< details Solution >}}
 
-This is what I get for some different schedules, I did not run
-multiple times to avoid timing variability.
+This is what I get for some different schedules when computing on a
+vector of one million numbers, I did not run multiple times to avoid
+timing variability.
 
 {{< autofig
     src="add-numbers-scaling.svg"
