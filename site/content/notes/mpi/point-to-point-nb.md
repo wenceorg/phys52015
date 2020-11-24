@@ -65,6 +65,22 @@ int MPI_Wait(MPI_Request *request, MPI_Status *status);
 Which waits until the message corresponding to `request` has been
 completed.
 
+Both of these calls can _complete_ the message exchange. If `MPI_Test`
+returns true in its flag argument, the message has been sent/received
+and the user-provided send/receive buffer is safe to be used again.
+
+Here's a picture of a non-blocking `MPI_Issend` matching with a
+blocking `MPI_Recv`. Note how the data transfer does not start
+(because this is a synchronous send) until the matching receive has
+been posted (set up). So the first `MPI_Test` returns false. The
+`MPI_Wait` will return immediately because the message has now been
+transferred.
+
+{{< manfig
+    src="mpi-issend-cartoon.svg"
+    width="75%"
+    caption="A non-blocking synchronous send returns immediately, and the data transfer begins as soon as the matching receive appears." >}}
+
 ## Why would you do this?
 
 Non-blocking messages allow us to separate "posting" messages
@@ -188,6 +204,12 @@ MPI_Waitsome(nsend+nrecv, requests, &nfinished, indices, MPI_STATUSES_IGNORE);
  * and indices[0..nfinished-1] tells us which requests they are */
 ```
 
+There are also matching
+[`MPI_Testall`](https://rookiehpc.com/mpi/docs/mpi_testall.php),
+[`MPI_Testany`](https://rookiehpc.com/mpi/docs/mpi_testany.php), and
+[`MPI_Testsome`](https://rookiehpc.com/mpi/docs/mpi_testsome.php)
+calls which don't block for completion of the messages.
+
 A high quality MPI implementation will provide optimised code for
 these routines that is more efficient than a loop with
 `MPI_Test`/`MPI_Wait` pairs.
@@ -255,4 +277,5 @@ messages, without thinking as hard about potential deadlocks.
 
 The critical thing to recall is that **we are not allowed** to look at
 the buffers we pass into non-blocking sends/receives until after
-calling `MPI_Wait` (or similar).
+calling a blocking `MPI_Wait`-like call, or a non-blocking
+`MPI_Test`-like call has returned true.
