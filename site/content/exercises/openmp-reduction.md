@@ -7,8 +7,8 @@ weight: 6
 
 In this exercise, we'll use the synchronisation constructs we
 encountered when looking at [OpenMP collectives]({{< ref
-"collectives.md" >}}) to implement different approaches to combining
-the partial sums in a reduction.
+"notes/openmp/collectives.md" >}}) to implement different approaches
+to combining the partial sums in a reduction.
 
 We'll then also benchmark the performance of the different approaches
 to see if there are any differences

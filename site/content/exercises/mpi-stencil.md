@@ -1,7 +1,7 @@
 ---
-title: "MPI: halo exchanges"
-weight: 10
-katex: false
+title: "MPI: domain decomposition and halo exchanges"
+weight: 11
+katex: true
 ---
 
 # Data parallel stencil computations

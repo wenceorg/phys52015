@@ -101,6 +101,7 @@ vector of one million numbers, I did not run multiple times to avoid
 timing variability.
 
 {{< autofig
+    width="75%"
     src="add-numbers-scaling.svg"
     caption="Strong scaling of OpenMP parallelisation of add_numbers with different schedule choices." >}}
 {{< /details >}}
