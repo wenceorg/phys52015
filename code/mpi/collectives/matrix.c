@@ -56,12 +56,12 @@ int main(int argc, char **argv)
   MPI_Comm_size(comm, &size);
   MPI_Comm_rank(comm, &rank);
 
-  A = malloc(4*size * sizeof(*A));
-  AT = malloc(4*size * sizeof(*AT));
+  A = malloc(size * sizeof(*A));
+  AT = malloc(size * sizeof(*AT));
 
   x = rank + 1;
-  for (int i = 0; i < 4*size; i++) {
-    A[i] = 4*size*rank + i;
+  for (int i = 0; i < size; i++) {
+    A[i] = size*rank + i;
   }
 
   if (rank == 0) {
