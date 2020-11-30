@@ -42,6 +42,41 @@ approaches listed in the code:
 1. Using a critical section to protect the shared updates;
 1. Using the reduction clause on a parallel loop.
 
+{{< details Solution >}}
+
+I implemented these approaches in
+[`code/openmp-snippets/reduction-different-approaches.c`]({{< code-ref
+"code/openmp-snippets/reduction-different-approaches.c" >}}). The
+crucial thing to note with the critical section and atomics is to
+compute partial dotproducts in private variables and then protect the
+single shared update.
+
+That is, do this
+
+```c
+#pragma omp for
+for ( ... ) {
+  mydot += a[i]*b[i];
+}
+#pragma omp atomic
+dotab += mydot;
+```
+
+Rather than this
+
+```c
+#pragma omp for
+for ( ... ) {
+#pragma omp atomic
+  dotab += a[i]*b[i];
+}
+```
+
+Since the latter does far more locking and synchronisation than
+necessary.
+
+{{< /details >}}
+
 {{< exercise >}}
 
 For each of the approaches, benchmark the time it takes to run the
@@ -51,6 +86,35 @@ threads, from one up to 48 threads.
 Produce plots of the [parallel scaling]({{< ref "scaling-laws.md" >}})
 and parallel efficiency of the different approaches.
 
+{{< details Solution >}}
+
+I did this with a vector with 500 million entries, and only ran up to
+24 threads, because I didn't want to wait that long, but the results
+will be broadly the same.
+
+This time I plot time to solution against number of threads on a
+[`semilogy`](https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.semilogy.html)
+axis. 
+
+{{< autofig
+    src="openmp-reduction-approaches.svg"
+    width="50%"
+    caption="Time to solution (lower is better) for a vector dot product as a function of number of threads." >}}
+    
+It looks like all the solutions are broadly identical in performance.
+
+We can also plot the efficiency which tells a similar story
+
+{{< autofig
+    src="openmp-reduction-approaches-efficiency.sv"
+    width="50%"
+    caption="Parallel efficiency (for strong scaling) for a vector dot product." >}}
+    
+It appears for these benchmarks that the "by hand" approach is
+_marginally_ better, but we would have to do more detailed
+benchmarking to be confident.
+
+{{< /details >}}
 {{< /exercise >}}
 
 
@@ -63,6 +127,17 @@ Which approach works worst?
 Do you observe perfect scalability? That is, is the speedup linear in
 the number of threads?
 
+{{< details Solution >}}
+
+As we see in the plots above, it looks like all the approaches are
+basically equally good for this test. The speedup is far from perfect,
+this is because the amount of memory bandwidth that the Hamilton
+compute node delivers does not scale linearly in the number of cores.
+So once we've got to around 8 cores, we're already using all of the
+memory bandwidth, and adding more cores doesn't get us the answer
+faster.
+
+{{< /details >}}
 {{< /question >}}
 
 ## More details: thread placement
@@ -122,4 +197,27 @@ when using the Intel OpenMP library.
 
 Which approach works better? Is there a difference at all?
 
+{{< details Solution >}}
+
+I just do this for the reduction clause case, since we determined that
+everything is basically the same for the other versions.
+
+
+I do this (again running with a vector size of 500 million, but
+the results will be broadly the same for 1 billion entries I suspect),
+and find that when I fill up all the cores, the speedup looks pretty
+much identical.
+
+However, at interim thread counts, `OMP_PROC_BIND=spread` produces
+better performance.
+
+This is because it places threads on both sockets on the compute node,
+maximising the amount of memory bandwidth that the program can obtain.
+
+{{< autofig
+    src="openmp-proc-bind-reduction.svg"
+    width="50%"
+    caption="The reduction performs better when using an intermediate number of threads if we specify a `spread` distribution." >}}
+    
+{{< /details >}}
 {{< /exercise >}}
