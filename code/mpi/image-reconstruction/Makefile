@@ -3,16 +3,20 @@ CC = mpicc
 CFLAGS = -Wall -Wextra -std=c11 -D_GNU_SOURCE -g -O3
 LDFLAGS = -lm
 
-OBJ = image.o pgmio.o main.o
+EXE = main
+
+OBJ = image.o pgmio.o $(EXE).o
+
 
 .PHONY: clean all
 
-all: main
 
-main: $(OBJ) Makefile
+all: $(EXE)
+
+$(EXE): $(OBJ) Makefile
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
-main.o: main.c image.h pgmio.h Makefile
+$(EXE).o: $(EXE).c image.h pgmio.h Makefile
 pgmio.o: pgmio.c image.h pgmio.h Makefile
 image.o: image.c image.h Makefile
 
@@ -21,4 +25,4 @@ image.o: image.c image.h Makefile
 
 
 clean:
-	-rm -rf $(OBJ) main main.dSYM
+	-rm -rf $(OBJ) $(EXE) $(EXE).dSYM

@@ -52,23 +52,77 @@ void DistributeImage(Image input, Image *output, int root, MPI_Comm comm)
      the number of rows) or MPI_Scatterv otherwise to send the data */
 
   /* Only if we only have one process */
-  CopyImage(input, output);
+  int rank, size;
+
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &size);
+
+  if (size == 1) {
+    CopyImage(input, output);
+    return;
+  }
+
+  /* Implement this case. GatherImage (already done) is similar but
+     going in the opposite direction. */
 }
 
 void GatherImage(Image input, Image *output, int root, MPI_Comm comm)
 {
   /* Gather rows of the input image (defined on all ranks) to output
      image (defined on root rank). */
-  /* Use MPI_Reduce (with MPI_SUM) to find the image size */
-  /* Use MPI_Reduce (with MPI_MAX) to find the threshold */
-  /* You can use MPI_Gather (if all the local image sizes are the
-     same) or MPI_Gatherv (otherwise) to gather the data */
+  int size, rank;
+  int NY = 0;
+  int threshold = 0;
+  MPI_Comm_size(comm, &size);
+  MPI_Comm_rank(comm, &rank);
+  /* Figure out global image size */
+  MPI_Allreduce(&input->NY, &NY, 1, MPI_INT, MPI_SUM, comm);
+  /* Get threshold */
+  MPI_Reduce(&input->threshold, &threshold, 1, MPI_INT, MPI_MAX, root, comm);
 
-  /* Only if we have one process */
-  CopyImage(input, output);
+  if (rank == root) {
+    /* root rank makes an image with the newly figured out global
+       image size */
+    CreateImage(output);
+    SetSizes(*output, input->NX, NY);
+    SetThreshold(*output, threshold);
+  } else {
+    *output = NULL;
+  }
+
+  if ((NY / size) * size == NY) {
+    /* All subimages the same size, can use MPI_Gather */
+    MPI_Gather(input->data, input->NX * input->NY, MPI_FLOAT,
+               *output ? (*output)->data : NULL, input->NX * input->NY,
+               MPI_FLOAT,
+               root, comm);
+  } else {
+    /* Subimages are different sizes, so we need to use Gatherv. */
+    int *recvcounts = NULL;
+    int *displs = NULL;
+    if (rank == root) {
+      int displ = 0;
+      recvcounts = malloc(size * sizeof(*recvcounts));
+      displs = malloc(size * sizeof(*recvcounts));
+      /* Figure out how much to receive from each rank and where in
+         the output buffer to put them. */
+      for (int i = 0; i < size; i++) {
+        recvcounts[i] = (NY / size + ((NY % size) > i)) * input->NX;
+        displs[i] = displ;
+        displ += recvcounts[i];
+      }
+    }
+    /* And gather everything to root rank. */
+    MPI_Gatherv(input->data, input->NX*input->NY, MPI_FLOAT,
+                *output ? (*output)->data : NULL, recvcounts, displs,
+                MPI_FLOAT, root, comm);
+    free(recvcounts);
+    free(displs);
+  }
 }
 
-void ReconstructFromEdges(Image edges, int niterations, Image *output)
+void ReconstructFromEdges(Image edges, int niterations, MPI_Comm comm,
+                          Image *output)
 {
   Image old = NULL;
   Image new = NULL;
@@ -81,15 +135,50 @@ void ReconstructFromEdges(Image edges, int niterations, Image *output)
   /* Copy edges into old image */
   CopyImage(edges, &old);
   float left_right_boundary_val = 0;
+  /* Who are we receiving from (and/or) sending too? MPI_PROC_NULL can
+   * be used as an "empty" destination. Messages to and/or from there
+   * will always return immediately and do nothing. Simplifies code a
+   * bit.
+   *
+   *   ---------------
+   *  |               |
+   *  |               |
+   *  |               |
+   *  |               |
+   *  |     ABOVE     |<-\
+   *   ---------------   | Send top row to above rank
+   *  |               |--/
+   *  |               |
+   *  |               |
+   *  |               |
+   *  |               |--\
+   *   ---------------   | Send bottom row to below rank
+   *  |     BELOW     |<-/
+   *  |               |
+   *  |               |
+   *  |               |
+   *  |               |
+   *   ---------------
+   */
+
   /* Run niterations Jacobi iterations to invert the Laplacian,
    * reconstructing an output image from its edges. */
   for (int it = 0; it < niterations; it++) {
     /* Insert boundary values from my neighbours here.
-     * the top_boundary comes from the last row of my neighbour with a lower rank
-     * the bottom_boundary comes from the first row of my neighbour with a higher rank
-     * If I'm at the very top of the image, then I can leave the top_boundary alone
-     * If I'm at the very bottom of the image, then I can leave the bottom_boundary alone.
+     *
+     * the top_boundary comes from the last row of my neighbour with a
+     * lower rank
+     *
+     * the bottom_boundary comes from the first row of my neighbour
+     * with a higher rank
+     *
+     * If I'm at the very top of the image, then I can leave the
+     * top_boundary alone
+     *
+     * If I'm at the very bottom of the image, then I can leave the
+     * bottom_boundary alone.
      */
+
     for (int i = 0; i < NY; i++) { /* rows */
       for (int j = 0; j < NX; j++) { /* columns */
         int ij = linear_index(i, j, NX);
@@ -165,7 +254,7 @@ int main(int argc, char **argv)
   }
 
   /* Run local reconstruction (will need modifying) */
-  ReconstructFromEdges(distributed_edges, niterations,
+  ReconstructFromEdges(distributed_edges, niterations, comm,
                        &distributed_reconstructed);
 
   {
@@ -180,6 +269,7 @@ int main(int argc, char **argv)
     }
   }
   DestroyImage(&distributed_edges);
+
   /* Gather image to rank 0 for writing */
   GatherImage(distributed_reconstructed, &reconstructed, 0, comm);
   
