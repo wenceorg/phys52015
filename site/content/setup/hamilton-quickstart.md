@@ -37,7 +37,7 @@ so most things will work with only minor changes.
 
 # Supercomputing Durham: Hamilton Quick Start Guide
 
-This adapted from a quickstart guide from [Tobias
+This is adapted from a quickstart guide from [Tobias
 Weinzierl](http://www.peano-framework.org/index.php/tobias-weinzierl/).
 
 It is intended to get you up and running on the Hamilton supercomputer

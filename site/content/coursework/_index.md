@@ -12,6 +12,27 @@ You should submit your work for this coursework via DUO. The
 submission deadline is 2021/01/11 at 14:00UTC.
 {{< /hint >}}
 
+{{< hint info >}}
+### Updates 2020/12/11
+
+Added link to descriptors for written work in [mark scheme]({{< ref
+"#mark-scheme" >}}).
+
+### Updates 2020/12/08
+
+The notation
+$$
+\left\lfloor \frac{N}{p} \right \rfloor = \frac{N}{p}
+$$
+means that the floor of the division (i.e. rounding down to the
+nearest integer) should be equal to the original division. That is $N$
+should be divisible by $p$ with no remainder.
+
+Changed instances of `mpiexec` in the examples to `mpirun` for
+consistency with the rest of the notes.
+
+{{< /hint >}}
+
 In this coursework you are to write parallel implementations of some
 dense linear algebra operations using MPI, and benchmark the scaling
 performance. You should not use other forms of parallelism.
@@ -175,13 +196,13 @@ reports a passed test when running with one process. It also prints a
 warning that nothing is implemented yet.
 
 ```
-$ mpiexec -n 1 ./main -t CHECK_MAT_MULT -N 8
+$ mpirun -n 1 ./main -t CHECK_MAT_MULT -N 8
 [MatMult]: TODO, please implement me.
 CheckMatMult succeeded.
 ```
 
 ```
-$ mpiexec -n 4 ./main -t CHECK_MAT_MULT -N 8
+$ mpirun -n 4 ./main -t CHECK_MAT_MULT -N 8
 [MatMult]: TODO, please implement me.
 [1] CheckMatMult failed at local index 0, expected 26 got 12
 [1] CheckMatMult failed at local index 1, expected 26 got 12
@@ -311,7 +332,7 @@ should describe in the report):
    SUMMA paper).
 
 
-## Mark scheme and submission
+## Mark scheme and submission {#mark-scheme}
 
 You should submit, via DUO, a **PDF** of your report (max 4 pages),
 and a zip-file of your implementation (`solution.c`).
@@ -328,6 +349,13 @@ an _unmodified_ version of the skeleton.
 |     Code | Code compiles with no warnings and does not leak memory | 15    |
 |   Report | Description of algorithms                               | 25    |
 |   Report | Analysis and presentation of benchmarking data          | 25    |
+
+The report will be marked with reference to the descriptors for
+written work (non-dissertation) found on
+[DUO](https://duo.dur.ac.uk/webapps/blackboard/content/listContent.jsp?course_id=_91410_1&content_id=_5831035_1),
+see _MSc in Scientific Computing and Data Analysis Programme →
+Assessments and Procedures → Marking criteria for written work
+(non-dissertation)_.
 
 
 You can check memory leaks with [Valgrind](https://www.valgrind.org).
