@@ -29,6 +29,7 @@ int main(int argc, char **argv)
     MPI_Send(sendbuf, nentries, MPI_INT, 0, 0, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nentries, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
+
   printf("[%d] First entry of sendbuf is %d; first of recvbuf is %d\n", rank, sendbuf[0], recvbuf[0]);
   MPI_Finalize();
   return 0;
