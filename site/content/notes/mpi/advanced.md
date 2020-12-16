@@ -107,8 +107,45 @@ Have a look at the code and compile and run it.
 Do you understand the output?
 
 Do you understand why there is only one `splitcomm` variable (despite
-splitting the input communicator into two)?
+splitting the input communicator in two)?
 
+{{< details Solution >}}
+
+We first split the `COMM_WORLD` communicator into two parts,
+containing even rank and odd ranks respectively.
+
+The even ranks then do an allreduce on that new communicator and print
+out some values in a synchronised manner (with a barrier after each
+rank on the split communicator).
+
+Finally, they call a barrier on `COMM_WORLD`.
+
+The odd ranks first call a barrier on `COMM_WORLD` (synchronising with
+the end of printing that the even ranks did), then do an allgather on
+the split communicator, and finally print out values in the same
+synchronised manner.
+
+We only have one `splitcomm` variable because we have separate
+processes. It logically means something different on the even and odd
+ranks.
+
+If you prefer, although it makes things harder to program, you could
+do:
+
+```c
+MPI_Comm even = MPI_COMM_NULL;
+MPI_Comm odd = MPI_COMM_NULL;
+
+if (world_rank % 2 == 0) {
+  MPI_Comm_split(comm, world_rank % 2, world_rank, &even);
+} else {
+  MPI_Comm_split(comm, world_rank % 2, world_rank, &odd);
+}
+```
+
+But you still have to send the different groups down different routes
+subsequently.
+{{< /details >}}
 {{< /exercise >}}
 
 This splitting facility is useful if we only need a subset of all the

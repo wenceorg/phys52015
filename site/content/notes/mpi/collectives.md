@@ -302,7 +302,7 @@ struct ValueAndLoc global;
 MPI_Allreduce(&local, &global, 1, MPI_DOUBLE_INT, MPI_MAXLOC, comm);
 ```
 
-### One to all: scatters and broadcasts
+### One to all: scatters and broadcasts {#bcast}
 
 When starting up a simulation, we might want to read some
 configuration file to provide parameters. This typically should only

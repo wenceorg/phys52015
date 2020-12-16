@@ -3,14 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void Gather_to_zero(const int *send, int **gathered, MPI_Comm comm)
+void gather_nonblocking(const int *send, int *recvbuf, MPI_Comm comm)
 {
   int size, rank;
 
   MPI_Comm_size(comm, &size);
   MPI_Comm_rank(comm, &rank);
 
-  int *recvbuf = malloc(size * sizeof(*recvbuf));
   if (rank == 0) {
     MPI_Request *requests;
 
@@ -24,17 +23,15 @@ void Gather_to_zero(const int *send, int **gathered, MPI_Comm comm)
   } else {
     MPI_Send(send, 1, MPI_INT, 0, 0, comm);
   }
-  *gathered = recvbuf;
 }
 
-void Gather_to_zero_blocking(const int *send, int **gathered, MPI_Comm comm)
+void gather_blocking(const int *send, int *recvbuf, MPI_Comm comm)
 {
   int size, rank;
 
   MPI_Comm_size(comm, &size);
   MPI_Comm_rank(comm, &rank);
 
-  int *recvbuf = malloc(size * sizeof(*recvbuf));
   if (rank == 0) {
     /* Put my value in the first spot */
     recvbuf[0] = *send;
@@ -46,7 +43,6 @@ void Gather_to_zero_blocking(const int *send, int **gathered, MPI_Comm comm)
     /* Send to rank 0 */
     MPI_Send(send, 1, MPI_INT, 0, 0, comm);
   }
-  *gathered = recvbuf;
 }
 
 int main(int argc, char **argv)
@@ -54,41 +50,54 @@ int main(int argc, char **argv)
   MPI_Init(&argc, &argv);
 
   MPI_Comm comm = MPI_COMM_WORLD;
-  int local_value[2];
+  int local;
   int rank, size;
-  int *gathered = NULL;
+  int *blocking = NULL;
+  int *nonblocking = NULL;
   double start, end;
 
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &size);
 
-  local_value[0] = rank * rank;
-  local_value[1] = size - rank;
+  local = rank * rank;
   /*
    * Process 0: A
    * Process 1: B
    * Process 2: C
    * Process 3: D
-
-   * Gather_to_zero(...) ->
    *
+   * gather_...(...) ->
    * Process 0: A, B, C, D
    */
 
+  if (rank == 0) {
+    /* Allocate space for output arrays.
+     * 1 int per process.
+     */
+    blocking = malloc(size*sizeof(*blocking));
+    nonblocking = malloc(size*sizeof(*nonblocking));
+  }
+
   start = MPI_Wtime();
-  Gather_to_zero(local_value, &gathered, comm);
+  for (int i = 0; i < 100; i++) {
+    gather_blocking(&local, blocking, comm);
+  }
   end = MPI_Wtime();
   if (rank == 0) {
-    printf("Non-blocking gather takes %.3g s\n", end - start);
-    free(gathered);
+    printf("Blocking gather takes %.3g s\n", (end - start)/100);
   }
+
   start = MPI_Wtime();
-  Gather_to_zero_blocking(local_value, &gathered, comm);
+  for (int i = 0; i < 100; i++) {
+    gather_nonblocking(&local, nonblocking, comm);
+  }
   end = MPI_Wtime();
   if (rank == 0) {
-    printf("Blocking gather takes %.3g s\n", end - start);
-    free(gathered);
+    printf("Non-blocking gather takes %.3g s\n", (end - start)/100);
   }
+
+  free(blocking);
+  free(nonblocking);
   MPI_Finalize();
   return 0;
 }

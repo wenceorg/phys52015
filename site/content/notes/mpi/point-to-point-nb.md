@@ -231,6 +231,57 @@ Compare the performance of two versions.
 
 Which performs better as a function of the total number of messages, $P$?
 
+{{< details Solution >}}
+I'll sketch the core message exchange here, the full code is
+implemented in [`mpi-snippets/gather-from-all.c`]({{< code-ref
+"mpi-snippets/gather-from-all.c" >}}).
+
+Suppose we want to gather a single `int` from each process.
+
+Rank 0 should allocate space for `size` ints.
+```c
+int *recvbuf = NULL;
+if (rank == 0) {
+  recvbuf = malloc(size * sizeof(*recvbuf));
+}
+```
+
+The blocking gather is straighforward
+
+```c
+if (rank == 0) {
+  recvbuf[0] = sendbuf[0];
+  for (int i = 1; i < size; i++) {
+    /* Receive from all ranks other than myself */
+    MPI_Recv(&(recvbuf[i]), 1, MPI_INT, i, 0, comm, MPI_STATUS_IGNORE);
+  }
+} else {
+  MPI_Ssend(sendbuf, 1, MPI_INT, 0, 0, comm);
+}
+```
+
+For the nonblocking gather, we just need to modify the receive side to
+allocate some requests and then wait on them.
+
+```c
+if (rank == 0) {
+  MPI_Requests *requests = malloc((size-1) * sizeof(*requests));
+  recvbuf[0] = sendbuf[0];
+  for (int i = 1; i < size; i++) {
+    /* Receive from all ranks other than myself */
+    MPI_Irecv(&(recvbuf[i]), 1, MPI_INT, i, 0, comm, &(requests[i-1]));
+  }
+  /* After posting all receives, wait for completion. */
+  MPI_Waitall(size-1, requests, MPI_STATUSES_IGNORE);
+  free(requests);
+} else {
+  MPI_Ssend(sendbuf, 1, MPI_INT, 0, 0, comm);
+}
+```
+
+I leave it to you to compare the performance.
+
+{{< /details >}}
 {{< /exercise >}}
 
 ## Wildcard matching {#wildcards}
