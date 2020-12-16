@@ -279,6 +279,8 @@ if (rank == 0) {
 }
 ```
 
+I leave it to you to compare the performance.
+
 {{< /details >}}
 {{< /exercise >}}
 

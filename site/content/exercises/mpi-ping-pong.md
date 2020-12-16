@@ -58,7 +58,7 @@ iterations in a loop to get accurate timings.
 {{< exercise >}}
 
 Run your code on the Hamilton compute nodes for a range of messages
-sizes from one byte to 1MB.
+sizes from one byte to 16MB.
 
 Produce a plot of the time to send a message as a function of message
 size.
@@ -70,6 +70,24 @@ to your data.
 
 What values of $\alpha$ and $\beta$ do you get?
 
+{{< details Solution >}}
+
+I provide a sample solution in
+[`mpi/ping-pong/ping-pong-solution.c`]({{< code-ref
+"mpi/ping-pong/ping-pong-solution.c" >}}). When I run it on one node
+using messages ranging from 1 Byte to 16MB (in powers of 2), I get
+something like the below.
+
+{{< autofig 
+    src="ping-pong-timing.svg"
+    width="50%"
+    caption="Ping pong time and model fit" >}}
+    
+It looks like a piecewise linear model is right for this MPI
+implementation. Between 512KB and 1MB, the time jumps up. This is
+probably when the implementation is switching protocols.
+
+{{< /details >}}
 
 {{< /exercise >}}
 
