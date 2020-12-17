@@ -23,7 +23,7 @@ For a data distribution, we will use a one-dimensional distribution
 where each process holds one row.
 
 I provide a template file [`matrix.c`]({{< code-ref
-"mpi/collectives/transpose.c" >}}) in the `code/mpi/collectives`
+"mpi/collectives/matrix.c" >}}) in the `code/mpi/collectives`
 subdirectory.
 
 It allocates some matrices and sets up the values.
@@ -37,6 +37,14 @@ implement the three stubbed-out functions
 2. `transpose_matrix`
 3. `matrix_vector_product`
 
+{{< details Solution >}}
+
+I provide a solution in [`mpi/collectives/matrix-solution.c`]({{<
+code-ref "mpi/collectives/matrix-solution.c" >}})
+
+The matrix-vector product has a bunch of different versions.
+
+{{< /details >}}
 {{< /exercise >}}
 
 I provide a routine to print the vector (so you can see if you've
@@ -59,3 +67,9 @@ MPI derived datatype (see, for example, the EPCC material
 [here](http://www.archer.ac.uk/training/course-material/2019/07/mpi-epcc/slides/L10-derivedtypes.pdf)).
 
 Good luck!
+
+{{< details Solution >}}
+
+This one is left up to you!
+
+{{< /details >}}

@@ -44,13 +44,16 @@ alpha1, beta1 = numpy.polyfit(ns[:-6], data[:-6], 1)
 
 fig, axes = pyplot.subplots(1)
 
-axes.loglog(ns, data, "o-", label=r"Ping-pong time")
-axes.loglog(ns, alpha*ns + beta, "r--",
-            label="Linear model (fit to large messages)")
-axes.loglog(ns, alpha1*ns + beta1, "b-.",
-            label="Linear model (fit to small messages)")
+axes.plot(ns, data, "o-", label=r"Ping-pong time")
+axes.plot(ns, alpha*ns + beta, "r--",
+          label="Linear model (fit to large messages)")
+axes.plot(ns, alpha1*ns + beta1, "b-.",
+          label="Linear model (fit to small messages)")
+axes.set_xscale("log", base=2)
+axes.set_yscale("log", base=10)
 axes.set_xlabel("Size of message in bytes")
 axes.set_ylabel("Time to send message [s]")
+axes.set_title("Ping-pong timing on Hamilton par6 queue")
 axes.legend(loc="best")
 
 fig.savefig(args.output,
