@@ -136,7 +136,9 @@ resulting in a network bandwidth of around $2\text{GB/s}$.
 
 Fitting the model to the Hamilton 7 data, the intra-node latency is
 still around $500\text{ns}$, but now the asymptotic bandwidth is
-around $6.5\text{GB/s}$, so the network is much better!
+around $6.5\text{GB/s}$, so the network is much better inside a node.
+However, we see that between nodes, it performs in a similar manner to
+the Hamilton 6 case.
 
 {{< /details >}}
 
