@@ -21,7 +21,8 @@ We care about the total time it takes to send a message, our model is
 a linear model which has two free parameters:
 
 1. $\alpha$, the message latency, measured in seconds;
-2. $\beta$, the network bandwidth, measured in bytes/second.
+2. $\beta$, the inverse network bandwidth, measured in seconds/byte
+   (so that the bandwidth is $\beta^{-1}$.
 
 With this model, the time to send a message with $b$ bytes is
 
@@ -81,12 +82,15 @@ something like the below.
 {{< autofig 
     src="ping-pong-timing.svg"
     width="50%"
-    caption="Ping pong time and model fit" >}}
+    caption="Ping pong time and model fit on Hamilton v6 (`par6.q` queue), this is the older hardware" >}}
     
 It looks like a piecewise linear model is right for this MPI
 implementation. Between 512KB and 1MB, the time jumps up. This is
 probably when the implementation is switching protocols.
 
+I get a latency of $\alpha_\text{intra} \approx 500\text{ns}$, and an inverse
+bandwidth of $\beta \approx 4.5\times 10^{-10}\text{s/byte}$ or a
+bandwidth of around $2\text{GB/s}$.
 {{< /details >}}
 
 {{< /exercise >}}
@@ -105,7 +109,39 @@ To do this, you'll need to write a SLURM batch script that specifies
 # One process per node
 #SBTACH --ntasks-per-node=1
 ```
+
+{{< details Solution >}}
+
+If I do this, I see that the inter-node latency on Hamilton 6 is
+pretty bad, although asymptotically it seems like the bandwidth is the
+same as for inter-node. This time I ran out to messages of 64MB. The
+slow message at 32MB appears to be repeatable, but I don't understand
+what is going on.
+
+Notice that when going across nodes, the switch in protocol happens at
+a lower size (it looks like 256KB, rather than 1MB).
+
+The plot also has results for Hamilton 7 which performs somewhat
+better.
+
+{{< autofig
+    src="ping-pong-timing-lots.svg"
+    width="60%"
+    caption="Ping pong latency on Hamilton 6 and Hamilton 7." >}}
+
+If I fit our linear model to the inter-node data, I get
+$\alpha_\text{inter} \approx 6\mu\text{s} \approx 10
+\alpha_\text{intra}$. The inverse bandwidth is about the same,
+resulting in a network bandwidth of around $2\text{GB/s}$.
+
+Fitting the model to the Hamilton 7 data, the intra-node latency is
+still around $500\text{ns}$, but now the asymptotic bandwidth is
+around $6.5\text{GB/s}$, so the network is much better!
+
+{{< /details >}}
+
 {{< /question >}}
+
 
 ## Advanced: variability
 
@@ -113,6 +149,11 @@ To do this, you'll need to write a SLURM batch script that specifies
 
 This section is optional, but possibly interesting.
 
+{{< details Solution >}}
+
+Solutions for this section are left as an exercise.
+
+{{< /details >}}
 {{< /hint >}}
 
 One thing that can affect performance of real MPI codes is the message
