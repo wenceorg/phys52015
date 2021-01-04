@@ -13,6 +13,12 @@ submission deadline is 2021/01/11 at 14:00UTC.
 {{< /hint >}}
 
 {{< hint info >}}
+### Updates 2021/01/04
+
+Textual benchmark output advertised the wrong order of timing data. It
+is `Min, Max, Mean, Standard deviation`. The JSON output is correct.
+Update the `bench.c` file to correct this error.
+
 ### Updates 2020/12/11
 
 Added link to descriptors for written work in [mark scheme]({{< ref

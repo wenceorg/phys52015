@@ -74,7 +74,7 @@ int BenchMatMult(MPI_Comm comm, const UserOptions options)
     } else {
       printf("Timing data for MatMult on %d processes, matrix size %d\n",
              size, A->N);
-      printf("All data in seconds. Min, Mean, Max, Standard deviation.\n");
+      printf("All data in seconds. Min, Max, Mean, Standard deviation.\n");
       printf("%g %g %g %g\n", timing[0], timing[1], timing[2], timing[3]);
     }
   }
