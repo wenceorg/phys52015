@@ -13,6 +13,18 @@ submission deadline is 2021/01/11 at 14:00UTC.
 {{< /hint >}}
 
 {{< hint info >}}
+### Updates 2021/01/05
+
+To avoid OpenBLAS parallelising with threads (and therefore destroying
+scaling behaviour), you need to do
+```
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+```
+
+In your submission scripts (before running the benchmark). Apologies
+for not noticing this earlier.
+
 ### Updates 2021/01/04
 
 Textual benchmark output advertised the wrong order of timing data. It
@@ -145,7 +157,7 @@ you may need to edit the `Makefile`.
 $ module load intel/2019.5
 $ module load gcc/8.2.0
 $ module load openblas
-$ module load intelmpi/intel/2019.5
+$ module load intelmpi/intel/2019.6
 ```
 {{< /tab >}}
 {{< tab "COSMA" >}}
@@ -156,6 +168,24 @@ $ module load openblas
 ```
 {{< /tab >}}
 {{< /tabs >}}
+{{< /hint >}}
+
+{{< hint warning >}}
+
+The local matrix-vector and matrix-matrix multiplications are done
+with OpenBLAS (hence needing to load the `openblas` module). On
+Hamilton at least this library automatically uses thread-parallelism
+unless you tell it not to. This will get in the way of the MPI
+parallelism we're using here.
+
+To turn it off, ensure that you do
+
+```
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+```
+In your batch submission scripts.
+
 {{< /hint >}}
 
 Having set up the environment by loading the required modules, build
