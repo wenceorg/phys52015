@@ -37,14 +37,14 @@ implement the three stubbed-out functions
 2. `transpose_matrix`
 3. `matrix_vector_product`
 
-{{< details Solution >}}
+{{< solution >}}
 
 I provide a solution in [`mpi/collectives/matrix-solution.c`]({{<
 code-ref "mpi/collectives/matrix-solution.c" >}})
 
 The matrix-vector product has a bunch of different versions.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 I provide a routine to print the vector (so you can see if you've
@@ -68,8 +68,8 @@ MPI derived datatype (see, for example, the EPCC material
 
 Good luck!
 
-{{< details Solution >}}
+{{< solution >}}
 
 This one is left up to you!
 
-{{< /details >}}
+{{< /solution >}}

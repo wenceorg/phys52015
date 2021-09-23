@@ -109,7 +109,7 @@ Do you understand the output?
 Do you understand why there is only one `splitcomm` variable (despite
 splitting the input communicator in two)?
 
-{{< details Solution >}}
+{{< solution >}}
 
 We first split the `COMM_WORLD` communicator into two parts,
 containing even rank and odd ranks respectively.
@@ -145,7 +145,7 @@ if (world_rank % 2 == 0) {
 
 But you still have to send the different groups down different routes
 subsequently.
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 This splitting facility is useful if we only need a subset of all the

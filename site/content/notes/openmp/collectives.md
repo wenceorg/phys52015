@@ -70,12 +70,12 @@ parallel. But the parallel version has race conditions.
 Try running with different numbers of threads. Do you always get the
 correct answer in parallel? Do you always get the same wrong answer?
 
-{{< details Solution >}}
+{{< solution >}}
 
 I, at least, don't always get the same wrong answer (but I generally
 get the wrong answer).
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 The solution to this problem is to create partial sums on each thread,
@@ -100,7 +100,7 @@ wrong.
 2. What happens if you add `nowait` to the `for` directive on line 32?
    (Remove the `nowait` from line 28 again!)
 
-{{< details Solution >}}
+{{< solution >}}
 
 For 1., you probably get a `Segmentation fault`, because we need to
 wait for the array to be allocated, this means we need to synchronise
@@ -111,7 +111,7 @@ thread finishes in the parallel loop before the others, it will
 immediately go ahead and start adding up the contributions, so it'll
 pick up whatever happens to be the current value in the other entries
 in `dotlocal` (which will likely be incomplete).
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ### Directives to the rescue
@@ -228,11 +228,11 @@ To terminate the hanging program, type `Control-c` at the commandline.
 
 {{< /details >}}
 
-{{< details Solution >}}
+{{< solution >}}
 
 It should work fine with one thread, but not more than one.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 Recall that often barriers are implicit in worksharing constructs. So
@@ -339,11 +339,11 @@ team](https://iss.oden.utexas.edu/?p=projects/galois) are doing.
 Modify the [`reduction-hand.c`]({{< ref "#reduction-hand" >}}) example
 to use a critical section to ensure the result is always correct.
 
-{{< details Solution >}}
+{{< solution >}}
 
 This was actually the topic of the [synchronisation]({{< ref
 "openmp-reduction.md" >}}) exercise, so see the solutions there.
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ### Atomics
@@ -422,7 +422,7 @@ $ gcc -fopenmp -g -fsanitize=thread -o race reduction-race.c
 The `-g` adds debug symbols so that we see line numbers in the error
 reports.
 
-{{< details Solution >}}
+{{< solution >}}
 If I do this and then run with two threads, I see output like the
 following:
 
@@ -451,7 +451,7 @@ WARNING: ThreadSanitizer: data race (pid=8685)
 This tells me that multiple threads had a write-race on line 27, which
 is where the `dotabparallel` variable is updated.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ## Summary

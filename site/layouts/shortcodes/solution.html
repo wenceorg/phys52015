@@ -1,0 +1,8 @@
+{{ if false }}
+<details {{ if or (.Get "open") (in .Params "open") }}open{{ end }}>
+  <summary>Solution</summary>
+  <div class="markdown-inner">
+    {{ .Inner | markdownify }}
+  </div>
+</details>
+{{ end }}

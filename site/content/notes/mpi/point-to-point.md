@@ -167,7 +167,7 @@ The code above sends a message from rank 0 to rank 1. Modify it so
 that it sends the message from rank 0 to ranks $[1..N]$ when run on
 $N$ processes.
 
-{{< details Solution >}}
+{{< solution >}}
 
 We just need to turn the `else if (rank == 1)` into an `else` clause
 and send `size-1` messages.
@@ -187,7 +187,7 @@ and send `size-1` messages.
 This is actually a [broadcast]({{< ref "collectives.md#bcast" >}}),
 for which the right MPI function is
 [`MPI_Bcast`](https://rookiehpc.com/mpi/docs/mpi_bcast.php).
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ## When are sends (receives) complete?
@@ -341,7 +341,7 @@ of the job to cancel the job (or set a short timeout in your slurm script).
 Try changing the `MPI_Send` calls to `MPI_Ssend`, is there now any
 value of the buffer size that completes successfully?
 
-{{< details Solution >}}
+{{< solution >}}
 
 The MPI implementation I have access to completes with `16356` and
 deadlocks with `16357`. Since each integer is 4 bytes, this is very
@@ -350,7 +350,7 @@ slightly less than to $2^16$ bytes.
 When I replace `MPI_Send` with `MPI_Ssend`, as expected, no size of
 message is sent successfully. This is because both processes are
 waiting in the `MPI_Ssend` until a receive appears.
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ## Avoiding deadlocks
@@ -370,7 +370,7 @@ pairs up a send and a receive in one call.
 Rewrite the code of [`mpi-snippets/ptp-deadlock.c`]({{< code-ref
 "mpi-snippets/ptp-deadlock.c" >}}) to use `MPI_Sendrecv`.
 
-{{< details Solution >}}
+{{< solution >}}
 
 This exercise previously inadvertantly said to rewrite
 `send-message.c`, but we need both sides. Let's reproduce the relevant
@@ -404,7 +404,7 @@ if (rank == 0) {
 The usual mistake when using `MPI_Sendrecv` (especially if
 communicating with multiple neighbours) is to match up the sends and
 receives incorrectly.
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ### Non-blocking communication

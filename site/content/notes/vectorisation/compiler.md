@@ -2,6 +2,7 @@
 title: "Compiler autovectorisation"
 weight: 1
 katex: true
+draft: true
 ---
 
 # Obtained vectorised code

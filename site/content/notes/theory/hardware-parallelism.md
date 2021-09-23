@@ -129,8 +129,8 @@ parallelism where we might have around 64 CPU cores sharing memory, up
 to large distributed memory systems where the only limiting factors are
 the capital budget and ongoing power and cooling costs.
 
-At the present time, there is no one programming model that covers all
-of these levels, hence in this course we will explicitly look at how
-to program for [vectorisation]({{< ref "vectorisation.md" >}}), [shared
-memory]({{< ref "notes/openmp/loop-parallelism.md" >}}), and [distributed
-memory]({{< ref "notes/mpi/point-to-point.md" >}}).
+At the present time, there is no one established programming model
+that covers all of these levels, in this course we will look at how to
+program for [shared memory]({{< ref
+"notes/openmp/loop-parallelism.md" >}}), and [distributed memory]({{<
+ref "notes/mpi/point-to-point.md" >}}) parallelism.

@@ -2,6 +2,7 @@
 title: "Vectorisation: loops with conditionals"
 weight: 2
 katex: true
+draft: true
 ---
 
 # Vectorisation of a loop with conditionals
@@ -111,7 +112,7 @@ Does the compiler report whether it successfully vectorised any loops?
 
 Run the code again, is it faster than the unvectorised version?
 
-{{< details Solution >}}
+{{< solution >}}
 For me, the loop is vectorised by the Intel compiler, but not by GCC.
 See the [compiler explorer](https://gcc.godbolt.org/z/orKMsz). I think
 this is because GCC does not have vectorised versions of the maths
@@ -138,7 +139,7 @@ Doing 10000000 calculations took 0.22 s
 ```
 
 So it does make a difference.
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}
 
 Now we are going to edit the main computational loop to see under what
@@ -154,7 +155,7 @@ Compile the code again, can the compiler still vectorise the loop?
 
 What type of transformation is this an example of?
 
-{{< details Solution >}}
+{{< solution >}}
 
 We need to change the code so that the increment is guarded
 
@@ -168,7 +169,7 @@ assignment]({{< ref "vectorisation.md#masked-assignment" >}}).
 
 Here's a [simplified example](https://gcc.godbolt.org/z/snqxr3) on the
 compiler explorer.
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}
 
 {{< exercise >}}
@@ -195,7 +196,7 @@ still possible?
 
 If not, why is this?
 
-{{< details Solution >}}
+{{< solution >}}
 
 In this case, we modify the loop to add
 
@@ -217,5 +218,5 @@ The relevant extract from the optimisation report:
 > remark #15520: loop was not vectorized: loop with multiple exits
 > cannot be vectorized unless it meets search loop idiom criteria
 
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}

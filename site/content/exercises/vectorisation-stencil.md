@@ -2,6 +2,7 @@
 title: "Vectorisation: stencils"
 weight: 3
 katex: true
+draft: true
 ---
 
 # Vectorisation of a simple stencil
@@ -117,7 +118,7 @@ output.
 How long does the blurring take? Note that you may need to run the
 same command multiple times to get a realistic timing result.
 
-{{< details Solution >}}
+{{< solution >}}
 
 For me, if I do
 ```
@@ -128,7 +129,7 @@ Blurring loop took:0.120000
 ```
 
 So around a tenth of a second.
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}
 
 As mentioned, we explicitly turned off vectorisation. Edit the
@@ -138,11 +139,11 @@ by running `make` again.
 {{< question >}}
 Did the runtime improve, or change in any other way?
 
-{{< details Solution >}}
+{{< solution >}}
 After removing the `-no-vec` part of the `CFLAGS` in the `Makefile`,
 and recompiling (`make clean` followed by `make all`), I don't see any
 change in the runtime.
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}
 
 We can ask the compiler to provide us some information on what it was
@@ -158,7 +159,7 @@ ref "compiler.md#opt-reports" >}}) and recompile.
 {{< question >}}
 Do the reports help to explain your observations about the runtime?
 
-{{< details Solution >}}
+{{< solution >}}
 
 After adding `-qopt-report=5` to the `CFLAGS` and recompiling, I see,
 in `filters.optrpt` the following:
@@ -195,7 +196,7 @@ LOOP END
 ```
 
 For the main blurring loop.
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}
 
 The main computational part of the code is in `filters.c`. Have a look
@@ -204,7 +205,7 @@ at that file.
 {{< question >}}
 Was the compiler able to vectorise the loops? If not, explain why.
 
-{{< details Solution >}}
+{{< solution >}}
 
 From the optimisation reports, we see that the compiler can't
 vectorise the loops. It complains about an `OUTPUT` dependence when
@@ -237,7 +238,7 @@ Applying mean blur filter...
 Blurring loop took:1.300000
 ```
 
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}
 
 {{< exercise >}}
@@ -249,7 +250,7 @@ Have a look at the code in `filter.c`. How do you think the runtime
 should behave as a function of `n`. Does this match with your
 observations?
 
-{{< details Solution >}}
+{{< solution >}}
 
 For each pixel in the output image, there is a double loop from $[-n,
 n]$, accessing $(2n+1)^2 + 1$ pixels in the input image, so I would
@@ -313,5 +314,5 @@ axes.legend(loc="best")
     width="100%"
     caption="The algorithmic scaling of the blur filter is quadratic in `n`" >}}
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}

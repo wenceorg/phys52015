@@ -82,7 +82,7 @@ sure to allocate enough time in the queue for them all), rather than
 running each one in its own job.
 {{< /details >}}
 
-{{< details Solution >}}
+{{< solution >}}
 I get, [as
 expected](https://en.wikipedia.org/wiki/Monte_Carlo_integration),
 approximately $\sqrt{N}$ convergence.
@@ -92,7 +92,7 @@ approximately $\sqrt{N}$ convergence.
     width="50%"
     caption="Convergence of the Monte-Carlo estimate of $\pi$" >}}
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ## Parallelisation with MPI
@@ -136,13 +136,13 @@ process.
 Now compile and then run the code with two processes using `mpirun`.
 Does what you observe make sense?
 
-{{< details Solution >}}
+{{< solution >}}
 
 At this point, your code just runs the same calculations on multiple
 processes (with the same random numbers). So you should have seen
 multiple prints of the same output.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ### Parallelising the random number generation
@@ -166,14 +166,14 @@ The `rank` of a process is a unique identifier.
 Run again on two processes, do you now see that the results are
 different depending on the process?
 
-{{< details Solution >}}
+{{< solution >}}
 
 If you change the call `srand(42)` to `srand(rank)` then different
 process will produce different random numbers. Now when running in
 parallel you should see (slightly) different results on the different
 processes.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 {{< details "Note: parallel random numbers" >}}
@@ -220,7 +220,7 @@ the runtime as a function of the number of cores.
 
 What observations can you make?
 
-{{< details Solution >}}
+{{< solution >}}
 
 If you did not manage, or you want to compare with a different
 implementation, the directory `code/calculate_pi/mpi` contains a
@@ -239,7 +239,7 @@ When I do this, I observe the following plot
 This is sort of expected because there's no communication and the
 major bottleneck is how fast the random points can be generated.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}
 
 ### Advice when writing MPI programs

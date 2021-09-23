@@ -250,12 +250,12 @@ rank. This turns any message into a "no-op" which returns immediately.
 
 {{< /details >}}
 
-{{< details Solution >}}
+{{< solution >}}
 
 The directory contains an annotated solution file as
 [`mpi/image-reconstruction/main-solution.c`]({{< code-ref
 "mpi/image-reconstruction/main-solution.c" >}})
-{{< /details >}}
+{{< /solution >}}
 
 {{< /exercise >}}
 

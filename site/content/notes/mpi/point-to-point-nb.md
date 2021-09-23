@@ -231,7 +231,7 @@ Compare the performance of two versions.
 
 Which performs better as a function of the total number of messages, $P$?
 
-{{< details Solution >}}
+{{< solution >}}
 I'll sketch the core message exchange here, the full code is
 implemented in [`mpi-snippets/gather-from-all.c`]({{< code-ref
 "mpi-snippets/gather-from-all.c" >}}).
@@ -281,7 +281,7 @@ if (rank == 0) {
 
 I leave it to you to compare the performance.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ## Wildcard matching {#wildcards}

@@ -1,7 +1,7 @@
 ---
 title: "Coursework: parallel dense linear algebra"
 draft: false
-weight: 4
+weight: 1
 katex: true
 ---
 
