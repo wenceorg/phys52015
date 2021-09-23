@@ -153,7 +153,7 @@ Try compiling and running the bad loop in the code below
 Do you always get the same results on different numbers of threads?
 What is wrong with the parallel loop?
 
-{{< details Solution >}}
+{{< solution >}}
 We don't see the same values printed independent of the number of
 threads, indicating that we did something wrong.
 
@@ -162,7 +162,7 @@ This is explicitly not allowed by the OpenMP standard (although the
 compiler does not complain), because if we modify the iteration
 variable, the compiler cannot figure out how to hand out the loops
 between threads.
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 {{< code-include "openmp-snippets/bad-loop.c" "c" >}}
 

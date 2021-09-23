@@ -71,7 +71,7 @@ to your data.
 
 What values of $\alpha$ and $\beta$ do you get?
 
-{{< details Solution >}}
+{{< solution >}}
 
 I provide a sample solution in
 [`mpi/ping-pong/ping-pong-solution.c`]({{< code-ref
@@ -91,7 +91,7 @@ probably when the implementation is switching protocols.
 I get a latency of $\alpha_\text{intra} \approx 500\text{ns}$, and an inverse
 bandwidth of $\beta \approx 4.5\times 10^{-10}\text{s/byte}$ or a
 bandwidth of around $2\text{GB/s}$.
-{{< /details >}}
+{{< /solution >}}
 
 {{< /exercise >}}
 
@@ -110,7 +110,7 @@ To do this, you'll need to write a SLURM batch script that specifies
 #SBTACH --ntasks-per-node=1
 ```
 
-{{< details Solution >}}
+{{< solution >}}
 
 If I do this, I see that the inter-node latency on Hamilton 6 is
 pretty bad, although asymptotically it seems like the bandwidth is the
@@ -140,7 +140,7 @@ around $6.5\text{GB/s}$, so the network is much better inside a node.
 However, we see that between nodes, it performs in a similar manner to
 the Hamilton 6 case.
 
-{{< /details >}}
+{{< /solution >}}
 
 {{< /question >}}
 
@@ -151,11 +151,11 @@ the Hamilton 6 case.
 
 This section is optional, but possibly interesting.
 
-{{< details Solution >}}
+{{< solution >}}
 
 Solutions for this section are left as an exercise.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /hint >}}
 
 One thing that can affect performance of real MPI codes is the message

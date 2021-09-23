@@ -183,7 +183,7 @@ for i in range(len(a)):
 print(c)
 ```
 
-{{< details Solution >}}
+{{< solution >}}
 The original code produces the output:
 ```
 [ 2.  4.  7. 12. 21.  0.  0.  0.]
@@ -213,7 +213,7 @@ So we fill up three more array entries at the end. The reason being
 that we should break when computing the entry at `c[4]`, but we don't
 realise that until we've executed another three iterations.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 ### Single-entry single-exit loops
@@ -312,12 +312,12 @@ Write out the unrolled loop (unrolling by 4) and convince yourself
 that you can't reorder the statements in the loop body while
 maintaining the same semantics.
 
-{{< details Solution >}}
+{{< solution >}}
 
 Since there is a dependency between neighbouring iterations, any
 reordering of the statements results in a different result.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 This particular loop exhibits a _read-after-write_ dependency, some
@@ -345,7 +345,7 @@ for (size_t i = 4; i < N; i++) {
 
 Explain your reasoning.
 
-{{< details Solution >}}
+{{< solution >}}
 
 This one can be vectorised. Although there is a dependency, it is
 at a distance of four statements away. So if we chunk the statements
@@ -356,7 +356,7 @@ at a time, this code is fine.
 See the optimisation report from the Intel compiler
 [here](https://gcc.godbolt.org/z/5Y8oP4).
 
-{{< /details >}}
+{{< /solution >}}
 
 {{< /exercise >}}
 

@@ -38,7 +38,7 @@ change?
 
 You should use a reasonably large value for `N`.
 
-{{< details Solution >}}
+{{< solution >}}
 
 Remember that to compile with OpenMP, we shuold add the appropriate
 flag to the compile command, so we need to add `-qopenmp` to the
@@ -48,7 +48,7 @@ followed by `make all`).
 Having done that, I see no change in runtime, because the code is not
 yet parallelised.
 
-{{< /details >}}
+{{< /solution >}}
 
 {{< /exercise >}}
 
@@ -61,7 +61,7 @@ appropriate OpenMP pragmas to parallelise the loop.
 Does the code now have different runtimes when using different numbers
 of threads?
 
-{{< details Solution >}}
+{{< solution >}}
 
 This code can be parallelised using a simple parallel for.
 
@@ -74,7 +74,7 @@ In `add_numbers.c` we annotate the for loop with
 If I do this, I see that the code now takes less time with fewer
 threads.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /question >}}
 
 
@@ -92,7 +92,7 @@ different schedules you investigated.
 
 What do you observe?
 
-{{< details Solution >}}
+{{< solution >}}
 
 This is what I get for some different schedules when computing on a
 vector of one million numbers, I did not run multiple times to avoid
@@ -102,5 +102,5 @@ timing variability.
     width="75%"
     src="add-numbers-scaling.svg"
     caption="Strong scaling of OpenMP parallelisation of add_numbers with different schedule choices." >}}
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}

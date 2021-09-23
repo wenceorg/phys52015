@@ -248,7 +248,7 @@ Can you explain what is happening?
 Think about the potential [data races]({{< ref "openmp#sync-data-race" >}}).
 {{< /details >}}
 
-{{< details Solution >}}
+{{< solution >}}
 If I run this code on eight processes, I see:
 
 ```
@@ -270,7 +270,7 @@ number in the parallel region is _shared_ (rather than being private).
 So by the time we get to the point where we write it into the output
 array, it is probably overwritten by a value from another thread.
 
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 
@@ -333,10 +333,10 @@ $ OMP_NUM_THREADS=8 ./uninitialised
 If you do this, do you always see the same nonsense values? Does it
 depend on the compiler?
 
-{{< details Solution >}}
+{{< solution >}}
 I, at least, don't always see the same values. Although it seems for
 me, thread0 always gets initialised to zero.
-{{< /details >}}
+{{< /solution >}}
 {{< /exercise >}}
 
 If you _really_ need a private variable that takes its initial value
