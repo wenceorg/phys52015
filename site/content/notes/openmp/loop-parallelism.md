@@ -1,6 +1,7 @@
 ---
 title: "Loop parallelism"
 weight: 2
+katex: true
 ---
 
 # OpenMP loop parallelism
@@ -88,11 +89,11 @@ Is equivalent to
 
 {{< /details >}}
 
-{{< hint warning >}} 
+### When is loop parallelisation possible?
 
-For loop parallelism to be possible, these loops must obey many of
-the same constraints we saw when looking [at vectorisation]({{< ref
-"vectorisation.md" >}}). Formally, we need the loop to be of the form.
+For loop parallelism to be possible, these loops must obey a number of
+constraints, both in the form of the loop construct, and also in what
+the loop body contains. Formally, we need the loop to be of the form.
 
 ```c
 for (var = init; var logical_op end; incr_expr)
@@ -101,16 +102,49 @@ for (var = init; var logical_op end; incr_expr)
 
 Where the `logical_op` is one of `<`, `<=`, `>`, or `>=` and
 `incr_expr` is an increment expression like `var = var + incr` (or
-similar).
+similar). We are also not allowed to modify `var` in the loop body.
 
-We are also not allowed to modify `var` in the loop body.
+The major constraint on the loop _body_ is that we cannot have
+_dependencies_ between loop iterations. Conceptually, a parallel loop
+runs multiple iterations of the loop body statements _in parallel_.
+For this to be valid, we must be able to execute the statements in any
+order we like.
 
-The compiler will complain about some of these issues, but maybe not
-about others.
+For example, this loop is not vectorisable
+
+```c
+for (size_t = 1; i < N; i++)
+  a[i] = a[i-1] + a[i];
+```
+Since the $i$th iteration depends on the result of the
+$i-1$th iteration.
+
+{{< exercise >}}
+
+Write out the unrolled loop (unrolling by 4) and convince yourself
+that you can't reorder the statements in the loop body while
+maintaining the same semantics.
+
+{{< /exercise >}}
+
+This particular loop exhibits a _read-after-write_ dependency, some
+times called a _flow_ dependency. These are "true" dependencies and
+really inhibit parallelisation. There are also a number of other
+types, _write-after-read_ (also called anti-dependencies),
+_write-after-write_ (also called output dependencies), and
+_read-after-read_ (not really dependencies). As usual,
+[wikipedia](https://en.wikipedia.org/wiki/Data_dependency) has a good
+summary. For our purposes, _read-after-write_ are the difficult ones
+to handle. The others can usually be refactored by introducing some
+temporary variables (as discussed in the linked wikipedia article).
+Typically, they then reveal a read-after-write dependency.
 
 
+{{< hint warning >}}
+The compiler will complain if your looping construct has the wrong
+form, however, it will _not_ complain if your loop body is not
+suitable for parallelisation (e.g. it has data dependencies).
 {{< /hint >}}
-
 
 {{< exercise >}}
 

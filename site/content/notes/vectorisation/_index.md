@@ -2,6 +2,7 @@
 title: "Vectorisation"
 weight: 2
 katex: true
+draft: true
 ---
 
 # Vectorisation

@@ -15,3 +15,5 @@
 /code/coursework/model-solution.c
 .DS_Store
 /site/static/coursework.tgz
+.vscode/
+.ipynb_checkpoints/

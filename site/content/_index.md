@@ -12,115 +12,19 @@ and notes. The source repository is [hosted on GitHub]({{< repo >}}).
 
 ## Course organisation
 
-The course will run over four weeks starting on 9th November 2020.
-Each week there will be two sessions run via Teams, scheduled at 4pm
-UK time on Mondays and Thursdays. These will start with a live summary
-and comments on previous exercises, followed by an exercise session
-where you can work through the exercises and get help from the
-lecturers and tutors.
+The course will run over four weeks starting on 9th November 2021.
+Each week there will be two sessions, scheduled at 4pm UK time on
+Tuesdays and Thursdays in TLC025.
 
-For each session, there will be some assigned reading from the
-course notes. You should read through these notes and attempt the
-exercises and questions.
+The sessions will be a combination of short lectures, discussion, and
+practical work on the exercises in small groups, with tutors to help.
+Please bring a laptop along to the sessions if you can.
 
+The notes contain
 {{< exercise >}}
-Exercises look like this.
+Exercises which look like this.
 {{< /exercise >}}
-
-You should make a list of questions you have on the notes (or from
-doing the exercises). Where the exercises ask you to produce plots or
-models, be prepared to show these to your group or the class (there
-are no wrong answers here!).
-
-In the live slots, I'll provide some high-level commentary and discuss
-any particular knotty points that have come up, we'll then also go
-through questions you have on the latest reading.
-
-In the second half (approximately) of the session, we'll work on the
-programming exercises. You're encouraged to collaborate in groups and
-ask questions of the lecturers and tutors if you get stuck, or want
-some clarification.
-
-### Reading for 2020-11-30 and 2020-12-03
-
-We'll continue with the MPI exercises, I added one on [MPI
-collectives]({{< ref "mpi-collectives.md" >}}). There are also some
-additional notes, with diagrams, on the different [collectives]({{<
-ref "notes/mpi/collectives.md" >}}) that MPI offers.
-
-We'll finish with some pointers to more [advanced topics]({{< ref
-"notes/mpi/advanced.md" >}}) in MPI. I'll also complete the exercise
-on [domain decomposition and halo exchanges]({{< ref "mpi-stencil.md"
->}}) (which will use some collectives and non-blocking point-to-point
-communcation), so hopefully we'll be able to work on that in the live
-sessions too.
-
-### Reading for 2020-11-26
-
-We'll continue with the point to point messaging. I introduce
-[non-blocking messages]({{< ref "notes/mpi/point-to-point-nb.md" >}}).
-We'll continue to work on the messaging exercises in the live session,
-so you can either continue with sending [messages round a ring]({{<
-ref "mpi-ring.md" >}}), look at [ping-pong messaging]({{< ref
-"mpi-ping-pong.md" >}}), or [calculate π]({{< ref "mpi-pi.md" >}}).
-
-
-### Reading for 2020-11-23
-
-This week we'll start looking at MPI. For the Monday session we will
-look at basic concepts and point-to-point messaging with blocking
-communication. Please therefore look at
-
-1. [The MPI overview]({{< ref "mpi.md" >}})
-1. [Point to point messaging]({{< ref "notes/mpi/point-to-point.md"
-   >}})
-
-In the live session, we'll look at the mini exercises from those notes
-and then work on the exercise sending [messages round a ring]({{< ref
-"mpi-ring.md" >}}) and [calculating π]({{< ref "mpi-pi.md" >}}) using
-a very simple to parallelise Monte Carlo method.
-
-### Reading for 2020-11-16 & 2020-11-19
-
-This week, we will cover OpenMP. For the Monday session, please look
-through the introductory sections on OpenMP and on loop parallelism:
-
-1. [Overview of shared memory programming]({{< ref "openmp.md" >}})
-1. [What OpenMP is]({{< ref "notes/openmp/intro.md" >}})
-1. [Loop parallelism in OpenMP]({{< ref "notes/openmp/loop-parallelism.md"
-   >}})
-
-and again have a go at the boxed exercises. In the live session we'll
-work through the first two OpenMP exercises on [parallel loops]({{<
-ref "openmp-loop.md" >}}) and [stencils]({{< ref "openmp-stencil.md"
->}}). Both of these exercises look at some strong scaling, so you may
-wish to remind yourself of [that]({{< ref "scaling-laws.md" >}})
-
-For the Thursday session, we'll look at synchronisation constructs:
-how multiple threads can collaborate when producing a shared result.
-This type of operation can broadly be termed ["collective"]({{< ref
-"notes/openmp/collectives.md" >}}). In the live session we will
-continue with the first two OpenMP exercises (if you still have
-questions) and also look at the [synchronisation exercise]({{< ref
-"openmp-reduction.md" >}}).
-
-### Reading for 2020-11-12
-
-Please look through the two sections on vectorisation:
-
-1. [overview]({{< ref "vectorisation.md" >}}); and
-2. [compiler autovectorisation]({{< ref "compiler.md" >}}).
-
-and attempt the boxed exercises. To see where this fits in the levels
-of parallelism we will encounter in the course, you could also look at
-the background on [parallelism in hardware]({{< ref
-"hardware-parallelism.md" >}}).
-
-In the live session we will work through the two vectorisation
-exercises on [loops]({{< ref "vectorisation-loop.md" >}}) and
-[stencils]({{< ref "vectorisation-stencil.md" >}}), as well as
-covering any questions or comments you had about the notes and your
-observations and answers to the boxed exercises.
+please do attempt them as you go through.
 
 ## Syllabus
 
@@ -129,19 +33,15 @@ observations and answers to the boxed exercises.
 - [Scaling laws]({{< ref "scaling-laws.md" >}})
 - Available parallelism in [modern supercomputers]({{< ref
   "hardware-parallelism.md" >}})
-- [Vectorisation and loop parallelism]({{< ref "vectorisation.md" >}})
 - Shared memory parallelism, with [OpenMP]({{< ref
   "openmp.md" >}})
 - Distributed memory parallelism, with [MPI]({{< ref  "mpi.md" >}})
 
 ### Assessment
 
-Via a single piece of [summative coursework]({{< ref "coursework.md"
->}}).
-
+Via a single piece of summative coursework, to appear.
 
 ## Lecturers
 
 - [Lawrence Mitchell](mailto:lawrence@wence.uk)
-
-- [Christian Arnold](https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712)
+- [Holger Schulz](https://www.ippp.dur.ac.uk/~hschulz/)

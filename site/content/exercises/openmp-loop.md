@@ -13,13 +13,11 @@ to]({{< ref hamilton-quickstart.md >}}).
 
 ## Obtaining the code
 
-We're going to use the same `add_numbers` code as we did in the
-previous [vectorisation exercise]({{< ref vectorisation-loop.md >}}).
-You should undo your edits from that exercise. If you can't remember
-what you changed just [download]({{< code-ref add_numbers.tgz >}}) and
-unpack the code again.
+The code for this exercise is in the `code/add_numbers` subdirectory
+of the [repository]({{< repo >}}), you can also [download]({{<
+code-ref add_numbers.tgz >}}) a tar archive.
 
-This time, we'll be working in the `openmp` subdirectory.
+We'll be working in the `openmp` subdirectory.
 
 {{< details "Working from the repository" >}}
 

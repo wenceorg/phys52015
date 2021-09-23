@@ -2,6 +2,7 @@
 title: "Vectorisation: stencils"
 weight: 3
 katex: true
+draft: true
 ---
 
 # Vectorisation of a simple stencil
