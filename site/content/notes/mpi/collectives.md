@@ -23,36 +23,36 @@ T(B) = \alpha + \beta B
 $$
 
 To rotate each item all the way around a ring of $P$ processes
-requires each process to send $P-1$ messages. Again supposing we
-reduce $B$ bytes:
-
+requires us to pass it from to each process in turn. To get all the
+way around, the item must be sent $P-1$ times. The longest "chain" of
+messages that must be sent has $P-1$ hops in it. Hence, supposing we
+reduce $B$ bytes, the total time to perform a reduction using this
+message passing scheme is:
 $$
-T_\text{ring}(B) = (P-1)(\alpha + \beta B)
+T_\text{ring}(B) = (P-1)(\alpha + \beta B).
 $$
-
 So as we add more processes, the time scales linearly.
 
 An alternative is to combine the partial reductions pairwise in a
 tree, as shown in the figure below
-
 {{< manfig
     src="mpi-tree-reduce.svg"
     width="75%"
     caption="Tree reduction across 16 processes. At each level processes combine pairwise." >}}
-
 This approach can be generalised to problems where the number of
 processes is not a power of two.
 
 To get the result back to all processes, we can just send the combined
 final value back up the tree in the same manner. For $P$ processes,
-the tree has depth $\log_2 P$ (we divide the number of by two each
-time). So now we only send $2 \log_2 P$ messages (up and down), for a
-total time of
-
+the tree has depth $\log_2 P$ (we divide the number of processes by two each
+time). The longest chain of messages from the leaves of the tree to
+the root is now only $\log_2 P$, so to reduce to the root and then
+send back to the leaves has a longest chain of $2 \log_2 P$ messages.
+The total time to perform a reduction using this tree-based message
+passing scheme is therefore:
 $$
 T_{\text{tree}}(B) = 2\log_2 P (\alpha + \beta B)
 $$
-
 As long as $2\log_2 P < (P-1)$ this takes less overall time. We can
 solve this numerically to find it should be preferable as long as $P >
 6$.
@@ -79,7 +79,6 @@ print(root)
     width="50%"
     caption="Modelled time to compute a reduction using a 1D ring and a tree, as soon as $P > 6$, the tree is faster"  >}}
     
-
 We conclude that some kind of tree-based reduction is superior in
 almost all circumstances.
 
@@ -90,13 +89,12 @@ work together (or collectively) to compute some result.
 ## What about implementation?
 
 Writing code for a tree-reduction in MPI by hand is actually not too
-hard, and you can have a go if you want.
-
-However, writing it generically to handle all datatypes is slightly
-fiddly, and moreover, depending on the topology of the underlying
-network, other approaches might be more efficient. For example,
+hard. However, writing it generically to handle all datatypes is
+slightly fiddly, and moreover, depending on the topology of the
+underlying network, other approaches might be more efficient. For
+example,
 [hypercubes](https://en.wikipedia.org/wiki/Hypercube_(communication_pattern))
-often offer a superior communication pattern. 
+often offer a superior communication pattern.
 
 Our conclusion then, is that we probably don't want to implement this
 stuff ourselves.
