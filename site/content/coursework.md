@@ -76,6 +76,35 @@ Gauss-Seidel iteration without any temporary storage at all. We will
 do this for the same image reconstruction approach that we saw in the
 [MPI stencil exercise]({{< ref "mpi-stencil.md" >}}).
 
+### Task: design and implement an OpenMP parallelisation
+
+The expensive part of image reconstruction is running the
+`ReconstructFromEdges` function. You should design a parallelisation
+scheme that can parallelise the loops over `i` and `j`. The
+Gauss-Seidel iteration is inherently sequential, so you should not
+expect to obtain exactly the same results when running in parallel.
+You should take care that your parallelisation scheme does not suffer
+from data races.
+
+{{< details Hint >}}
+
+Think about which entries of the `data` array are read from for a
+particular iteration. Is there a way you can split the loops so that
+you can run them in parallel without data races?
+
+On an "even" pixel, the update only reads from "odd" pixels (and vice
+versa). Consider colouring the pixels like a chess board and then
+updating one colour after the other.
+
+TODO: Better explanation.
+
+{{< /details >}}
+
+### Writeup
+
+Write up a short description of your OpenMP parallelisation scheme.
+You should explain what problems arise when trying to parallelise the
+loops, and how you solve them.
 
 ## Part 2: MPI
 
@@ -253,10 +282,6 @@ Some questions you could consider include:
 4. Do you observe the same algorithmic scaling behaviour for
    `MPI_Allreduce` as for `tree_allreduce`? If not, what do you think
    might be the difference?
-
-
-This report should be in **PDF** format, and no more than **three
-pages** long.
 
 
 ## Mark scheme and submission {#submission}
