@@ -34,7 +34,7 @@ $ brew install gcc
 
 Since MacOS ships with its own compiler toolchain, homebrew doesn't
 install these compilers with clashing names, so to use this version of
-GCC you'll need to run `gcc-10` (rather than just `gcc`).
+GCC you'll need to run `gcc-11` (rather than just `gcc`).
 
 ### Intel toolchain
 

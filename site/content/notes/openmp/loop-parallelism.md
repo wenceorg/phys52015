@@ -89,7 +89,7 @@ Is equivalent to
 
 {{< /details >}}
 
-### When is loop parallelisation possible?
+### When is loop parallelisation possible? {#data-races}
 
 For loop parallelism to be possible, these loops must obey a number of
 constraints, both in the form of the loop construct, and also in what

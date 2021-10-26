@@ -1,5 +1,5 @@
 ---
-title: "Coursework"
+title: "Coursework: stencils and collectives"
 weight: 3
 katex: true
 ---
@@ -9,16 +9,17 @@ katex: true
 This coursework has two parts. In the first part, you will design and
 implement OpenMP parallelisation of a simple stencil code. In the
 second part, you will develop a tree-based implementation of
-`MPI_Allreduce`, and then perform some benchmarking of your
-implementation against both the vendor-provided version, and the
-non-scalable version we [saw in the exercises]({{< ref "mpi-ring.md"
->}}).
+[`MPI_Allreduce`]({{< ref "notes/mpi/collectives.md#reductions" >}}),
+and then perform some benchmarking of your implementation against both
+the vendor-provided version, and the non-scalable version we [saw in
+the exercises]({{< ref "mpi-ring.md" >}}).
 
-You will be assessed by submitting both your code, and a brief writeup
+You will be assessed by submitting both your code, and brief writeups
 of your findings through GitHub classroom. See details [below]({{< ref
 "#submission" >}}).
 
-To gain access to the template code, you should [accept the classroom assignment]().
+To gain access to the template code, you should [accept the classroom
+assignment](https://classroom.github.com/a/DKMRJlH9).
 
 
 ## Part 1: OpenMP
@@ -70,41 +71,53 @@ x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j=1}^{i-1}
 a_{ij}x_j^{(k+1)} - \sum_{j=i+1}^n a_{ij} x_j^{(k)}\right).
 $$
 
-Computationally, it turns out that if we have a way of applying $A$ to
-some vector (without forming the matrix), then we can run a
-Gauss-Seidel iteration without any temporary storage at all. We will
-do this for the same image reconstruction approach that we saw in the
-[MPI stencil exercise]({{< ref "mpi-stencil.md" >}}).
+We will apply Gauss-Seidel iteration to solve the same image
+construction problem we saw in the [MPI stencil exercise]({{< ref
+"mpi-stencil.md" >}}).
 
-### Task: design and implement an OpenMP parallelisation
+### Task: design and implement an OpenMP parallelisation scheme
 
-The expensive part of image reconstruction is running the
-`ReconstructFromEdges` function. You should design a parallelisation
-scheme that can parallelise the loops over `i` and `j`. The
-Gauss-Seidel iteration is inherently sequential, so you should not
-expect to obtain exactly the same results when running in parallel.
-You should take care that your parallelisation scheme does not suffer
-from data races.
+The code for this part is in the `openmp` subdirectory of the template
+repository. You can build the code with `make` which produces a
+`./main` executable. A sample image if provided in `images/`, but any
+other PGM image will also work.
+
+You goal is to parallelise the reconstruction of the image in the
+`ReconstructFromEdges` function. Take care that your parallelisation
+scheme does not suffer from [data races]({{< ref
+"notes/openmp/loop-parallelism.md#data-races" >}}). Is there a way you
+can parallelise both the loops over `i` and `j`?
+
+{{< hint info >}}
+
+The Gauss-Seidel iteration is order-dependent, so when you run in
+parallel you will not obtain exactly the same answers _even with a
+correct implementation_.
+
+{{< /hint >}}
 
 {{< details Hint >}}
 
 Think about which entries of the `data` array are read from for a
 particular iteration. Is there a way you can split the loops so that
-you can run them in parallel without data races?
-
-On an "even" pixel, the update only reads from "odd" pixels (and vice
-versa). Consider colouring the pixels like a chess board and then
-updating one colour after the other.
-
-TODO: Better explanation.
+you can run them in parallel without data races? Breaking iterations
+into independent sets that can run in parallel is often term
+"colouring". You can see a description of this for Gauss-Seidel
+iterations in pages 14-16 of [these slides](http://adl.stanford.edu/cme342/Lecture_Notes_files/lecture10-14.pdf).
 
 {{< /details >}}
 
-### Writeup
+Make sure that you commit your changes and push them to your GitHub
+repository. Ensure that your code compiles without warnings and does
+not leak any memory.
 
-Write up a short description of your OpenMP parallelisation scheme.
-You should explain what problems arise when trying to parallelise the
-loops, and how you solve them.
+### Part 1 writeup
+
+Write up a short description (max one page) of your OpenMP
+parallelisation scheme. You should explain what problems arise when
+trying to parallelise the loops, and how you solve them. You should
+include this writeup in your repository as PDF file called
+`part1.pdf`.
 
 ## Part 2: MPI
 
@@ -214,6 +227,17 @@ The main executable has some benchmarking options which you can run
 that control the algorithm choice for reductions, and the size of the
 messages being sent.
 
+{{< hint info >}}
+
+You will need to do the benchmarking on the compute notes of Hamilton,
+so you will need to write a batch script and submit your code to the
+batch system.
+
+Leave yourself enough time to get your benchmarking runs completed,
+since Hamilton often has significant usage.
+
+{{< /hint >}}
+
 If you run in benchmarking mode, it prints out a short timing summary
 of the time to perform the reductions.
 ```
@@ -262,14 +286,14 @@ number of processes, and the size of the messages. Think about how
 best to present these data. Compare them with the data we obtained for
 ping-pong messages, and the performance models we developed.
 
-### Writeup
+### Part 2 writeup
 
 Write up both the algorithm/implementation choices for
-`tree_allreduce` and your findings in a short report. In addition to
-describing the implementation choices, your report should present the
-results of your experiments, along with an analysis of the data.
-Remember to justify and explain your parameter choices for the
-experiments you carried out.
+`tree_allreduce` and your findings in a short report (max four pages).
+In addition to describing the implementation choices, your report
+should present the results of your experiments, along with an analysis
+of the data. Remember to justify and explain your parameter choices
+for the experiments you carried out.
 
 Some questions you could consider include:
 
@@ -283,27 +307,34 @@ Some questions you could consider include:
    `MPI_Allreduce` as for `tree_allreduce`? If not, what do you think
    might be the difference?
 
+You may also cover other points that your noticed or found interesting.
+
+You should include this writeup in your repository as PDF file called
+`part2.pdf`.
 
 ## Mark scheme and submission {#submission}
 
 You should submit your work by uploading a single text file containing
-the git commit hash of the code and writeup you want marked in the
+the git commit hash of the code and writeups you want marked in the
 GitHub classroom repository. **Make sure to push your changes to this
 repository regularly**.
 
-Your repository should contain your implementations and your PDF
-report.
+Your repository should contain your implementations and two **PDF**
+reports:
 
-|    Artifact | Descriptor                                        | Marks |
-|------------:|:--------------------------------------------------|-------|
-| OpenMP Code | Correct parallelisation of Gauss-Seidel iteration | 15    |
-|    MPI Code | Correct implementation for `tree_allreduce`       | 20    |
-|    MPI Code | Compiles with no warnings and no memory leaks     | 5     |
-|      Report | Description of implementation choices             | 25    |
-|      Report | Analysis and presentation of experimental data    | 35    |
+1. `part1.pdf`: Max one page, covering your implementation for Part 1
+2. `part2.pdf`: Max four pages, covering your implementation and
+   experiments for Part 2
 
+|      Artifact | Descriptor                                                                               | Marks |
+|--------------:|:-----------------------------------------------------------------------------------------|-------|
+|      All code | Compiles with no warnings and no memory leaks                                            | 5     |
+|   Part 1 code | Correct OpenMP parallelisation of Gauss-Seidel iteration                                 | 15    |
+|   Part 2 code | Correct MPI implementation for `tree_allreduce`                                          | 20    |
+| Part 1 report | Description of parallelisation scheme                                                    | 10    |
+| Part 2 report | Description of implementation choices and analysis and presentation of experimental data | 50    |
 
-The report will be marked with reference to the [descriptors for
+The reports will be marked with reference to the [descriptors for
 written
 work](https://durhamuniversity.sharepoint.com/teams/MScScientificComputingandDataAnalysis/SitePages/Written-Work-Descriptors-(Non-Dissertation).aspx)
 on the MISCADA sharepoint site.
