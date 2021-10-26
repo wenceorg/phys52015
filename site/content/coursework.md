@@ -276,7 +276,15 @@ Benchmark the different implementations on a range of processes, from
 
 {{< details Hint >}}
 
-It makes sense to collect all the data
+It makes sense to collect the data for different message counts but a
+fixed process count in the same job script. For example, to collect
+data for a count of 1, 2, and 4, your job script could execute
+
+```
+mpiexec ./main -N 1 -t BENCH
+mpiexec ./main -N 2 -t BENCH
+mpiexec ./main -N 4 -t BENCH
+```
 
 {{< /details >}}
 
