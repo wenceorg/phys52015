@@ -22,6 +22,12 @@ To gain access to the template code, you should [accept the classroom
 assignment](https://classroom.github.com/a/2XXzmcuE).
 
 
+{{< hint warning >}}
+
+The submission deadline for this work is January 10th 2022 at 2pm (UK time).
+
+{{< /hint >}}
+
 ## Part 1: OpenMP
 
 The [Gauss-Seidel](https://en.wikipedia.org/wiki/Gauss–Seidel_method)
