@@ -19,7 +19,7 @@ of your findings through GitHub classroom. See details [below]({{< ref
 "#submission" >}}).
 
 To gain access to the template code, you should [accept the classroom
-assignment](https://classroom.github.com/a/DKMRJlH9).
+assignment](https://classroom.github.com/a/2XXzmcuE).
 
 
 ## Part 1: OpenMP
