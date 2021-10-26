@@ -14,10 +14,14 @@ mention in passing where appropriate.
 
 {{< task >}} 
 
-Sign up for a [Hamilton account]({{< ref "hamilton-quickstart.md" >}})
-if you don't already have one. If you have a COSMA account, you can
-use that instead, and need not sign up for Hamilton access (although
-you may wish to anyway).
+I think I have arranged for you to have a [Hamilton account]({{< ref
+"hamilton-quickstart.md" >}}). Follow the instructions in that guide
+to log in and check that you can access Hamilton.
+
+If you can't access Hamilton, get in touch with me!
+
+If you have a COSMA account, you can use that instead, and therefore
+need not use Hamilton.
 
 {{< /task >}}
 

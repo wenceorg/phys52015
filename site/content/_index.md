@@ -15,10 +15,23 @@ and notes. The source repository is [hosted on GitHub]({{< repo >}}).
 The course will run over four weeks starting on 9th November 2021.
 Each week there will be two sessions, scheduled at 4pm UK time on
 Tuesdays and Thursdays in TLC025.
+{{< hint info >}}
+You can attend remotely over
+[zoom](https://durhamuniversity.zoom.us/j/97932635844?pwd=aG9JNThyYTVBSkJKMlVRVUxKNzM2QT09),
+and will need to be authenticated with your Durham account.
+
+Meeting ID: 979 3263 5844
+Passcode: 371456
+{{< /hint >}}
 
 The sessions will be a combination of short lectures, discussion, and
 practical work on the exercises in small groups, with tutors to help.
 Please bring a laptop along to the sessions if you can.
+
+We will use the same [slack
+channel](https://blackboard.durham.ac.uk/ultra/courses/_5721_1/outline)
+that you have been using for the scientific computing part of the
+course to facilitate discussion.
 
 The notes contain
 {{< exercise >}}
@@ -43,5 +56,5 @@ Via a single piece of summative coursework, to appear.
 
 ## Lecturers
 
-- [Lawrence Mitchell](mailto:lawrence@wence.uk)
+- [Lawrence Mitchell](mailto:lawrence.mitchell@durham.ac.uk)
 - [Holger Schulz](https://www.ippp.dur.ac.uk/~hschulz/)

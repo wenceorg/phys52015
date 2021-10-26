@@ -12,15 +12,11 @@ on Hamilton, so you'll need to register for one.
 ## Access to Hamilton
 
 For many of the exercises in the course, we will be using the
-[Hamilton](https://www.dur.ac.uk/cis/local/hpc/) supercomputer. You
-should obtain an account on Hamilton by [following their
-instructions](https://www.dur.ac.uk/cis/local/hpc/hamilton/account/#getting_account).
+[Hamilton](https://www.dur.ac.uk/arc/hamilton/) supercomputer. 
+If you are registered on the course on blackboard, you should have
+been given access to Hamilton.
 
-When requesting an account for this course, please put the course
-leader (Lawrence Mitchell) as the approver, and mention that the
-access is for the MISCADA course PHYS52015.
-
-Since we'll be logging in a lot, I also provide some [tips]({{< ref
+Since we'll be logging in a lot, I provide some [tips]({{< ref
 configuration.md >}}) on how to configure `ssh` for swifter login.
 
 ## Access to COSMA
@@ -42,7 +38,7 @@ Weinzierl](http://www.peano-framework.org/index.php/tobias-weinzierl/).
 
 It is intended to get you up and running on the Hamilton supercomputer
 quickly. It is not replacement of any of the [official
-documentation](https://www.dur.ac.uk/cis/local/hpc/hamilton/).
+documentation](https://www.dur.ac.uk/arc/hamilton/).
 
 ## Logging in and transferring code
 
@@ -61,15 +57,19 @@ Where `USERNAME` is your CIS username. Since we'll do this a lot, you
 can also see some [tips]({{< ref configuration.md >}}) on how to
 configure `ssh` for swifter logins.
 
+{{< hint warning >}}
+
+If you can't log in to Hamilton, contact me so we can sort things out.
+
+{{< /hint >}}
+
 Hamilton doesn't mount any of the Durham shared drives, so you have to
 manually transfer any files you want. You can do this with 
 [`scp`](https://linux.die.net/man/1/scp). For example, if you are on
 your local machine then
-
 ```sh
 $ scp somefile.c USERNAME@hamilton.dur.ac.uk:
 ```
-
 copies `somefile.c` into your home directory on Hamilton. The other
 option is to directly download files when you are logged in. Some of
 the exercises in the course will provide more details on how to do
