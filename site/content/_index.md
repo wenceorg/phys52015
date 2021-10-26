@@ -43,5 +43,5 @@ Via a single piece of summative coursework, to appear.
 
 ## Lecturers
 
-- [Lawrence Mitchell](mailto:lawrence@wence.uk)
+- [Lawrence Mitchell](mailto:lawrence.mitchell@durham.ac.uk)
 - [Holger Schulz](https://www.ippp.dur.ac.uk/~hschulz/)
