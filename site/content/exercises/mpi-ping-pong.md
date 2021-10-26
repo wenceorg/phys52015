@@ -59,7 +59,7 @@ iterations in a loop to get accurate timings.
 {{< exercise >}}
 
 Run your code on the Hamilton compute nodes for a range of messages
-sizes from one byte to 16MB.
+sizes from one byte to 64MB.
 
 Produce a plot of the time to send a message as a function of message
 size.

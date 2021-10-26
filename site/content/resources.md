@@ -1,6 +1,6 @@
 ---
 title: "Further resources"
-weight: 4
+weight: 5
 ---
 
 # Other reading/resources
