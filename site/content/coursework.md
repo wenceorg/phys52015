@@ -6,6 +6,12 @@ katex: true
 
 # Overview
 
+{{< hint warning >}}
+
+The submission deadline for this work is 2022-01-10 at 14:00UTC.
+
+{{< /hint >}}
+
 This coursework has two parts. In the first part, you will design and
 implement OpenMP parallelisation of a simple stencil code. In the
 second part, you will develop a tree-based implementation of
@@ -21,12 +27,6 @@ of your findings through GitHub classroom. See details [below]({{< ref
 To gain access to the template code, you should [accept the classroom
 assignment](https://classroom.github.com/a/2XXzmcuE).
 
-
-{{< hint warning >}}
-
-The submission deadline for this work is January 10th 2022 at 2pm (UK time).
-
-{{< /hint >}}
 
 ## Part 1: OpenMP
 
@@ -83,10 +83,66 @@ construction problem we saw in the [MPI stencil exercise]({{< ref
 
 ### Task: design and implement an OpenMP parallelisation scheme
 
+#### Overview of code
 The code for this part is in the `openmp` subdirectory of the template
 repository. You can build the code with `make` which produces a
 `./main` executable. A sample image if provided in `images/`, but any
 other PGM image will also work.
+
+When run on an image, the code produces some output on the convergence
+of the scheme. For example, before making any modifications from the
+template code:
+
+```
+$ ./main images/mario.pgm edges.pgm recon.pgm 1000
+     0 ||r||/||r0|| = 1
+   100 ||r||/||r0|| = 0.00320287
+   200 ||r||/||r0|| = 0.0018596
+   300 ||r||/||r0|| = 0.00135849
+   400 ||r||/||r0|| = 0.00108396
+   500 ||r||/||r0|| = 0.000904829
+   600 ||r||/||r0|| = 0.000776414
+   700 ||r||/||r0|| = 0.000678938
+   800 ||r||/||r0|| = 0.000602047
+   900 ||r||/||r0|| = 0.000539689
+  1000 ||r||/||r0|| = 0.00048804
+```
+We are solving a linear system of equations
+$$
+A x = b,
+$$
+given a guess of the solution $x^*$, the residual is
+$$
+r = b - A x^*.
+$$
+The executable prints out the
+[2-norm](https://en.wikipedia.org/wiki/Norm_(mathematics)) of this
+residual, divided by the 2-norm of the initial residual (so that
+everything is normalised).
+
+As the iterations converge to the solution, the residual should drop
+to zero.
+
+**DO NOT** change the format of the output, it is used by the
+automated testing framework to perform some basic tests of
+correctness. You can run these tests with the python script
+`check-convergence.py`. Redirect the output of the `main` program to a
+file and then run the check-convergence script:
+```
+$ ./main images/mario.pgm edges.pgm recon.pgm 1000 > output.txt
+$ python3 check-convergence.py output.txt
+Checking number of lines in output...ok
+Parsing output...ok
+Checking iteration counts are correct...ok
+Checking first residual is correctv...ok
+Checking residuals decrease monotonically...ok
+Checking final residual is small enough...ok
+```
+
+The checker does not check exact outputs, since even a correct
+parallel scheme may not produce the same results as a serial scheme.
+
+#### Parallelisation goal
 
 You goal is to parallelise the reconstruction of the image in the
 `ReconstructFromEdges` function. Take care that your parallelisation
@@ -96,8 +152,8 @@ can parallelise both the loops over `i` and `j`?
 
 {{< hint info >}}
 
-The Gauss-Seidel iteration is order-dependent, so when you run in
-parallel you will not obtain exactly the same answers _even with a
+The Gauss-Seidel iteration is order-dependent, so if you change the
+iteration order you will not obtain exactly the same answers _even with a
 correct implementation_.
 
 {{< /hint >}}
@@ -107,7 +163,7 @@ correct implementation_.
 Think about which entries of the `data` array are read from for a
 particular iteration. Is there a way you can split the loops so that
 you can run them in parallel without data races? Breaking iterations
-into independent sets that can run in parallel is often term
+into independent sets that can run in parallel is often termed
 "colouring". You can see a description of this for Gauss-Seidel
 iterations in pages 14-16 of [these slides](http://adl.stanford.edu/cme342/Lecture_Notes_files/lecture10-14.pdf).
 
@@ -116,6 +172,12 @@ iterations in pages 14-16 of [these slides](http://adl.stanford.edu/cme342/Lectu
 Make sure that you commit your changes and push them to your GitHub
 repository. Ensure that your code compiles without warnings and does
 not leak any memory.
+
+{{< hint info >}}
+Some basic tests of functionality are run by the GitHub CI server
+every time you push. You should make sure that your code at least
+passes these.
+{{< /hint >}}
 
 ### Part 1 writeup
 
@@ -227,6 +289,12 @@ Ensure that your code performs correctly, does not leak any memory
 (all objects that you allocate in `tree_allreduce` should be freed),
 and compiles without warnings.
 
+{{< hint info >}}
+Some basic tests of functionality are run by the GitHub CI server
+every time you push. You should make sure that your code at least
+passes these.
+{{< /hint >}}
+
 ### Task: benchmarking and comparison to `MPI_Allreduce`
 
 The main executable has some benchmarking options which you can run
@@ -328,10 +396,19 @@ You should include this writeup in your repository as PDF file called
 
 ## Mark scheme and submission {#submission}
 
-You should submit your work by uploading a single text file containing
-the git commit hash of the code and writeups you want marked in the
-GitHub classroom repository. **Make sure to push your changes to this
-repository regularly**.
+To submit your work, upload a single text file to ULTRA containing the
+git commit hash of the code and writeups you want marked. I will then
+go your repository and mark the work from the relevant commit. To
+ensure that I can match things up, add your CIS username to the
+`README.md` document in your copy of the repository.
+
+{{< hint warning >}}
+
+I will mark what is in the GitHub classroom repository. **Make sure to
+push your changes to this repository regularly**. Do not upload code
+to ULTRA.
+
+{{< /hint >}}
 
 Your repository should contain your implementations and two **PDF**
 reports:
