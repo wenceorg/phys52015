@@ -89,6 +89,16 @@ repository. You can build the code with `make` which produces a
 `./main` executable. A sample image if provided in `images/`, but any
 other PGM image will also work.
 
+{{< hint info >}}
+
+On Hamilton you'll want to load the following modules
+
+```
+gcc/9.3.0
+```
+
+{{< /hint >}}
+
 When run on an image, the code produces some output on the convergence
 of the scheme. For example, before making any modifications from the
 template code:
@@ -111,9 +121,9 @@ We are solving a linear system of equations
 $$
 A x = b,
 $$
-given a guess of the solution $x^*$, the residual is
+given a guess of the solution $x^\*$, the residual is
 $$
-r = b - A x^*.
+r = b - A x^\*.
 $$
 The executable prints out the
 [2-norm](https://en.wikipedia.org/wiki/Norm_(mathematics)) of this
@@ -184,7 +194,7 @@ passes these.
 Write up a short description (max one page) of your OpenMP
 parallelisation scheme. You should explain what problems arise when
 trying to parallelise the loops, and how you solve them. You should
-include this writeup in your repository as PDF file called
+include this writeup in your repository as a PDF file called
 `part1.pdf`.
 
 ## Part 2: MPI
@@ -193,8 +203,10 @@ In the one of the [first MPI exercises]({{< ref "mpi-ring.md" >}}), we
 implemented a simple collective operation where we passed messages
 around a one-dimensional ring.
 
-In this coursework, we're going to implement a more sophisticated
-version of this collective operation, using a tree reduction.
+Now we're going to implement a more sophisticated
+version of this collective operation, using a tree reduction,
+discussed when we introduced [collectives]({{< ref
+"notes/mpi/collectives.md" >}}).
 
 We will then benchmark the ring reduction, tree reduction, and the
 builtin `MPI_Allreduce` for a range of problem sizes, and compare to the
@@ -263,7 +275,7 @@ ok 16 - MPI_MAX count 1048577
 
 The full version of `MPI_Allreduce` can handle arbitrary datatypes and
 combining operations (including user operations). For our
-implementation, we will restrict to `MPI_INT` data and the builtin
+implementation, we will restrict to the `MPI_INT` data and the builtin
 operations `MPI_SUM`, `MPI_PROD`, `MPI_MIN`, and `MPI_MAX`.
 
 We will also restrict ourselves to reductions over communicators whose
