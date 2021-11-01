@@ -14,7 +14,7 @@ and notes. The source repository is [hosted on GitHub]({{< repo >}}).
 
 The course will run over four weeks starting on 9th November 2021.
 Each week there will be two sessions, scheduled at 4pm UK time on
-Tuesdays and Thursdays in TLC025.
+Tuesdays and Fridays in TLC025.
 {{< hint info >}}
 You can attend remotely over
 [zoom](https://durhamuniversity.zoom.us/j/97932635844?pwd=aG9JNThyYTVBSkJKMlVRVUxKNzM2QT09),
