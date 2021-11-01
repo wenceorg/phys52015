@@ -6,7 +6,7 @@ title: "Hamilton access & quickstart"
 
 Most of the exercises in this course will require that you use one of
 Durham's supercomputing systems. This will either be Hamilton, or (for
-some Physics students) COSMA. You don't automatically get an account
+some Physics students) COSMA. If you're signed up on the course, you should haveYou don't automatically get an account
 on Hamilton, so you'll need to register for one.
 
 ## Access to Hamilton
