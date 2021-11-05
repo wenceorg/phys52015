@@ -110,7 +110,7 @@ runs multiple iterations of the loop body statements _in parallel_.
 For this to be valid, we must be able to execute the statements in any
 order we like.
 
-For example, this loop is not vectorisable
+For example, this loop cannot be straightforwardly parallelised
 
 ```c
 for (size_t = 1; i < N; i++)
@@ -137,7 +137,7 @@ _read-after-read_ (not really dependencies). As usual,
 summary. For our purposes, _read-after-write_ are the difficult ones
 to handle. The others can usually be refactored by introducing some
 temporary variables (as discussed in the linked wikipedia article).
-Typically, they then reveal a read-after-write dependency.
+Typically, they then might reveal a read-after-write dependency.
 
 
 {{< hint warning >}}
