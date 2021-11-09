@@ -78,7 +78,7 @@ a_{ij}x_j^{(k+1)} - \sum_{j=i+1}^n a_{ij} x_j^{(k)}\right).
 $$
 
 We will apply Gauss-Seidel iteration to solve the same image
-construction problem we saw in the [MPI stencil exercise]({{< ref
+reconstruction problem we saw in the [MPI stencil exercise]({{< ref
 "mpi-stencil.md" >}}).
 
 ### Task: design and implement an OpenMP parallelisation scheme
