@@ -52,7 +52,13 @@ please do attempt them as you go through.
 
 ### Assessment
 
-Via a single piece of summative coursework, to appear.
+Via a single piece of [summative coursework]({{< ref "coursework.md" >}}).
+
+## Some slides
+
+### 2021-11-09
+
+[A very brief course intro]({{< static-ref "slides/intro.html" >}})
 
 ## Lecturers
 
