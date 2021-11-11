@@ -18,7 +18,7 @@ improving an existing parallel code.
 
 [^3]: These examples are adapted from section 2.1 of Victor Eijkhout's
     [Introduction to High Performance Scientific
-    Computing](https://pages02.tacc.utexas.edu/istc/istc.html),
+    Computing](https://pages.tacc.utexas.edu/istc/istc.html),
     reproduced under [CC-BY
     3.0](https://creativecommons.org/licenses/by/3.0/).
 

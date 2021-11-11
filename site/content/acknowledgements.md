@@ -6,9 +6,9 @@ weight: 10
 # Acknowledgements
 
 Some of the exercises and examples, where noted, are adapted from
-[Victor Eijkhout's](https://pages02.tacc.utexas.edu) introductory high
+[Victor Eijkhout's](https://pages.tacc.utexas.edu/~eijkhout/) introductory high
 performance computing
-[textbook](https://pages02.tacc.utexas.edu/istc/istc.html).
+[textbook](https://pages.tacc.utexas.edu/~eijkhout/istc/istc.html).
 
 Some of the material is adapted from a previous version of the course
 taught by [Tobias

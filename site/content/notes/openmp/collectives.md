@@ -119,7 +119,7 @@ in `dotlocal` (which will likely be incomplete).
 We see that writing a collective reduction by hand is possible, but a
 bit tedious. OpenMP provides facilities to handle all of the gory
 details by adding an extra
-[`reduction`](https://computing.llnl.gov/tutorials/openMP/#REDUCTION)
+[`reduction`](https://hpc.llnl.gov/tuts/openMP/#REDUCTION)
 clause to the `for` directive
 
 ```c
@@ -184,7 +184,7 @@ memory.
 OpenMP has a number of constructs for this purpose. We've already
 implicitly seen one of them, namely barriers. In a parallel region,
 [`#pragma omp
-barrier`](https://computing.llnl.gov/tutorials/openMP/#BARRIER) can be
+barrier`](https://hpc.llnl.gov/tuts/openMP/#BARRIER) can be
 used to synchronise all threads in the team.
 
 ```c
@@ -247,7 +247,7 @@ OpenMP provides us two further constructions. For protecting _code_
 and _variables_ respectively.
 
 The first is the critical section [`#pragma omp
-critical`](https://computing.llnl.gov/tutorials/openMP/#CRITICAL).
+critical`](https://hpc.llnl.gov/tuts/openMP/#CRITICAL).
 This directive specifies that a region of code must be executed by
 only one thread at a time.
 
@@ -349,7 +349,7 @@ This was actually the topic of the [synchronisation]({{< ref
 ### Atomics
 
 Even finer-grained than critical sections are [`#pragma omp
-atomic`](https://computing.llnl.gov/tutorials/openMP/#ATOMIC)
+atomic`](https://hpc.llnl.gov/tuts/openMP/#ATOMIC)
 directives. These can be used to protect (some) updates to shared
 variables.
 

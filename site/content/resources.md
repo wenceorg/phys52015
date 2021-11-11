@@ -9,12 +9,12 @@ There are many excellent textbooks and tutorials on parallel
 programming. Here are some I like, with brief commentary.
 
 - Victor Eijkhout, [_Introduction to High Performance
-  Computing_](https://pages.tacc.utexas.edu/~eijkhout/istc/istc.html). This is
-  a gentle, and quite comprehensive, introduction to parallel
+  Computing_](https://pages.tacc.utexas.edu/~eijkhout/istc/istc.html).
+  This is a gentle, and quite comprehensive, introduction to parallel
   computing. The author has a
-  [separate](https://pages.tacc.utexas.edu/~eijkhout/pcse/html/index.html), in
-  progress, book which contains more details on OpenMP and MPI
-  programming models.
+  [separate](https://pages.tacc.utexas.edu/~eijkhout/pcse/html/index.html)
+  book which contains more details on OpenMP and MPI programming
+  models.
   
 - Georg Hager & Gerhard Wellein, [_Introduction to High Performance
   Computing for Scientists and
@@ -36,14 +36,17 @@ programming. Here are some I like, with brief commentary.
   [computational
   science](https://cse.buffalo.edu/~knepley/classes/caam519/CSBook.pdf)
   also have much good advice, with a focus on the use of
-  [PETSc](http://www.mcs.anl.gov/petsc) providing parallel data
+  [PETSc](https://www.petsc.org/) providing parallel data
   structures and solvers.
 
 - The [Lawrence Livermore](https://www.llnl.gov) high performance
   computing [centre](https://hpc.llnl.gov/user-portal), has some nice
   [tutorials](https://hpc.llnl.gov/training/tutorials). Including one
-  introducing [OpenMP](https://computing.llnl.gov/tutorials/openMP/)
-  and [one for MPI](https://computing.llnl.gov/tutorials/mpi/).
+  introducing [OpenMP](https://hpc.llnl.gov/tuts/openMP/)
+  and [one introductory](https://hpc-tutorials.llnl.gov/mpi/), and
+  [one
+  advanced](https://hpc.llnl.gov/sites/default/files/DavidCronkSlides.pdf)
+  MPI tutorial.
   
 - The UK's supercomputing service [ARCHER](https://www.archer.ac.uk/),
   ran regular training events over its lifetime. Much of their
