@@ -431,7 +431,7 @@ transforms](https://en.wikipedia.org/wiki/Fast_Fourier_transform) are
 among the fastest approaches for computing the inverse of the
 Laplacian in periodic domains. They form, amongst other things, a core
 computational component of numerical simulation of turbulent flow (see
-for example the codes at https://github.com/spectralDNSe).
+for example the codes at https://github.com/spectralDNS).
 
 To compute Fourier transforms in parallel, we need to do
 one-dimensional transforms along each cartesian direction,

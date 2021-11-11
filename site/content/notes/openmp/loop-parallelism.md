@@ -44,7 +44,7 @@ Fortunately, there is a better way[^1].
 
 Suppose we are in a parallel region, to distribute the work in a loop
 amongst the thread team, we use the [`#pragma omp
-for`](https://computing.llnl.gov/tutorials/openMP/#DO) directive.
+for`](https://hpc.llnl.gov/tuts/openMP/#DO) directive.
 
 
 ```c
@@ -327,7 +327,7 @@ You now know enough (probably more than enough) to attempt the OpenMP
 Sometimes, we might want to serialise some part of the code in a
 parallel region. OpenMP offers us two ways of doing this. If we don't
 care about which thread executes some code, we can use [`#pragma omp
-single`](https://computing.llnl.gov/tutorials/openMP/#SINGLE)
+single`](https://hpc.llnl.gov/tuts/openMP/#SINGLE)
 
 ```c
 #pragma omp parallel
@@ -345,7 +345,7 @@ after some parallel setup on a single thread.
 
 Alternatively, if we want thread0 to execute something, we can use
 [`#pragma omp
-master`](https://computing.llnl.gov/tutorials/openMP/#MASTER)
+master`](https://hpc.llnl.gov/tuts/openMP/#MASTER)
 
 ```c
 #pragma omp parallel
