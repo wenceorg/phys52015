@@ -45,8 +45,12 @@ Exercises look like this.
 
 ## Slides/recordings
 
-### 2021-11-09 summary
+### 2021-11-12 summary
 
+- [OpenMP slides 2](https://rpubs.com/iamholger/834246)
+- [OpenMP exercise 2](https://rpubs.com/iamholger/834247)
+
+### 2021-11-09 summary
 
 We briefly introduced the course as a whole, then Holger provided an
 introduction to the concepts of [shared memory]({{< ref "openmp.md"
@@ -59,7 +63,7 @@ accounts had not been set up (sorry!), and there are instructions in
 the slack channel about what to do in this case.
 
 - [Intro slides]({{< static-ref "slides/intro.html" >}})
-- [OpenMP slides](https://rpubs.com/iamholger/834248)
+- [OpenMP slides 1](https://rpubs.com/iamholger/834248)
 - [OpenMP exercise 1](https://rpubs.com/iamholger/832782)
 - [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=600b4905-9539-4e5f-b849-adda0095585a)
 
