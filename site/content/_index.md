@@ -71,8 +71,6 @@ worthwhile getting [remote editing]({{< ref "remote.md" >}}) set up.
 
 ### 2021-11-09
 
-### 2021-11-09 summary
-
 We briefly introduced the course as a whole, then Holger provided an
 introduction to the concepts of [shared memory]({{< ref "openmp.md"
 >}}), and the OpenMP programming model.

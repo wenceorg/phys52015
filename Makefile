@@ -1,20 +1,27 @@
 pyfigures = $(wildcard figures/*.py)
 drawiofigures = $(wildcard figures/*.drawio)
+mdslides = $(wildcard site/static/slides/*.md)
 
 drawiosvg = $(patsubst %.drawio,%.svg,$(drawiofigures))
 drawiopdf = $(patsubst %.drawio,%.pdf,$(drawiofigures))
 pysvg = $(patsubst %.py,%.svg,$(pyfigures))
 pypdf = $(patsubst %.py,%.pdf,$(pyfigures))
+htmlslides = $(patsubst %.md,%.html,$(mdslides))
 
 .PHONY: html allsvg pysvg allcode alltgz killds_store
 
-html: allcode alltgz pysvg
+html: allcode alltgz pysvg htmlslides
 	(cd site; hugo --minify --cleanDestinationDir)
 
 allslides: allfigures
 
 site/static/images:
 	mkdir -p $@
+
+htmlslides: $(htmlslides)
+
+site/static/slides/%.html: site/static/slides/%.md
+	(cd site/static/slides; python preprocess.py $(notdir $<))
 
 allsvg: pysvg drawiosvg
 
