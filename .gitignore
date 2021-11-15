@@ -17,3 +17,4 @@
 /site/static/coursework.tgz
 .vscode/
 .ipynb_checkpoints/
+/site/static/slides/*.html
