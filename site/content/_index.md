@@ -45,10 +45,31 @@ Exercises look like this.
 
 ## Slides/recordings
 
-### 2021-11-12 summary
+### 2021-11-12
+
+We continued with OpenMP, starting to introduce the concept of
+[parallel regions]({{< ref "notes/openmp/intro.md" >}}) and [loop
+parallelism]({{< ref "notes/openmp/loop-parallelism.md" >}}). We saw how to
+control the number of threads in a parallel region using the
+`OMP_NUM_THREADS` environment variable, as well as runtime control
+with on the directives.
+
+We then did some more OpenMP exercises.
 
 - [OpenMP slides 2](https://rpubs.com/iamholger/834246)
 - [OpenMP exercise 2](https://rpubs.com/iamholger/834247)
+- [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=315b6af3-d5c7-4e49-864c-adde013eaa04)
+
+{{< hint info >}}
+
+A reminder that to transfer data to Hamilton, your best bet is to use
+[`scp`]({{< ref "hamilton-quickstart.md" >}}) or similar (rather than
+trying to copy and paste into a terminal editor). It is also
+worthwhile getting [remote editing]({{< ref "remote.md" >}}) set up.
+
+{{< /hint >}}
+
+### 2021-11-09
 
 ### 2021-11-09 summary
 
