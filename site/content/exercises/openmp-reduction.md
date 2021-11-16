@@ -191,7 +191,7 @@ Compare this to results obtained with
 OMP_PROC_BIND=spread
 ```
 
-This spreads threads out between cores, thread0 to the first socket,
+This spreads threads out between cores, thread 0 to the first socket,
 thread 1 to the second, and so on. I think this is the default setting
 when using the Intel OpenMP library.
 
