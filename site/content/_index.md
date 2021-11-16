@@ -45,6 +45,11 @@ Exercises look like this.
 
 ## Slides/recordings
 
+### 2021-11-16
+
+- [OpenMP slides 3](https://rpubs.com/iamholger/836014)
+- [OpenMP exercise 3](https://rpubs.com/iamholger/835619)
+
 ### 2021-11-12
 
 We continued with OpenMP, starting to introduce the concept of
