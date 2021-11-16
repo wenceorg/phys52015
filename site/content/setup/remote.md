@@ -35,6 +35,27 @@ to Host" command.
 You can then use VS code, browsing the Hamilton filesystem as if it
 were local.
 
+{{< hint warning >}}
+
+The way remote editing in VS code works results in it creating a
+directory `~/.vscode-server` in your home directory on Hamilton.
+
+You might run in to quota issues (check if the "Soft limit" for files
+in the output of the `quota` command is hit).
+
+To work around this, we can move the vscode directory somewhere else
+and then symlink it back.
+
+You can run this sequence of commands at the terminal to achieve this,
+you'll only need to do it once.
+
+```sh
+$ mv $HOME/.vscode-server /ddn/data/$USER/vscode-server
+$ ln -s /ddn/data/$USER/vscode-server $HOME/.vscode-server
+```
+
+{{< /hint >}}
+
 {{< hint info >}}
 
 I don't use VS Code myself, so can't help with further configuration
