@@ -1,4 +1,4 @@
-{{ if false }}
+{{ if (.Get "release") }}
 <details {{ if or (.Get "open") (in .Params "open") }}open{{ end }}>
   <summary>Solution</summary>
   <div class="markdown-inner">

@@ -47,8 +47,26 @@ Exercises look like this.
 
 ### 2021-11-16
 
+We talked about [collectives]({{< ref "notes/openmp/collectives.md"
+>}}), and in particular _reductions_. We also touched on [_data
+races_]({{< ref "openmp.md#sync-data-race" >}}), and
+[synchronisation]({{< ref
+"notes/openmp/collectives.md#inter-thread-synchronisation" >}})
+constructs you can use to avoid them.
+
 - [OpenMP slides 3](https://rpubs.com/iamholger/836014)
 - [OpenMP exercise 3](https://rpubs.com/iamholger/835619)
+- [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=b1ebdacf-6cf1-4634-b7ce-ade20145956d)
+
+{{< hint info >}}
+
+Understanding data races, and how to rework code to avoid them, is of
+critical importance for writing correct OpenMP code. So I recommend
+working through the [notes]({{< ref "notes/openmp/collectives.md" >}})
+and [exercises]({{< ref "exercises/openmp-reduction.md" >}}) them to
+check that you really understand what is going on.
+
+{{< /hint >}}
 
 ### 2021-11-12
 
@@ -62,7 +80,7 @@ with on the directives.
 We then did some more OpenMP exercises.
 
 - [OpenMP slides 2](https://rpubs.com/iamholger/834246)
-- [OpenMP exercise 2](https://rpubs.com/iamholger/834247)
+- [OpenMP exercise 2](https://rpubs.com/iamholger/834247), [sketch solutions](https://rpubs.com/iamholger/833883)
 - [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=315b6af3-d5c7-4e49-864c-adde013eaa04)
 
 {{< hint info >}}
@@ -87,7 +105,7 @@ accounts had not been set up (sorry!), and there are instructions in
 the slack channel about what to do in this case.
 
 - [Intro slides]({{< static-ref "slides/intro.html" >}})
-- [OpenMP slides 1](https://rpubs.com/iamholger/834248)
+- [OpenMP slides 1](https://rpubs.com/iamholger/834248), [sketch solutions](https://rpubs.com/iamholger/831650)
 - [OpenMP exercise 1](https://rpubs.com/iamholger/832782)
 - [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=600b4905-9539-4e5f-b849-adda0095585a)
 
