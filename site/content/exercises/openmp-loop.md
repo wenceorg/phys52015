@@ -61,7 +61,7 @@ appropriate OpenMP pragmas to parallelise the loop.
 Does the code now have different runtimes when using different numbers
 of threads?
 
-{{< solution >}}
+{{< solution release=True >}}
 
 This code can be parallelised using a simple parallel for.
 
@@ -90,9 +90,13 @@ Produce a [strong scaling]({{< ref "scaling-laws.md#amdahl" >}}) plot
 for the computation as a function of the number of threads using the
 different schedules you investigated.
 
+Don't forget to do this on a [compute node]({{< ref
+"setup/hamilton-quickstart.md#running-code" >}}) (submit a job script
+with `sbatch`) to avoid timing variability.
+
 What do you observe?
 
-{{< solution >}}
+{{< solution release=True >}}
 
 This is what I get for some different schedules when computing on a
 vector of one million numbers, I did not run multiple times to avoid
