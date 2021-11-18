@@ -45,6 +45,16 @@ Exercises look like this.
 
 ## Slides/recordings
 
+### 2021-11-19
+
+We'll introduce the concept of [parallel scaling]({{< ref
+"notes/theory/scaling-laws.md" >}}), and will look at some examples of
+[Amdahl's law]({{< ref "notes/theory/scaling-laws.md#amdahl" >}}).
+
+- [OpenMP slides 4](https://rpubs.com/iamholger/837106)
+- [OpenMP exercise 4](https://rpubs.com/iamholger/837117)
+
+
 ### 2021-11-16
 
 We talked about [collectives]({{< ref "notes/openmp/collectives.md"
