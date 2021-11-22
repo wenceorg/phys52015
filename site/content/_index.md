@@ -45,15 +45,32 @@ Exercises look like this.
 
 ## Slides/recordings
 
+### 2021-11-23
+
+We will start looking at programming with _distributed memory_
+parallelism, and introduce the [MPI]({{< ref "mpi.md" >}})
+library.
+
+The MPI library has a lot of functions, and can be a bit overwhelming,
+but please read through the [overview]({{< ref "mpi.md" >}}),
+and [point-to-point messaging]({{< ref "notes/mpi/point-to-point.md"
+>}}) notes.
+
+- [Intro slides]({{< static-ref "slides/mpi-intro.html" >}})
+- [Point to point slides]({{< static-ref "slides/mpi-ptp.html" >}})
+
 ### 2021-11-19
 
-We'll introduce the concept of [parallel scaling]({{< ref
-"notes/theory/scaling-laws.md" >}}), and will look at some examples of
+We introduced the concept of [parallel scaling]({{< ref
+"notes/theory/scaling-laws.md" >}}), and looked at some examples of
 [Amdahl's law]({{< ref "notes/theory/scaling-laws.md#amdahl" >}}).
 
 - [OpenMP slides 4](https://rpubs.com/iamholger/837106)
 - [OpenMP exercise 4](https://rpubs.com/iamholger/837117)
+- [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=aa88594b-79f9-41ba-b1af-ade50130f10a)
 
+Hopefully you were able to produce some plots of the parallel
+performance of the example code. What did you observe?
 
 ### 2021-11-16
 
