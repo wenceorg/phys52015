@@ -5,7 +5,7 @@ weight: 4
 
 # MPI: a messaging API
 
-Both vectorisation and OpenMP level parallelism are possible when
+OpenMP level parallelism is possible when
 using a single computer, with a shared memory space.
 
 If we want to solve really big problems, we need to move beyond this
