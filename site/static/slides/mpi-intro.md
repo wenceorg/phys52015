@@ -131,6 +131,36 @@ processes](/phys52015/images/manual/comm-world-comm-self.svg)
 
 ------
 
+## Compiling
+
+- Most MPI libraries come with _compiler wrappers_
+  - `mpicc` (for C)
+  - `mpicxx` (for C++)
+  - `mpif90` (for Fortran)
+- Take care of include and link flags
+
+### On Hamilton
+
+```
+module load gcc/9.3.0
+module load intelmpi/gcc/2019.6
+```
+
+------
+
+## Running
+
+- Amount of parallelism specified at _runtime_
+- Use MPI library's "runner", usually `mpirun` or `mpiexec`
+- On Hamilton use `mpirun`
+
+```
+$ mpirun -n 10 ./myapp
+```
+Run 10 copies of `myapp` in same MPI context
+
+------
+
 ## Important concepts
 
 - No process special
