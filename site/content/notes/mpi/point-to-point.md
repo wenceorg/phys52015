@@ -283,7 +283,7 @@ Therefore, I would only worry about `MPI_Send` and `MPI_Ssend`.
 `MPI_Ssend` to catch any deadlock errors.
 {{< /hint >}}
 
-### A concrete example
+### A concrete example {#deadlock-exercise}
 
 Let us look at the difference in behaviour between `MPI_Ssend` and
 `MPI_Send` to observe how `MPI_Send` can hide deadlocks in some

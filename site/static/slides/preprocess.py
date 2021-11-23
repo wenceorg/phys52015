@@ -121,7 +121,7 @@ def preprocess(inp):
     else:
         title = f"<title>{title}</title>"
 
-    slides = slides.split("------")
+    slides = slides.split("\n------\n")
 
     return (title, slides)
 
@@ -137,9 +137,13 @@ def generate(inp, outp):
     title, slides = preprocess(inp)
     lines = [header % title, "<body>", '<div class="reveal">', '<div class="slides">']
     for slide in slides:
-        lines.append('<section data-markdown><script type="text/template">')
-        lines.append(f"\n{slide.strip()}\n")
-        lines.append("</script></section>")
+        lines.append('<section>')
+        sections = slide.strip().split("\n--->\n")
+        for section in sections:
+            lines.append('<section data-markdown><textarea data-template>')
+            lines.append(f"\n{section.strip()}\n")
+            lines.append("</textarea></section>")
+        lines.append("</section>")
     lines.append("</div>")
     lines.append("</div>")
     lines.append(footer)
