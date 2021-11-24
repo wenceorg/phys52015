@@ -8,9 +8,9 @@ pysvg = $(patsubst %.py,%.svg,$(pyfigures))
 pypdf = $(patsubst %.py,%.pdf,$(pyfigures))
 htmlslides = $(patsubst %.md,%.html,$(mdslides))
 
-.PHONY: html allsvg pysvg allcode alltgz killds_store
+.PHONY: html allsvg pysvg allcode killds_store
 
-html: allcode alltgz pysvg htmlslides
+html: allcode pysvg htmlslides
 	(cd site; hugo --minify --cleanDestinationDir)
 
 allslides: allfigures
@@ -44,20 +44,6 @@ figures/%.svg: figures/%.py
 
 figures/%.pdf: figures/%.py
 	python $< $@
-
-killds_store:
-	find . -name ".DS_Store" -print0 | xargs -0 rm -f
-
-site/static/code/blur_image.tgz: code/blur_image/vec/Makefile $(wildcard code/blur_image/vec/*.[ch]) code/blur_image/openmp/Makefile $(wildcard code/blur_image/openmp/*.[ch]) $(wildcard code/blur_image/images/*.ppm)
-	(cd code; tar -zcf $(abspath $@) $(patsubst code/%,%,$^))
-
-site/static/code/add_numbers.tgz: code/add_numbers/serial/Makefile $(wildcard code/add_numbers/serial/*.[ch]) code/add_numbers/openmp/Makefile $(wildcard code/add_numbers/openmp/*.[ch])
-	(cd code; tar -zcf $(abspath $@) $(patsubst code/%,%,$^))
-
-site/static/code/coursework.tgz: code/coursework/Makefile code/coursework/valgrind.supp code/coursework/bench.c code/coursework/bench.h code/coursework/check.c code/coursework/check.h code/coursework/main.c code/coursework/mat.c code/coursework/mat.h code/coursework/solution.c code/coursework/utils.h code/coursework/vec.c code/coursework/vec.h
-	(cd code; tar -zcf $(abspath $@) $(patsubst code/%,%,$^))
-
-alltgz: killds_store site/static/code/blur_image.tgz site/static/code/add_numbers.tgz site/static/code/coursework.tgz
 
 allcode:
 	rsync --delete -rupm code/ site/static/code/ --filter '+ */' --filter '+ *.c' --filter '+ *.h' --filter '+ Makefile' --filter '+ *.slurm' --filter '- *'

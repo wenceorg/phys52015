@@ -24,7 +24,7 @@ where each process holds one row.
 
 I provide a template file [`matrix.c`]({{< code-ref
 "mpi/collectives/matrix.c" >}}) in the `code/mpi/collectives`
-subdirectory.
+subdirectory of the [repository]({{< repo >}}).
 
 It allocates some matrices and sets up the values.
 

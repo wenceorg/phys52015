@@ -43,12 +43,13 @@ Create a C file `serial.c` containing the below.
 {{< code-include "hello/serial.c" "c" >}}
 
 {{< hint "info" >}}
-You can copy the download link and use `wget` after logging in to get the
-code
 
-```sh
-$ wget {{< code-ref "hello/serial.c" >}}
-```
+All of these code snippets live in the [course repository]({{< repo
+>}}), so rather than copying or downloading, you should clone the
+repository and work in the relevant `code` subdirectory.
+
+We're working the in the `code/hello` subdirectory for this exercise.
+
 {{< /hint >}}
 
 Having done that you should compile the code with `icc`
