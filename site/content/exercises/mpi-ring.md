@@ -28,9 +28,9 @@ shown by the arrow between processes.
 ## Code
 
 I provide a template file [`ring.c`]({{< code-ref "mpi/ring/ring.c"
->}}) in the `code/mpi/ring` subdirectory. It initialises and finalises
-MPI and provides a stub `ring_reduce` function which you should
-implement.
+>}}) in the `code/mpi/ring` subdirectory of the [repository]({{< repo
+>}}). It initialises and finalises MPI and provides a stub
+`ring_reduce` function which you should implement.
 
 The initial local value is set to the rank. This gives us a nice way
 of checking if the summed value is correct, since on $P$ processes,

@@ -14,16 +14,15 @@ to]({{< ref hamilton-quickstart.md >}}).
 ## Obtaining the code
 
 The code for this exercise is in the `code/add_numbers` subdirectory
-of the [repository]({{< repo >}}), you can also [download]({{<
-code-ref add_numbers.tgz >}}) a tar archive.
+of the [repository]({{< repo >}}).
 
 We'll be working in the `openmp` subdirectory.
 
 {{< details "Working from the repository" >}}
 
-If you cloned the [repository]({{< repo >}}) and have committed your
-changes on branches for the previous exercises, just checkout the
-`main` branch again and create a new branch for this exercise.
+If you have committed your changes on branches for the previous
+exercises, just checkout the `main` branch again and create a new
+branch for this exercise.
 
 {{< /details >}}
 

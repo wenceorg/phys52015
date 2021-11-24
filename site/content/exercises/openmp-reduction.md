@@ -15,7 +15,9 @@ to see if there are any differences
 
 ## Template code and benchmarking
 
-In [`openmp-snippets/reduction-template.c`]({{< code-ref
+As usual, the starter code lives in the [repository]({{< repo >}}), in
+the `code/openmp-snippets` subdirectory.
+In [`reduction-template.c`]({{< code-ref
 "openmp-snippets/reduction-template.c" >}}) is some code that times
 how long it takes to run the reduction.
 

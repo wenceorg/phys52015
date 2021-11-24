@@ -139,8 +139,7 @@ I provide a skeleton code in C which provides datatypes for vectors
 and matrices, some viewing facilities (for debugging), and has various
 options for benchmarking performance and testing correctness.
 
-Download it as a [tarball here]({{< code-ref "coursework.tgz" >}}),
-or else find the code in the `/code/coursework` subdirectory of the [course
+Find the code in the `/code/coursework` subdirectory of the [course
 repository]({{< repo >}}).
 
 You should do your implementation in the `solution.c` file, which

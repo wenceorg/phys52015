@@ -20,14 +20,10 @@ vectorise a loop in the presence of conditionals inside the loop body.
 The idea is to observe, and understand, what patterns permit (or do
 not permit) vectorisation.
 
-The code for this exercise is provided as a [tar archive]({{< code-ref
-add_numbers.tgz >}}).
+The code for this exercise is in the `code/add_numbers` subdirectory
+of the [repository]({{< repo >}}).
 
 {{< hint info >}}
-
-You can also clone the [entire course repository]({{< repo >}}), which
-gives you access to the code for all the course exercises in the `code`
-subdirectory.
 
 I recommend that you create a new branch for each exercise and commit
 your changes when editing code (since we'll reuse the same code
@@ -35,18 +31,8 @@ multiple times).
 
 {{< /hint >}}
 
-Download and unpack it with
-
 ```sh
-$ wget {{< code-ref add_numbers.tgz >}}
-$ tar zxvf add_numbers.tgz
-```
-
-This will create a new directory `add_numbers` with two
-subdirectories.
-
-```sh
-$ cd add_numbers
+$ cd code/add_numbers
 $ ls
 openmp serial
 ```

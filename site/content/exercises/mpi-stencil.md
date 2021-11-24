@@ -71,10 +71,11 @@ in touch and we can figure out a better way.
 
 ## Implementation
 
-In the `code/mpi/image-reconstruction` subdirectory, I provide some
-skeleton code. It runs correctly in serial to reconstruct images.
-Build the code with `make` and then run it like so (there are some
-sample images in the `images` subdirectory)
+In the `code/mpi/image-reconstruction` subdirectory of the
+[repository]({{< repo >}}), I provide some skeleton code. It runs
+correctly in serial to reconstruct images. Build the code with `make`
+and then run it like so (there are some sample images in the `images`
+subdirectory)
 
 ```
 $ ./main images/mario.pgm edges.pgm reconstructed.pgm 100

@@ -42,14 +42,14 @@ $$
 
 ## Obtaining the code
 
-The code for this exercise is again provided as an [archive]({{<
-code-ref "calculate_pi.tgz" >}}), so download it an unpack it.
+The code for this exercise is in the [repository]({{< repo >}}) in the
+`code/calculate_pi/` subdirectory.
 
 {{< details "Working from the repository" >}}
 
-If you cloned the [repository]({{< repo >}}) and have committed your
-changes on branches for the previous exercises, just checkout the
-`main` branch again and create a new branch for this exercise.
+If you have committed your changes on branches for the previous
+exercises, just checkout the `main` branch again and create a new
+branch for this exercise.
 
 {{< /details >}}
 
@@ -57,7 +57,7 @@ The code contains two subdirectories. We'll be working in the `serial`
 subdirectory.
 
 ```sh
-$ cd calculate_pi/serial
+$ cd code/calculate_pi/serial
 $ ls
 Makefile       calculate_pi.c main.c         proto.h
 ```

@@ -34,29 +34,11 @@ more on the computational aspects of this in
 [COMP52215](https://www.dur.ac.uk/postgraduate.modules/module_description/?year=2020&module_code=COMP52215)
 if you're interested).
 
-The code for this exercise is provided as a [tar archive]({{< code-ref
-blur_image.tgz >}}).
-
-{{< hint info >}}
-
-You can also clone the [entire course repository]({{< repo >}}), which
-gives you access to the code for all the course exercises in the `code`
-subdirectory.
-
-{{< /hint >}}
-
-Download and unpack it with
+The code and images are in the [repository]({{< repo >}}) in the
+`code/blur_image/` subdirectory.
 
 ```sh
-$ wget {{< code-ref blur_image.tgz >}}
-$ tar zxvf blur_image.tgz
-```
-
-This will create a new directory `blur_image` with three
-subdirectories.
-
-```sh
-$ cd blur_image
+$ cd code/blur_image
 $ ls
 images openmp vec
 ```

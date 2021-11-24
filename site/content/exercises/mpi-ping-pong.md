@@ -33,8 +33,10 @@ $$
 ## Implementation
 
 I provide a template in [`mpi/ping-pong/ping-pong.c`]({{< code-ref
-"mpi/ping-pong/ping-pong.c" >}}) that you can compile with `mpicc`. It
-takes one argument, the size of the message (in bytes) to exchange.
+"mpi/ping-pong/ping-pong.c" >}}) in the `code/mpi/ping-pong`
+subdirectory of the [repository]({{< repo >}}) that you can compile
+with `mpicc`. It takes one argument, the size of the message (in
+bytes) to exchange.
 
 You should implement the `ping_pong` function which should send a
 message of the given size from rank 0 to rank 1, after which rank 1
