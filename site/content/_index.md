@@ -45,10 +45,17 @@ Exercises look like this.
 
 ## Slides/recordings
 
+### 2021-11-26
+
+We'll continue with point to point messaging, and I'll discuss a bit
+more about how messages traverse through the network. This will
+motivate [nonblocking messages]({{< ref
+"notes/mpi/point-to-point-nb.md" >}}).
+
 ### 2021-11-23
 
-We will start looking at programming with _distributed memory_
-parallelism, and introduce the [MPI]({{< ref "mpi.md" >}})
+We started looking at programming with _distributed memory_
+parallelism, and introduced the [MPI]({{< ref "mpi.md" >}})
 library.
 
 The MPI library has a lot of functions, and can be a bit overwhelming,
@@ -58,7 +65,10 @@ and [point-to-point messaging]({{< ref "notes/mpi/point-to-point.md"
 
 - [Intro slides]({{< static-ref "slides/mpi-intro.html" >}})
 - [Point to point slides]({{< static-ref "slides/mpi-ptp.html" >}})
+- [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=0f8a5e4f-cb37-45b3-bbd8-ade901493e85)
 
+Do have a go at the exercises linked at the end of the point to point
+slides before the next session. I will go through some solutions then.
 ### 2021-11-19
 
 We introduced the concept of [parallel scaling]({{< ref
