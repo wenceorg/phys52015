@@ -47,12 +47,14 @@ Exercises look like this.
 
 ### 2021-11-26
 
-We'll continue with point to point messaging, and I'll discuss a bit
-more about how messages traverse through the network. This will
-motivate [nonblocking messages]({{< ref
-"notes/mpi/point-to-point-nb.md" >}}).
+We had an impromptu online session due to storm Arwen. We continued
+with point to point messaging, and discussed a bit more about how
+messages traverse through the network. Then we looked at [nonblocking
+messages]({{< ref "notes/mpi/point-to-point-nb.md" >}}). I fixed some
+of the typos from the live slides.
 
 - [Slides]({{< static-ref "slides/mpi-nb.html" >}})
+- [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=5305d970-2a86-49f4-aa9d-adec012cf2bf)
 
 ### 2021-11-23
 
