@@ -52,6 +52,8 @@ more about how messages traverse through the network. This will
 motivate [nonblocking messages]({{< ref
 "notes/mpi/point-to-point-nb.md" >}}).
 
+- [Slides]({{< static-ref "slides/mpi-nb.html" >}})
+
 ### 2021-11-23
 
 We started looking at programming with _distributed memory_
