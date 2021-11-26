@@ -21,7 +21,7 @@ You can attend remotely over
 [zoom](https://durhamuniversity.zoom.us/j/97932635844?pwd=aG9JNThyYTVBSkJKMlVRVUxKNzM2QT09),
 and will need to be authenticated with your Durham account.
 
-Meeting ID: 979 3263 5844
+Meeting ID: 979 3263 5844 
 Passcode: 371456
 {{< /hint >}}
 
