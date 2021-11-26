@@ -92,11 +92,11 @@ MPI_Send(data, 10, MPI_INT, 4, 0, MPI_COMM_WORLD);
 ```c [4,8]
 int MPI_Isend(const void *buffer, 
               int count, MPI_Datatype dtype, 
-              int dest, int tag,
+              int dest, int tag, MPI_Comm comm,
               MPI_Request *request);
 int MPI_Irecv(void *buffer, 
               int count, MPI_Datatype dtype,
-              int source, int tag,
+              int source, int tag, MPI_Comm comm,
               MPI_Request *request);
 ```
 
@@ -181,7 +181,7 @@ if (rank == 0) {
   build a simple model for message time
   
 $$
-T_(b) = \alpha + \beta b
+T(b) = \alpha + \beta b
 $$
 
 - Time to send a message depends on the latency $\alpha$ and the
