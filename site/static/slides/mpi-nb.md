@@ -204,3 +204,87 @@ $$
 - Non-blocking messages, minimum time is
 
   $$T_\text{non-block} = \min(T_\text{compute}, T_\text{message})$$
+
+------
+
+## Waiting for ~Godot~ many messages
+
+- Need one request object per non-blocking message
+- Three options
+  1. Wait for all requests `MPI_Waitall`
+  2. Wait for one request `MPI_Waitany`
+  3. Wait for at least one request `MPI_Waitsome`
+  
+--->
+
+### Typical pattern
+```c
+MPI_Request *requests;
+
+nsend = ...;
+nrecv = ...;
+
+requests = malloc((nsend+nrecv)*sizeof(*requests));
+
+for (int i = 0; i < nrecv; i++) {
+  MPI_Irecv(..., &requests[i]);
+}
+
+for (int i = 0; i < nsend; i++) {
+  MPI_Isend(..., &requests[i + nrecv]);
+}
+
+/* Some work that doesn't depend on the messages */
+```
+
+--->
+
+### Waiting options
+
+- Everything
+```c
+MPI_Waitall(nsend+nrecv, requests, MPI_STATUSES_IGNORE);
+```
+- A message
+```c
+int which;
+MPI_Waitany(nsend+nrecv, requests, &which, MPI_STATUSES_IGNORE);
+```
+- Some messages
+```c
+int *indices = malloc((nsend+nrecv)*sizeof(*indices));
+int nfinished;
+MPI_Waitsome(nsend+nrecv, requests, &nfinished, indices,
+             MPI_STATUSES_IGNORE);
+```
+
+------
+
+## Major point
+
+- Message is not complete until succesfully waited on or tested
+- **Not allowed** to look at receive buffer (or modify send buffer)
+  until the request has completed
+  
+```c
+MPI_Request *requests;
+nsend = ...;
+nrecv = ...;
+requests = malloc((nsend+nrecv)*sizeof(*requests));
+for (int i = 0; i < nrecv; i++) {
+  MPI_Irecv(data, ..., &requests[i]);
+}
+/* Not allowed */
+if (data[0]) {
+  ...;
+}
+MPI_Waitall(..., requests);
+```
+
+------
+
+## Exercises
+
+- [MPI ping pong](/phys52015/exercises/mpi-ping-pong/)
+- [Gather to zero](/phys52015/notes/mpi/point-to-point-nb/)
+- [Halo exchanges](/phys52015/exercises/mpi-stencil/) This one is harder

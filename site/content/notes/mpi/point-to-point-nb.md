@@ -146,7 +146,6 @@ something like this
 
 ```c
 MPI_Request *requests;
-MPI_Request *requests;
 
 nsend = ...;
 nrecv = ...;
@@ -162,8 +161,6 @@ for (int i = 0; i < nsend; i++) {
 }
 
 /* Some work that doesn't depend on the messages */
-...;
-
 ```
 
 Having done the work that doesn't depend on messages, we now need to
