@@ -5,7 +5,11 @@ title: "Introduction to HPC: overview"
 
 # Intro to HPC
 
+<div class="center">
+
 Brief course overview
+
+</div>
 
 ------
 

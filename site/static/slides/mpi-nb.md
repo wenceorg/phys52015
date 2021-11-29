@@ -4,7 +4,13 @@ title: "MPI: more point to point"
 
 # MPI: more point to point
 
-[Notes](/phys52015/notes/mpi/point-to-point/) and [more](/phys52015/notes/mpi/point-to-point-nb/)
+<div class="center">
+
+[Notes](/phys52015/notes/mpi/point-to-point/) and
+[more](/phys52015/notes/mpi/point-to-point-nb/)
+
+</div>
+
 ------
 
 ## Reminder

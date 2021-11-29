@@ -82,7 +82,7 @@ sure to allocate enough time in the queue for them all), rather than
 running each one in its own job.
 {{< /details >}}
 
-{{< solution >}}
+{{< solution  release=True >}}
 I get, [as
 expected](https://en.wikipedia.org/wiki/Monte_Carlo_integration),
 approximately $\sqrt{N}$ convergence.
@@ -136,7 +136,7 @@ process.
 Now compile and then run the code with two processes using `mpirun`.
 Does what you observe make sense?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 At this point, your code just runs the same calculations on multiple
 processes (with the same random numbers). So you should have seen
@@ -166,7 +166,7 @@ The `rank` of a process is a unique identifier.
 Run again on two processes, do you now see that the results are
 different depending on the process?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 If you change the call `srand(42)` to `srand(rank)` then different
 process will produce different random numbers. Now when running in
@@ -220,7 +220,7 @@ the runtime as a function of the number of cores.
 
 What observations can you make?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 If you did not manage, or you want to compare with a different
 implementation, the directory `code/calculate_pi/mpi` contains a

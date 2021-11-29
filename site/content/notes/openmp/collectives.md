@@ -70,7 +70,7 @@ parallel. But the parallel version has race conditions.
 Try running with different numbers of threads. Do you always get the
 correct answer in parallel? Do you always get the same wrong answer?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 I, at least, don't always get the same wrong answer (but I generally
 get the wrong answer).
@@ -100,7 +100,7 @@ wrong.
 2. What happens if you add `nowait` to the `for` directive on line 32?
    (Remove the `nowait` from line 28 again!)
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 For 1., you probably get a `Segmentation fault`, because we need to
 wait for the array to be allocated, this means we need to synchronise
@@ -228,7 +228,7 @@ To terminate the hanging program, type `Control-c` at the commandline.
 
 {{< /details >}}
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 It should work fine with one thread, but not more than one.
 
@@ -339,7 +339,7 @@ team](https://iss.oden.utexas.edu/?p=projects/galois) are doing.
 Modify the [`reduction-hand.c`]({{< ref "#reduction-hand" >}}) example
 to use a critical section to ensure the result is always correct.
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 This was actually the topic of the [synchronisation]({{< ref
 "openmp-reduction.md" >}}) exercise, so see the solutions there.
@@ -422,7 +422,7 @@ $ gcc -fopenmp -g -fsanitize=thread -o race reduction-race.c
 The `-g` adds debug symbols so that we see line numbers in the error
 reports.
 
-{{< solution >}}
+{{< solution  release=True >}}
 If I do this and then run with two threads, I see output like the
 following:
 

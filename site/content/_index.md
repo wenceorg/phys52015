@@ -45,6 +45,22 @@ Exercises look like this.
 
 ## Slides/recordings
 
+### 2021-11-30
+
+We'll look at [collectives]({{< ref "notes/mpi/collectives.md" >}}),
+and build a simple performance model for the reduction we coded in the
+[ring reduce]({{< ref "exercises/mpi-ring.md" >}}) exercise. This will
+motivate better algorithms and MPI's various collective operations.
+
+- [Slides]({{< static-ref "slides/mpi-collectives.html" >}})
+
+No session on Friday 3rd December due to [UCU strike
+action](https://www.ucu.org.uk/hedisputes). Some Durham-specific
+comments on the action are available on [their
+website](http://durhamucu.org.uk/why-are-strikes-necessary-and-important-for-staff-and-students/).
+
+
+
 ### 2021-11-26
 
 We had an impromptu online session due to storm Arwen. We continued
@@ -73,6 +89,7 @@ and [point-to-point messaging]({{< ref "notes/mpi/point-to-point.md"
 
 Do have a go at the exercises linked at the end of the point to point
 slides before the next session. I will go through some solutions then.
+
 ### 2021-11-19
 
 We introduced the concept of [parallel scaling]({{< ref
@@ -96,7 +113,7 @@ races_]({{< ref "openmp.md#sync-data-race" >}}), and
 constructs you can use to avoid them.
 
 - [OpenMP slides 3](https://rpubs.com/iamholger/836014)
-- [OpenMP exercise 3](https://rpubs.com/iamholger/835619)
+- [OpenMP exercise 3](https://rpubs.com/iamholger/835619), [sketch solutions](https://rpubs.com/iamholger/836059)
 - [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=b1ebdacf-6cf1-4634-b7ce-ade20145956d)
 
 {{< hint info >}}
@@ -121,7 +138,8 @@ with on the directives.
 We then did some more OpenMP exercises.
 
 - [OpenMP slides 2](https://rpubs.com/iamholger/834246)
-- [OpenMP exercise 2](https://rpubs.com/iamholger/834247), [sketch solutions](https://rpubs.com/iamholger/833883)
+- [OpenMP exercise 2](https://rpubs.com/iamholger/834247), [sketch
+  solutions](https://rpubs.com/iamholger/833883)
 - [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=315b6af3-d5c7-4e49-864c-adde013eaa04)
 
 {{< hint info >}}

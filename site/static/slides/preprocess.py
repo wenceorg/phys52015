@@ -59,6 +59,11 @@ header = """
   .reveal p {
       text-align: left;
   }
+  .reveal .center {
+      margin-left: auto;
+      margin-right: auto;
+      display: inline-block;
+  }
   .reveal ul {
       display: block;
   }

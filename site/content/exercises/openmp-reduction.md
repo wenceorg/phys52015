@@ -44,7 +44,7 @@ approaches listed in the code:
 1. Using a critical section to protect the shared updates;
 1. Using the reduction clause on a parallel loop.
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 I implemented these approaches in
 [`code/openmp-snippets/reduction-different-approaches.c`]({{< code-ref
@@ -88,7 +88,7 @@ threads, from one up to 48 threads.
 Produce plots of the [parallel scaling]({{< ref "scaling-laws.md" >}})
 and parallel efficiency of the different approaches.
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 I did this with a vector with 500 million entries, and only ran up to
 24 threads, because I didn't want to wait that long, but the results
@@ -129,7 +129,7 @@ Which approach works worst?
 Do you observe perfect scalability? That is, is the speedup linear in
 the number of threads?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 As we see in the plots above, it looks like all the approaches are
 basically equally good for this test. The speedup is far from perfect,
@@ -199,7 +199,7 @@ when using the Intel OpenMP library.
 
 Which approach works better? Is there a difference at all?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 I just do this for the reduction clause case, since we determined that
 everything is basically the same for the other versions.

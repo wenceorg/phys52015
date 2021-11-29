@@ -4,7 +4,11 @@ title: "MPI: point to point"
 
 # MPI: point to point messages
 
+<div class="center">
+
 [Notes](/phys52015/notes/mpi/point-to-point)
+
+</div>
 
 ------
 

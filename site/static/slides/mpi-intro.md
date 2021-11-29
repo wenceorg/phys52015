@@ -4,7 +4,11 @@ title: "MPI: beginnings"
 
 # MPI: an introduction
 
+<div class="center">
+
 [Introductory notes](/phys52015/notes/mpi/)
+
+</div>
 
 ------
 

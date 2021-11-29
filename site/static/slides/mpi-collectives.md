@@ -4,7 +4,12 @@ title: "MPI: more point to point"
 
 # MPI: collectives
 
+<div class="center">
+
 [Notes](/phys52015/notes/mpi/collectives/)
+
+</div>
+
 ------
 
 ## So far
