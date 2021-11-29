@@ -21,7 +21,7 @@ MPI_Send(data, 10, MPI_INT, 4, 0, MPI_COMM_WORLD);
 
 ------
 
-##Deadlocks
+## Deadlocks
 
 - `MPI_Send` is _blocking_
   - That means it waits until the buffer you pass in is safe to reuse
