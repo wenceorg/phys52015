@@ -228,7 +228,7 @@ Compare the performance of two versions.
 
 Which performs better as a function of the total number of messages, $P$?
 
-{{< solution >}}
+{{< solution  release=True >}}
 I'll sketch the core message exchange here, the full code is
 implemented in [`mpi-snippets/gather-from-all.c`]({{< code-ref
 "mpi-snippets/gather-from-all.c" >}}).
@@ -243,7 +243,7 @@ if (rank == 0) {
 }
 ```
 
-The blocking gather is straighforward
+The blocking gather is straightforward
 
 ```c
 if (rank == 0) {

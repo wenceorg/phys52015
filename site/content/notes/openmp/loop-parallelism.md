@@ -153,7 +153,7 @@ Try compiling and running the bad loop in the code below
 Do you always get the same results on different numbers of threads?
 What is wrong with the parallel loop?
 
-{{< solution >}}
+{{< solution  release=True >}}
 We don't see the same values printed independent of the number of
 threads, indicating that we did something wrong.
 

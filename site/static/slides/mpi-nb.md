@@ -4,7 +4,13 @@ title: "MPI: more point to point"
 
 # MPI: more point to point
 
-[Notes](/phys52015/notes/mpi/point-to-point/) and [more](/phys52015/notes/mpi/point-to-point-nb/)
+<div class="center">
+
+[Notes](/phys52015/notes/mpi/point-to-point/) and
+[more](/phys52015/notes/mpi/point-to-point-nb/)
+
+</div>
+
 ------
 
 ## Reminder
@@ -21,7 +27,7 @@ MPI_Send(data, 10, MPI_INT, 4, 0, MPI_COMM_WORLD);
 
 ------
 
-##Deadlocks
+## Deadlocks
 
 - `MPI_Send` is _blocking_
   - That means it waits until the buffer you pass in is safe to reuse

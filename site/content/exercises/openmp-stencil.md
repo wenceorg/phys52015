@@ -87,7 +87,7 @@ The code is not yet parallelised. You should parallelise the
 What kind of parallelisation is appropriate here? What schedule should
 you use?
 
-{{< solution >}}
+{{< solution release=True >}}
 
 The main work is done in a for loop over the output pixels. Since the
 output pixels are all independent, we can use a simple `#pragma omp
@@ -114,7 +114,7 @@ scaling]({{< ref "scaling-laws.md" >}}) of the problem.
 
 What type of scaling is the appropriate one to consider here?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 Since the total amount of work is fixed, [_strong scaling_]({{< ref
 "scaling-laws.md#amdahl" >}}) is appropriate. We are interested in how
@@ -152,7 +152,7 @@ probably need to use the large sample image (`landscape.ppm`). You may
 also need to increase the size of the blur filter from the default
 `n=1` (edit `main.c` to do this).
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 I used a static schedule. I get slightly different speedup behaviour
 with `n=1` to `n=10`, which the graph below shows.
@@ -196,7 +196,7 @@ Can you explain your results thinking about whether the computational
 cost is variable depending on which pixel in the image you are
 blurring?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 I run the main loop with `schedule(runtime)` to control the schedule
 and do

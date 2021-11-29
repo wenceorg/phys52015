@@ -73,7 +73,7 @@ to your data.
 
 What values of $\alpha$ and $\beta$ do you get?
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 I provide a sample solution in
 [`mpi/ping-pong/ping-pong-solution.c`]({{< code-ref
@@ -112,7 +112,7 @@ To do this, you'll need to write a SLURM batch script that specifies
 #SBTACH --ntasks-per-node=1
 ```
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 If I do this, I see that the inter-node latency on Hamilton 6 is
 pretty bad, although asymptotically it seems like the bandwidth is the
@@ -153,7 +153,7 @@ the Hamilton 6 case.
 
 This section is optional, but possibly interesting.
 
-{{< solution >}}
+{{< solution  release=True >}}
 
 Solutions for this section are left as an exercise.
 

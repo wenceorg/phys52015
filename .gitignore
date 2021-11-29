@@ -18,3 +18,5 @@
 .vscode/
 .ipynb_checkpoints/
 /site/static/slides/*.html
+/code/compile_flags.txt
+/site/.hugo_build.lock

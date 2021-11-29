@@ -4,6 +4,7 @@ import os
 import time
 import yaml
 import pathlib
+from commonmark import commonmark as htmlify
 
 
 header = """
@@ -48,13 +49,32 @@ header = """
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/math/math.min.js"
             integrity="sha512-3HmB6PODGpVVNHOzPd/iva9nhAtO8o5lNh8ukjgcswV+iQTRZFqdMWJW25dvcSploiX4I4M6uuUKIV9BaogQhw=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<style>
-.container {
-  display: flex;
-}
-.col {
-  flex: 1;
-}
+<style type="text/css">
+  .container {
+      display: flex;
+  }
+  .col {
+      flex: 1;
+  }
+  .reveal p {
+      text-align: left;
+  }
+  .reveal .center {
+      margin-left: auto;
+      margin-right: auto;
+      display: inline-block;
+  }
+  .reveal ul {
+      display: block;
+  }
+  .reveal ol {
+      display: block;
+  }
+  .reveal img {
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+  }
 </style>
 </head>
 """.strip()
@@ -83,7 +103,6 @@ footer = """
     center: true,
     transition: 'none', // none/fade/slide/convex/concave/zoom
     plugins: [
-      RevealMarkdown,
       RevealHighlight,
       RevealMath
     ]
@@ -140,9 +159,9 @@ def generate(inp, outp):
         lines.append('<section>')
         sections = slide.strip().split("\n--->\n")
         for section in sections:
-            lines.append('<section data-markdown><textarea data-template>')
-            lines.append(f"\n{section.strip()}\n")
-            lines.append("</textarea></section>")
+            lines.append('<section>')
+            lines.append(f"{htmlify(section.strip())}")
+            lines.append("</section>")
         lines.append("</section>")
     lines.append("</div>")
     lines.append("</div>")

@@ -248,7 +248,7 @@ Can you explain what is happening?
 Think about the potential [data races]({{< ref "openmp#sync-data-race" >}}).
 {{< /details >}}
 
-{{< solution >}}
+{{< solution  release=True >}}
 If I run this code on eight processes, I see:
 
 ```
@@ -333,7 +333,7 @@ $ OMP_NUM_THREADS=8 ./uninitialised
 If you do this, do you always see the same nonsense values? Does it
 depend on the compiler?
 
-{{< solution >}}
+{{< solution  release=True >}}
 I, at least, don't always see the same values. Although it seems for
 me, thread0 always gets initialised to zero.
 {{< /solution >}}
