@@ -4,7 +4,6 @@ import os
 import time
 import yaml
 import pathlib
-from commonmark import commonmark as htmlify
 
 
 header = """
@@ -103,9 +102,11 @@ footer = """
     center: true,
     transition: 'none', // none/fade/slide/convex/concave/zoom
     plugins: [
+      RevealMarkdown,
       RevealHighlight,
-      RevealMath
-    ]
+      RevealMath,
+    ],
+    markdown: {smartypants: true}
   };
 
   // options from URL query string
@@ -145,23 +146,24 @@ def preprocess(inp):
     return (title, slides)
 
 
-def generate(inp, outp):
-    intime = os.stat(inp).st_mtime
-    try:
-        outtime = os.stat(outp).st_mtime
-    except FileNotFoundError:
-        outtime = float("-inf")
-    if intime < outtime:
-        return
+def generate(inp, outp, watch=False):
+    if watch:
+        intime = os.stat(inp).st_mtime
+        try:
+            outtime = os.stat(outp).st_mtime
+        except FileNotFoundError:
+            outtime = float("-inf")
+        if intime < outtime:
+            return
     title, slides = preprocess(inp)
     lines = [header % title, "<body>", '<div class="reveal">', '<div class="slides">']
     for slide in slides:
         lines.append('<section>')
         sections = slide.strip().split("\n--->\n")
         for section in sections:
-            lines.append('<section>')
-            lines.append(f"{htmlify(section.strip())}")
-            lines.append("</section>")
+            lines.append('<section data-markdown><textarea data-template>')
+            lines.append(f"\n{section.strip()}\n")
+            lines.append("</textarea></section>")
         lines.append("</section>")
     lines.append("</div>")
     lines.append("</div>")
@@ -195,7 +197,7 @@ if args.watch:
     print("Watching for changes, hit C-c to stop")
 while True:
     for inp, outp in zip(infiles, outfiles):
-        generate(inp, outp)
+        generate(inp, outp, watch=args.watch)
     if args.watch:
         time.sleep(0.25)
     else:
