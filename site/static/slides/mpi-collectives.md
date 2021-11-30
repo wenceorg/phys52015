@@ -293,10 +293,10 @@ int MPI_Gather(const void *sendbuf,
 
 - Additional collectives for all-to-all communication
 - See [notes](/phys52015/notes/mpi/collectives/) for more details
-- Note touched upon
+- Not touched on
   - "Neighbourhood collectives"
   - "Vector" versions of Scatter/Gather where everyone sends a
-    different amount of data [image reconstruction
+    different amount of data: [image reconstruction
     exercise](/phys52015/exercises/mpi-stencil/)
     
 ------
