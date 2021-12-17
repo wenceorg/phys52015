@@ -47,12 +47,13 @@ Exercises look like this.
 
 ### 2021-11-30
 
-We'll look at [collectives]({{< ref "notes/mpi/collectives.md" >}}),
-and build a simple performance model for the reduction we coded in the
-[ring reduce]({{< ref "exercises/mpi-ring.md" >}}) exercise. This will
-motivate better algorithms and MPI's various collective operations.
+We looked at [collectives]({{< ref "notes/mpi/collectives.md" >}}),
+and built a simple performance model for the reduction we coded in the
+[ring reduce]({{< ref "exercises/mpi-ring.md" >}}) exercise. This
+motivated better algorithms and MPI's various collective operations.
 
 - [Slides]({{< static-ref "slides/mpi-collectives.html" >}})
+- [Video](https://durham.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=22f5b974-c89b-4915-9758-adf0012ad397)
 
 No session on Friday 3rd December due to [UCU strike
 action](https://www.ucu.org.uk/hedisputes). Some Durham-specific
