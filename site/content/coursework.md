@@ -349,7 +349,7 @@ T_\text{ring}(B) = (P-1)T_\text{message}(B)
 $$
 and the tree-based scheme takes
 $$
-T_\text{tree}(B) = 2 \log_P T_\text{message}(B),
+T_\text{tree}(B) = 2 (\log_2 P) T_\text{message}(B),
 $$
 where $T_\text{message}(B)$ is the time to send a message of $B$ bytes.
 
