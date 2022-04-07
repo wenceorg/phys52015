@@ -1,0 +1,112 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Accessing Durham Supercomputing facilities #  Most of the exercises in this course will require that you use one of Durham&rsquo;s supercomputing systems. This will either be Hamilton, or (for some Physics students) COSMA. If you&rsquo;re signed up on the course, you should have been given access to Hamilton semi-automatically (I signed everyone up).
+Access to Hamilton #  For many of the exercises in the course, we will be using the Hamilton supercomputer."><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Hamilton access & quickstart"><meta property="og:description" content="Accessing Durham Supercomputing facilities #  Most of the exercises in this course will require that you use one of Durham&rsquo;s supercomputing systems. This will either be Hamilton, or (for some Physics students) COSMA. If you&rsquo;re signed up on the course, you should have been given access to Hamilton semi-automatically (I signed everyone up).
+Access to Hamilton #  For many of the exercises in the course, we will be using the Hamilton supercomputer."><meta property="og:type" content="article"><meta property="og:url" content="https://teaching.wence.uk/phys52015/setup/hamilton-quickstart/"><meta property="article:modified_time" content="2022-04-07T18:13:40+01:00"><title>Hamilton access & quickstart | PHYS52015 – Introduction to HPC</title><link rel=manifest href=/phys52015/manifest.json><link rel=icon href=/phys52015/favicon.png type=image/x-icon><link rel=stylesheet href=/phys52015/book.min.0cb0b7d6a1ed5d0e95321cc15edca4d6e9cc406149d1f4a3f25fd532f6a3bb38.css integrity="sha256-DLC31qHtXQ6VMhzBXtyk1unMQGFJ0fSj8l/VMvajuzg="></head><body dir=ltr><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav><div class=book-brand><img class=book-center src=/phys52015/logo.svg alt=Logo><h2><a href=/phys52015>PHYS52015 – Introduction to HPC</a></h2></div><ul><li><span>Administrivia</span><ul><li><a href=/phys52015/setup/remote/>Remote editing/development</a></li><li><a href=/phys52015/setup/hamilton-quickstart/ class=active>Hamilton access & quickstart</a></li><li><a href=/phys52015/setup/byod/>Local setup</a></li><li><a href=/phys52015/setup/configuration/>ssh configuration</a></li><li><a href=/phys52015/setup/unix/>Unix resources</a></li></ul></li><li><span>Exercises</span><ul><li><a href=/phys52015/exercises/hello/>Parallel Hello World</a></li><li><a href=/phys52015/exercises/openmp-loop/>OpenMP: parallel loops</a></li><li><a href=/phys52015/exercises/openmp-stencil/>OpenMP: stencils</a></li><li><a href=/phys52015/exercises/openmp-reduction/>OpenMP: synchronisation</a></li><li><a href=/phys52015/exercises/mpi-ring/>MPI: messages round a ring</a></li><li><a href=/phys52015/exercises/mpi-pi/>MPI: Calculating π</a></li><li><a href=/phys52015/exercises/mpi-ping-pong/>MPI: ping-pong latency</a></li><li><a href=/phys52015/exercises/mpi-collectives/>MPI: simple collectives</a></li><li><a href=/phys52015/exercises/mpi-stencil/>MPI: domain decomposition and halo exchanges</a></li></ul></li><li><a href=/phys52015/coursework/>Coursework: stencils and collectives</a></li><li><span>Notes</span><ul><li><a href=/phys52015/notes/introduction/>Introduction and motivation</a></li><li><span>Theory & concepts</span><ul><li><a href=/phys52015/notes/theory/scaling-laws/>Parallel scaling laws</a></li><li><a href=/phys52015/notes/theory/hardware-parallelism/>Parallelism in hardware: an overview</a></li><li><a href=/phys52015/notes/theory/concepts/>Parallel patterns</a></li></ul></li><li><a href=/phys52015/notes/openmp/>OpenMP</a><ul><li><a href=/phys52015/notes/openmp/intro/>What is OpenMP?</a></li><li><a href=/phys52015/notes/openmp/loop-parallelism/>Loop parallelism</a></li><li><a href=/phys52015/notes/openmp/collectives/>Collectives</a></li></ul></li><li><a href=/phys52015/notes/mpi/>MPI</a><ul><li><a href=/phys52015/notes/mpi/point-to-point/>Point-to-point messaging in MPI</a></li><li><a href=/phys52015/notes/mpi/point-to-point-nb/>Non-blocking point-to-point messaging</a></li><li><a href=/phys52015/notes/mpi/collectives/>Collectives</a></li><li><a href=/phys52015/notes/mpi/advanced/>Advanced topics</a></li></ul></li></ul></li><li><a href=/phys52015/resources/>Further resources</a></li><li><a href=/phys52015/acknowledgements/>Acknowledgements</a></li><li><span>Past editions</span><ul><li><span>2020/21</span><ul><li><a href=/phys52015/past-editions/2020-21/coursework/>Coursework: parallel dense linear algebra</a></li></ul></li></ul></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/phys52015/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Hamilton access & quickstart</strong>
+<label for=toc-control><img src=/phys52015/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#access-to-hamilton>Access to Hamilton</a></li><li><a href=#access-to-cosma>Access to COSMA</a></li></ul><ul><li><a href=#logging-in-and-transferring-code>Logging in and transferring code</a></li><li><a href=#compilation-environment>Compilation environment</a></li><li><a href=#running-code>Running code</a></li></ul></nav></aside></header><article class=markdown><blockquote class="book-hint warning"><span>This course page was updated until March 2022 when I left Durham University.
+For future updates, please visit
+the <a href=https://durham-phys52015.github.io/>new version
+of the course pages</a>.</span></blockquote><h1 id=accessing-durham-supercomputing-facilities>Accessing Durham Supercomputing facilities
+<a class=anchor href=#accessing-durham-supercomputing-facilities>#</a></h1><p>Most of the exercises in this course will require that you use one of
+Durham&rsquo;s supercomputing systems. This will either be Hamilton, or (for
+some Physics students) COSMA. If you&rsquo;re signed up on the course, you
+should have been given access to Hamilton semi-automatically (I signed
+everyone up).</p><h2 id=access-to-hamilton>Access to Hamilton
+<a class=anchor href=#access-to-hamilton>#</a></h2><p>For many of the exercises in the course, we will be using the
+<a href=https://www.dur.ac.uk/arc/hamilton/>Hamilton</a> supercomputer.
+If you are registered on the course on blackboard, you should have
+been given access to Hamilton.</p><p>Since we&rsquo;ll be logging in a lot, I provide some <a href=https://teaching.wence.uk/phys52015/setup/configuration/>tips</a> on how to configure <code>ssh</code> for swifter login.</p><h2 id=access-to-cosma>Access to COSMA
+<a class=anchor href=#access-to-cosma>#</a></h2><p>Some of you may have access to the Physics-run
+<a href=https://www.dur.ac.uk/icc/cosma/>COSMA</a> system. You can also use
+this system, the same information about setting up ssh login also
+applies.</p><p>The rest of the guide is a quick start on using supercomputing systems
+where you must compile code and then submit it via a batch scheduler.
+The focus is on Hamilton, but COSMA uses the same scheduling system,
+so most things will work with only minor changes.</p><h1 id=supercomputing-durham-hamilton-quick-start-guide>Supercomputing Durham: Hamilton Quick Start Guide
+<a class=anchor href=#supercomputing-durham-hamilton-quick-start-guide>#</a></h1><p>This is adapted from a quickstart guide from <a href=http://www.peano-framework.org/index.php/tobias-weinzierl/>Tobias
+Weinzierl</a>.</p><p>It is intended to get you up and running on the Hamilton supercomputer
+quickly. It is not replacement of any of the <a href=https://www.dur.ac.uk/arc/hamilton/>official
+documentation</a>.</p><h2 id=logging-in-and-transferring-code>Logging in and transferring code
+<a class=anchor href=#logging-in-and-transferring-code>#</a></h2><p>You access Hamilton via ssh with</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ ssh USERNAME@hamilton.dur.ac.uk
+</code></pre></div><blockquote class="book-hint info">When writing commands to execute in the shell, I use a <code>$</code> to indicate
+the prompt. You should not type this character.</blockquote><p>Where <code>USERNAME</code> is your CIS username. Since we&rsquo;ll do this a lot, you
+can also see some <a href=https://teaching.wence.uk/phys52015/setup/configuration/>tips</a> on how to
+configure <code>ssh</code> for swifter logins.</p><blockquote class="book-hint warning">If you can&rsquo;t log in to Hamilton, contact me so we can sort things out.</blockquote><p>Hamilton doesn&rsquo;t mount any of the Durham shared drives, so you have to
+manually transfer any files you want. You can do this with
+<a href=https://linux.die.net/man/1/scp><code>scp</code></a>. For example, if you are on
+your local machine then</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ scp somefile.c USERNAME@hamilton.dur.ac.uk:
+</code></pre></div><p>copies <code>somefile.c</code> into your home directory on Hamilton. The other
+option is to directly download files when you are logged in. Some of
+the exercises in the course will provide more details on how to do
+this.</p><h2 id=compilation-environment>Compilation environment
+<a class=anchor href=#compilation-environment>#</a></h2><p>As is common with supercomputers, there are many different compiler
+versions available on Hamilton. These are managed with <a href=https://modules.readthedocs.io/en/latest/>environment
+modules</a> so that different
+Hamilton users can control which compilers and tools they get.</p><p>Often in this course we&rsquo;ll use the Intel compiler for which we need to
+load two modules</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ module load intel/xe_2018.2
+$ module load gcc/9.3.0
+</code></pre></div><p>This makes the Intel compiler tools available and loads a recent
+version of gcc. After executing these commands you can check the
+versions you have</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ icc --version
+icc <span style=color:#f92672>(</span>ICC<span style=color:#f92672>)</span> 18.0.2 <span style=color:#ae81ff>20180210</span>
+Copyright <span style=color:#f92672>(</span>C<span style=color:#f92672>)</span> 1985-2018 Intel Corporation.  All rights reserved.
+
+$ gcc --version
+gcc <span style=color:#f92672>(</span>GCC<span style=color:#f92672>)</span> 9.3.0
+Copyright <span style=color:#f92672>(</span>C<span style=color:#f92672>)</span> <span style=color:#ae81ff>2019</span> Free Software Foundation, Inc.
+This is free software<span style=color:#111>;</span> see the <span style=color:#111>source</span> <span style=color:#00a8c8>for</span> copying conditions.  There is NO
+warranty<span style=color:#111>;</span> not even <span style=color:#00a8c8>for</span> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+</code></pre></div><p>The exercises will typically enumerate the modules you need.</p><h2 id=running-code>Running code
+<a class=anchor href=#running-code>#</a></h2><p>When we log in to the Hamilton system, we access the &ldquo;login&rdquo; node. You
+can use this to compile code and run some profile analysis programs,
+however <strong>DO NOT</strong> use it for running your simulations. In common with
+most supercomputers, Hamilton consists of two parts.</p><ol><li>Login nodes (this is where we&rsquo;ve been so far);</li><li>Compute nodes (this is where you want to run your code).</li></ol><figure style=width:70%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/hamilton-nodes.svg alt="Schematic of Hamilton login and compute nodes"><figcaption><p>Schematic of Hamilton login and compute nodes</p></figcaption></figure><p>To run code on the compute nodes we need to submit a job to the
+scheduler. This program takes care of allocate simulations to the
+compute nodes to maximise throughput for all users of the system. On
+Hamilton, the scheduler is called
+<a href=https://slurm.schedmd.com/documentation.html>Slurm</a>.</p><p>To use the scheduler we have to create a script that provides a recipe
+for Hamilton to run our code. This script is a shell script that
+contains some magic comments that describe things to the scheduler.
+The individual exercises contain some examples, as does the <a href=https://www.dur.ac.uk/cis/local/hpc/hamilton/slurm-v2/templates/>Hamilton
+documentation</a>.
+Here is a simple example for a serial job.</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-bash data-lang=bash><span style=color:#75715e>#!/bin/bash
+</span><span style=color:#75715e></span><span style=color:#75715e>#SBATCH --job-name=&#34;myjob&#34;</span>
+<span style=color:#75715e>#SBATCH -o myjob.%A.out</span>
+<span style=color:#75715e>#SBATCH -e myjob.%A.err</span>
+<span style=color:#75715e>#SBATCH -p test.q</span>
+<span style=color:#75715e>#SBATCH -t 00:05:00</span>
+<span style=color:#75715e>#SBATCH --nodes=1</span>
+<span style=color:#75715e>#SBATCH --cpus-per-task=24</span>
+<span style=color:#75715e>#SBATCH --mail-type=ALL</span>
+<span style=color:#75715e>#SBATCH --mail-user=YOUREMAIL@durham.ac.uk</span>
+
+<span style=color:#111>source</span> /etc/profile.d/modules.sh
+
+module load intel/xe_2018.2
+module load gcc/9.3.0
+
+./myexecutable
+</code></pre></div><p>Some things to note. This is a shell script executed with bash (as
+indicated by the shebang-line). Lines beginning with <code>#SBATCH</code> are
+parsed by the job submission command <code>sbatch</code> and are used to provide
+options to it. Here we selected a particular queue <code>test.q</code> and said
+the job will run for a maximum of five minutes (<code>-t 00:05:00</code>). The
+other options control the size of the job and where output is sent.
+Run <code>man sbatch</code> on the Hamilton login node to see details of these
+flags.</p><blockquote class="book-hint info"><p>A typical reason your job might fail is because you did not load the
+necessary modules, so don&rsquo;t forget to do so!</p><p>This is also useful for reproducibility, since it helps you to record
+exactly the software you used to produce the results.</p></blockquote><p>After all the comments we have the commands that will be run <em>on the
+compute node</em>. The first makes the <code>module</code> command available. We then
+load the same modules we used during compilation. Potentially we might
+also load other modules here to gain access to profiling commands.
+Finally is the command to run our code (here named <code>myexecutable</code>).</p><p>Having saved this submission script (say as <code>myjob.slurm</code>) we submit
+it <code>sbatch</code></p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ sbatch myjob.slurm
+</code></pre></div><p>This job is now submitted to the queue and will run when a slot is
+available.</p><p>You can see what jobs you currently have in the queue with</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ squeue -u <span style=color:#111>$USER</span>
+</code></pre></div><p>For more details on using Hamilton, you&rsquo;re encouraged to check <a href=https://www.dur.ac.uk/cis/local/hpc/hamilton/>their
+documentation</a>. We&rsquo;ll
+also recapitulate aspects of this guide when we carry out the exercises.</p></article><footer class=book-footer><div class="flex flex-wrap justify-between"><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/commit/d488ecdf20e1aba21512c0e81135546a0c9a77d7 title="Last modified by Lawrence Mitchell | April 7, 2022" target=_blank rel=noopener><img src=/phys52015/svg/calendar.svg class=book-icon alt=Calendar>
+<span>April 7, 2022</span></a></div><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/edit/main/site/content/setup/hamilton-quickstart.md target=_blank rel=noopener><img src=/phys52015/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div></div><div class="flex flex-wrap align-right"><p>© 2020&ndash; <a href=mailto:lawrence.mitchell@durham.ac.uk>Lawrence Mitchell</a>, <a href=https://www.ippp.dur.ac.uk/~hschulz/>Holger Schulz</a>, <a href="https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712">Christian Arnold</a> & <a href=https://www.dur.ac.uk/>Durham University</a>.</p><p><a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=/phys52015/cc-by-sa.svg></a>
+This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.</p></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#access-to-hamilton>Access to Hamilton</a></li><li><a href=#access-to-cosma>Access to COSMA</a></li></ul><ul><li><a href=#logging-in-and-transferring-code>Logging in and transferring code</a></li><li><a href=#compilation-environment>Compilation environment</a></li><li><a href=#running-code>Running code</a></li></ul></nav></aside></main></body></html>

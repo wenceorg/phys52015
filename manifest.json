@@ -1,0 +1,15 @@
+{
+  "name": "PHYS52015 – Introduction to HPC",
+  "short_name": "PHYS52015 – Introduction to HPC",
+  "start_url": "/phys52015/",
+  "scope": "/phys52015/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/phys52015/favicon.svg",
+      "sizes": "512x512"
+    }
+  ]
+}

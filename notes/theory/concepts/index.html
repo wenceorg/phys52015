@@ -1,0 +1,147 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Overview of parallel patterns #  So far, we&rsquo;ve seen that to run large simulations, and exploit all of the hardware available to us on supercomputers (but even on laptops and phones), we will need to use parallelism of some kind.
+We&rsquo;ve also looked at the levels of parallelism exposed by modern hardware, and noted that there are effectively three levels.
+Now we&rsquo;re going to look at the types of parallelism (or parallel patterns) that we might encounter in software."><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Parallel patterns"><meta property="og:description" content="Overview of parallel patterns #  So far, we&rsquo;ve seen that to run large simulations, and exploit all of the hardware available to us on supercomputers (but even on laptops and phones), we will need to use parallelism of some kind.
+We&rsquo;ve also looked at the levels of parallelism exposed by modern hardware, and noted that there are effectively three levels.
+Now we&rsquo;re going to look at the types of parallelism (or parallel patterns) that we might encounter in software."><meta property="og:type" content="article"><meta property="og:url" content="https://teaching.wence.uk/phys52015/notes/theory/concepts/"><meta property="article:modified_time" content="2022-04-07T18:13:40+01:00"><title>Parallel patterns | PHYS52015 – Introduction to HPC</title><link rel=manifest href=/phys52015/manifest.json><link rel=icon href=/phys52015/favicon.png type=image/x-icon><link rel=stylesheet href=/phys52015/book.min.0cb0b7d6a1ed5d0e95321cc15edca4d6e9cc406149d1f4a3f25fd532f6a3bb38.css integrity="sha256-DLC31qHtXQ6VMhzBXtyk1unMQGFJ0fSj8l/VMvajuzg="></head><body dir=ltr><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav><div class=book-brand><img class=book-center src=/phys52015/logo.svg alt=Logo><h2><a href=/phys52015>PHYS52015 – Introduction to HPC</a></h2></div><ul><li><span>Administrivia</span><ul><li><a href=/phys52015/setup/remote/>Remote editing/development</a></li><li><a href=/phys52015/setup/hamilton-quickstart/>Hamilton access & quickstart</a></li><li><a href=/phys52015/setup/byod/>Local setup</a></li><li><a href=/phys52015/setup/configuration/>ssh configuration</a></li><li><a href=/phys52015/setup/unix/>Unix resources</a></li></ul></li><li><span>Exercises</span><ul><li><a href=/phys52015/exercises/hello/>Parallel Hello World</a></li><li><a href=/phys52015/exercises/openmp-loop/>OpenMP: parallel loops</a></li><li><a href=/phys52015/exercises/openmp-stencil/>OpenMP: stencils</a></li><li><a href=/phys52015/exercises/openmp-reduction/>OpenMP: synchronisation</a></li><li><a href=/phys52015/exercises/mpi-ring/>MPI: messages round a ring</a></li><li><a href=/phys52015/exercises/mpi-pi/>MPI: Calculating π</a></li><li><a href=/phys52015/exercises/mpi-ping-pong/>MPI: ping-pong latency</a></li><li><a href=/phys52015/exercises/mpi-collectives/>MPI: simple collectives</a></li><li><a href=/phys52015/exercises/mpi-stencil/>MPI: domain decomposition and halo exchanges</a></li></ul></li><li><a href=/phys52015/coursework/>Coursework: stencils and collectives</a></li><li><span>Notes</span><ul><li><a href=/phys52015/notes/introduction/>Introduction and motivation</a></li><li><span>Theory & concepts</span><ul><li><a href=/phys52015/notes/theory/scaling-laws/>Parallel scaling laws</a></li><li><a href=/phys52015/notes/theory/hardware-parallelism/>Parallelism in hardware: an overview</a></li><li><a href=/phys52015/notes/theory/concepts/ class=active>Parallel patterns</a></li></ul></li><li><a href=/phys52015/notes/openmp/>OpenMP</a><ul><li><a href=/phys52015/notes/openmp/intro/>What is OpenMP?</a></li><li><a href=/phys52015/notes/openmp/loop-parallelism/>Loop parallelism</a></li><li><a href=/phys52015/notes/openmp/collectives/>Collectives</a></li></ul></li><li><a href=/phys52015/notes/mpi/>MPI</a><ul><li><a href=/phys52015/notes/mpi/point-to-point/>Point-to-point messaging in MPI</a></li><li><a href=/phys52015/notes/mpi/point-to-point-nb/>Non-blocking point-to-point messaging</a></li><li><a href=/phys52015/notes/mpi/collectives/>Collectives</a></li><li><a href=/phys52015/notes/mpi/advanced/>Advanced topics</a></li></ul></li></ul></li><li><a href=/phys52015/resources/>Further resources</a></li><li><a href=/phys52015/acknowledgements/>Acknowledgements</a></li><li><span>Past editions</span><ul><li><span>2020/21</span><ul><li><a href=/phys52015/past-editions/2020-21/coursework/>Coursework: parallel dense linear algebra</a></li></ul></li></ul></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/phys52015/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Parallel patterns</strong>
+<label for=toc-control><img src=/phys52015/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#data-parallelism>Data parallelism</a><ul><li><a href=#summary>Summary</a></li></ul></li><li><a href=#task-parallelism>Task parallelism</a></li></ul></nav></aside></header><article class=markdown><blockquote class="book-hint warning"><span>This course page was updated until March 2022 when I left Durham University.
+For future updates, please visit
+the <a href=https://durham-phys52015.github.io/>new version
+of the course pages</a>.</span></blockquote><h1 id=overview-of-parallel-patterns>Overview of parallel patterns
+<a class=anchor href=#overview-of-parallel-patterns>#</a></h1><p>So far, we&rsquo;ve seen that to run large simulations, and exploit all of
+the hardware available to us on supercomputers (but even on laptops
+and phones), we will need to use parallelism of some kind.</p><p>We&rsquo;ve also looked at the levels of parallelism exposed by modern
+hardware, and noted that there are effectively three levels.</p><p>Now we&rsquo;re going to look at the types of parallelism (or <em>parallel
+patterns</em>) that we might encounter in software. By recognising these
+patterns, we&rsquo;ll be able to figure out what an appropriate
+parallelisation strategy is.</p><p>In general, we can think of parallelism as finding <em>independent</em>
+operations in the execution of a program. If two (or more) operations
+are independent, then we can conceivably restructure our program such
+that they execute <em>at the same time</em> (in parallel).</p><h2 id=data-parallelism>Data parallelism
+<a class=anchor href=#data-parallelism>#</a></h2><p>Often, and we&rsquo;ve already seen an example of this when looking at
+vector addition, we have a program that performs the same operation
+independently on many different data items.</p><p>This is very common in scientific computing. We often need to perform
+the same (regular) operation on a large dataset and can parallelise
+this by dividing the dataset up across many processors. Each processor
+can then work on its own part of the problem.</p><p>Recall our simple example of addition of two vectors</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#111>size_t</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>n</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span>
+  <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>+</span> <span style=color:#111>c</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+</code></pre></div><p>here we have three large arrays and each iteration of the loop is
+independent. This is therefore a classic example of data parallelism.
+In fact, data parallelism is often called <em>array parallelism</em> by some
+people.</p><p>Since all the iterations of the loop are independent, we could split
+them up between processes in any way we like, but those may have
+different performance characteristics. The usual choice is to evenly
+divide the arrays into chunks and hand those chunks out to processes.</p><figure style=width:50%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/vector-addition-data-parallel.svg alt="Three-process data parallelism for vector addition."><figcaption><p>Three-process data parallelism for vector addition.</p></figcaption></figure><blockquote class=exercise><h3>Exercise</h3><p>In the figure, we divided 16 array entries between three processes.
+Assume that parallelisation is perfect (with no overheads) and that
+computing a single addition takes 1 time unit.</p><p>How long would this addition take on one process?</p><p>How long would you predict it to take on three processes?</p><p>Given the data decomposition sketched above, how long will the loop
+take?</p></blockquote><p>If all the code we ever wrote was pointwise array operations like
+this, a parallel programming course would be quite short, because now
+we&rsquo;re done. Unfortunately (fortunately?) there is more to it than
+this, because most interesting programs access data with some
+interdependent footprint.</p><p>These are often still data parallel, but we typically need to think a
+bit harder about how to expose and realise the parallelism.</p><p>For a simple example, consider the following loops</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#00a8c8>while</span> <span style=color:#111>(...)</span> <span style=color:#111>{</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#111>size_t</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>n</span><span style=color:#f92672>-</span><span style=color:#ae81ff>1</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span>
+     <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#f92672>+</span><span style=color:#ae81ff>1</span><span style=color:#111>]</span> <span style=color:#f92672>+</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#f92672>-</span><span style=color:#ae81ff>1</span><span style=color:#111>]</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>2</span><span style=color:#f92672>*</span><span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+</code></pre></div><details><summary>Aside</summary><div class=markdown-inner><p>Access patterns like this occur in <a href=https://en.wikipedia.org/wiki/Finite-difference_method>finite
+difference</a>
+approximations of <abbr title="partial differential
+equations">PDEs</abbr> (of which more in
+<a href="https://www.dur.ac.uk/postgraduate.modules/module_description/?year=2020&module_code=COMP52215">COMP52215</a>
+if you take it) or image processing.</p><p>This is an example <a href=https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method>Gauß-Seidel</a> relaxation for the 1D Laplacian.</p></div></details><p>At first glance, this looks like the previous simple data parallel
+loop. But we have to be careful because we write into the same array
+we read from. Naively just chunking up the loop will result in us
+obtaining the wrong answer.</p><figure style=width:75%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/stencil-data-dependencies.svg alt="Data dependencies for the 1D Laplacian stencil"><figcaption><p>Data dependencies for the 1D Laplacian stencil</p></figcaption></figure><p>As we see from the figure above, updating an array entry needs values
+from its two neighbours as well. If we were to chunk the loop
+iterations up between processes as before, then on the boundaries
+between processes we might end up reading the wrong value.</p><blockquote class=exercise><h3>Exercise</h3><p>Can you think of any ways you could parallelise this loop?</p><p>Hint: think about colouring neighbouring entries in the array in
+different colours. Do you see a pattern?</p><p>Does your parallel strategy produce the same answer as the serial
+loop?</p></blockquote><blockquote class="book-hint info"><p>This example demonstrates the idea that there is a difference between
+parallelism <em>in the algorithm</em> and parallelism <em>in the code</em>.</p><p>In fact, when attempting to implement parallel code it is often a good
+idea to step back to pen-and-paper and consider the algorithm, looking
+for parallelism there, rather than starting from a serial code and
+looking for parallelisation opportunities.</p></blockquote><h3 id=summary>Summary
+<a class=anchor href=#summary>#</a></h3><p>As mentioned, data parallelism is well suited to many parts of
+scientific computing. It is easiest to implement when we can
+statically decompose the data. That is, we can write a (possibly
+data-dependent) algorithmic decomposition and assign work to processes
+&ldquo;up front&rdquo;.</p><p>When writing programs that are data parallel, it is a good idea to
+think about using high-level constructs that make the data parallelism
+explicit. For example, rather than writing stencil operations as
+above, we might wrap them up in a library interface that explicitly
+describes the data access.</p><p>The rationale for this is (at least) threefold:</p><ol><li>It makes the parallelism explicit to a reader of the program;</li><li>We can usually design the library in such a way that the programmer
+can pretend they are writing serial code (which is easier to think
+about);</li><li>By capturing the data access patterns in code, we have a chance of
+reasoning about them algorithmically. This moves the
+task of parallelisation from the individual programmer to a
+library, and gives us an opportunity to apply more complicated
+optimisations.</li></ol><h2 id=task-parallelism>Task parallelism
+<a class=anchor href=#task-parallelism>#</a></h2><p>Some algorithms do not lend themselves to the data parallel approach,
+because the amount of available parallelism waxes and wanes through
+the program. Many graph algorithms fall into this category.</p><p>For example, one can write a program to solve
+<a href=https://en.wikipedia.org/wiki/Maze>mazes</a> by converting the maze
+into a graph where each decision point in the maze becomes a vertex
+and decision points with paths between them become edges. We can now
+visit the maze, trying to find the centre, by <a href=https://en.wikipedia.org/wiki/Breadth-first_search>breadth-first
+search</a> of the
+graph. Mark Handley has a <a href="https://www.youtube.com/watch?v=pNLuKoTwMEE">nice
+video</a>, although he is
+doing <a href=https://en.wikipedia.org/wiki/Depth-first_search>depth-first
+search</a>.</p><p>Imagine that you are visiting the maze but with a huge group of
+friends. You start off all entering the maze at the same point. Every
+time you come to a decision point, you split your group set off down
+the different paths. If you encounter other members of your party
+later, you merge groups. If you keep track of which points you&rsquo;ve
+visited (some you don&rsquo;t turn back on yourselves), some of you will
+eventually reach the centre of the maze.</p><p>We can think of each of the groups walking through the maze as tasks.
+When we come to a decision point, we create new tasks, and when a
+group (task) reaches a point that has already been visited we remove
+the task.</p><p>It is clear that the number of separate groups moving at any one time
+in the maze changes, so if we&rsquo;re thinking of parallelism, we don&rsquo;t
+have a static decomposition of data or work. It is instead dynamic.</p><p>This kind of parallelism where the workload changes dynamically can be
+addressed with task parallelism. It is often more complicated to
+handle than data parallelism. For example, we often need to change our
+data structures, or design new ones: high-performance parallel data
+structures for task parallelism are a <a href="https://iss.oden.utexas.edu/?p=projects/galois">subject of ongoing
+research</a>.</p><blockquote class=exercise><h3>Exercise</h3><p>Pseudo-code for breadth-first visit of a graph is</p><div class=highlight><div style=color:#272822;background-color:#fafafa><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#272822;background-color:#fafafa><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#272822;background-color:#fafafa><code class=language-python data-lang=python><span style=color:#00a8c8>def</span> <span style=color:#75af00>bfs</span><span style=color:#111>(</span><span style=color:#111>G</span><span style=color:#111>,</span> <span style=color:#111>root</span><span style=color:#111>):</span>
+    <span style=color:#d88200>&#34;&#34;&#34;
+</span><span style=color:#d88200>    Visit all vertices in a graph G breadth-first reachable from root
+</span><span style=color:#d88200>    &#34;&#34;&#34;</span>
+    <span style=color:#111>seen</span> <span style=color:#f92672>=</span> <span style=color:#111>set</span><span style=color:#111>()</span>
+    <span style=color:#111>queue</span> <span style=color:#f92672>=</span> <span style=color:#111>Queue</span><span style=color:#111>()</span> <span style=color:#75715e># First-in first-out queue</span>
+    <span style=color:#111>queue</span><span style=color:#f92672>.</span><span style=color:#111>add</span><span style=color:#111>(</span><span style=color:#111>root</span><span style=color:#111>)</span>
+    <span style=color:#111>seen</span><span style=color:#f92672>.</span><span style=color:#111>add</span><span style=color:#111>(</span><span style=color:#111>root</span><span style=color:#111>)</span>
+    <span style=color:#00a8c8>while</span> <span style=color:#f92672>not</span> <span style=color:#111>queue</span><span style=color:#f92672>.</span><span style=color:#111>empty</span><span style=color:#111>():</span>
+        <span style=color:#111>v</span> <span style=color:#f92672>=</span> <span style=color:#111>queue</span><span style=color:#f92672>.</span><span style=color:#111>pop</span><span style=color:#111>()</span>
+        <span style=color:#00a8c8>for</span> <span style=color:#111>w</span> <span style=color:#f92672>in</span> <span style=color:#111>G</span><span style=color:#f92672>.</span><span style=color:#111>edges</span><span style=color:#111>(</span><span style=color:#111>v</span><span style=color:#111>):</span> <span style=color:#75715e># edges in G from v to w</span>
+            <span style=color:#00a8c8>if</span> <span style=color:#111>w</span> <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> <span style=color:#111>seen</span><span style=color:#111>:</span>
+                <span style=color:#111>seen</span><span style=color:#f92672>.</span><span style=color:#111>add</span><span style=color:#111>(</span><span style=color:#111>w</span><span style=color:#111>)</span>
+                <span style=color:#111>queue</span><span style=color:#f92672>.</span><span style=color:#111>add</span><span style=color:#111>(</span><span style=color:#111>w</span><span style=color:#111>)</span>
+</code></pre></td></tr></table></div></div><p>Where do you think tasks are created?</p><p>Where are they removed?</p><p>Where (or why) might we have to be careful if using parallelism for
+this algorithm?</p></blockquote><p>It turns out that the critical thing here for high-performance
+implementations is the design of appropriate parallel data structures
+that can handle irregular access. Along with sometimes rethinking the
+way we implement the algorithms (by doing the moral equivalent of loop
+reordering). If you are interested in finding out more on this kind of
+irregular parallelism, and
+for many more details than you need for this course, I recommend
+starting with the homepage of the
+<a href="https://iss.oden.utexas.edu/?p=projects/galois">Galois</a> system.</p></article><footer class=book-footer><div class="flex flex-wrap justify-between"><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/commit/d488ecdf20e1aba21512c0e81135546a0c9a77d7 title="Last modified by Lawrence Mitchell | April 7, 2022" target=_blank rel=noopener><img src=/phys52015/svg/calendar.svg class=book-icon alt=Calendar>
+<span>April 7, 2022</span></a></div><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/edit/main/site/content/notes/theory/concepts.md target=_blank rel=noopener><img src=/phys52015/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div></div><div class="flex flex-wrap align-right"><p>© 2020&ndash; <a href=mailto:lawrence.mitchell@durham.ac.uk>Lawrence Mitchell</a>, <a href=https://www.ippp.dur.ac.uk/~hschulz/>Holger Schulz</a>, <a href="https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712">Christian Arnold</a> & <a href=https://www.dur.ac.uk/>Durham University</a>.</p><p><a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=/phys52015/cc-by-sa.svg></a>
+This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.</p></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#data-parallelism>Data parallelism</a><ul><li><a href=#summary>Summary</a></li></ul></li><li><a href=#task-parallelism>Task parallelism</a></li></ul></nav></aside></main></body></html>

@@ -1,0 +1,67 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Remote development and managing changes #  Remote editing #  Editing in a terminal is somewhat painful, and laboriously copying files back and forth between your local machine and Hamilton is error-prone.
+A better approach is to use a combination of version control and remote editing. I provide brief instructions for VS Code which is a popular editor, and very brief instructions for Emacs.
+VS Code #  VS Code has an extension for remote editing which allows you to edit files on remote systems as if you&rsquo;re running locally."><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Remote editing/development"><meta property="og:description" content="Remote development and managing changes #  Remote editing #  Editing in a terminal is somewhat painful, and laboriously copying files back and forth between your local machine and Hamilton is error-prone.
+A better approach is to use a combination of version control and remote editing. I provide brief instructions for VS Code which is a popular editor, and very brief instructions for Emacs.
+VS Code #  VS Code has an extension for remote editing which allows you to edit files on remote systems as if you&rsquo;re running locally."><meta property="og:type" content="article"><meta property="og:url" content="https://teaching.wence.uk/phys52015/setup/remote/"><meta property="article:modified_time" content="2022-04-07T18:13:40+01:00"><title>Remote editing/development | PHYS52015 – Introduction to HPC</title><link rel=manifest href=/phys52015/manifest.json><link rel=icon href=/phys52015/favicon.png type=image/x-icon><link rel=stylesheet href=/phys52015/book.min.0cb0b7d6a1ed5d0e95321cc15edca4d6e9cc406149d1f4a3f25fd532f6a3bb38.css integrity="sha256-DLC31qHtXQ6VMhzBXtyk1unMQGFJ0fSj8l/VMvajuzg="></head><body dir=ltr><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav><div class=book-brand><img class=book-center src=/phys52015/logo.svg alt=Logo><h2><a href=/phys52015>PHYS52015 – Introduction to HPC</a></h2></div><ul><li><span>Administrivia</span><ul><li><a href=/phys52015/setup/remote/ class=active>Remote editing/development</a></li><li><a href=/phys52015/setup/hamilton-quickstart/>Hamilton access & quickstart</a></li><li><a href=/phys52015/setup/byod/>Local setup</a></li><li><a href=/phys52015/setup/configuration/>ssh configuration</a></li><li><a href=/phys52015/setup/unix/>Unix resources</a></li></ul></li><li><span>Exercises</span><ul><li><a href=/phys52015/exercises/hello/>Parallel Hello World</a></li><li><a href=/phys52015/exercises/openmp-loop/>OpenMP: parallel loops</a></li><li><a href=/phys52015/exercises/openmp-stencil/>OpenMP: stencils</a></li><li><a href=/phys52015/exercises/openmp-reduction/>OpenMP: synchronisation</a></li><li><a href=/phys52015/exercises/mpi-ring/>MPI: messages round a ring</a></li><li><a href=/phys52015/exercises/mpi-pi/>MPI: Calculating π</a></li><li><a href=/phys52015/exercises/mpi-ping-pong/>MPI: ping-pong latency</a></li><li><a href=/phys52015/exercises/mpi-collectives/>MPI: simple collectives</a></li><li><a href=/phys52015/exercises/mpi-stencil/>MPI: domain decomposition and halo exchanges</a></li></ul></li><li><a href=/phys52015/coursework/>Coursework: stencils and collectives</a></li><li><span>Notes</span><ul><li><a href=/phys52015/notes/introduction/>Introduction and motivation</a></li><li><span>Theory & concepts</span><ul><li><a href=/phys52015/notes/theory/scaling-laws/>Parallel scaling laws</a></li><li><a href=/phys52015/notes/theory/hardware-parallelism/>Parallelism in hardware: an overview</a></li><li><a href=/phys52015/notes/theory/concepts/>Parallel patterns</a></li></ul></li><li><a href=/phys52015/notes/openmp/>OpenMP</a><ul><li><a href=/phys52015/notes/openmp/intro/>What is OpenMP?</a></li><li><a href=/phys52015/notes/openmp/loop-parallelism/>Loop parallelism</a></li><li><a href=/phys52015/notes/openmp/collectives/>Collectives</a></li></ul></li><li><a href=/phys52015/notes/mpi/>MPI</a><ul><li><a href=/phys52015/notes/mpi/point-to-point/>Point-to-point messaging in MPI</a></li><li><a href=/phys52015/notes/mpi/point-to-point-nb/>Non-blocking point-to-point messaging</a></li><li><a href=/phys52015/notes/mpi/collectives/>Collectives</a></li><li><a href=/phys52015/notes/mpi/advanced/>Advanced topics</a></li></ul></li></ul></li><li><a href=/phys52015/resources/>Further resources</a></li><li><a href=/phys52015/acknowledgements/>Acknowledgements</a></li><li><span>Past editions</span><ul><li><span>2020/21</span><ul><li><a href=/phys52015/past-editions/2020-21/coursework/>Coursework: parallel dense linear algebra</a></li></ul></li></ul></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/phys52015/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Remote editing/development</strong>
+<label for=toc-control><img src=/phys52015/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#remote-editing>Remote editing</a><ul><li><a href=#vs-code>VS Code</a></li><li><a href=#emacs>Emacs</a></li></ul></li><li><a href=#managing-changes-with-version-control>Managing changes with version control</a></li></ul></nav></aside></header><article class=markdown><blockquote class="book-hint warning"><span>This course page was updated until March 2022 when I left Durham University.
+For future updates, please visit
+the <a href=https://durham-phys52015.github.io/>new version
+of the course pages</a>.</span></blockquote><h1 id=remote-development-and-managing-changes>Remote development and managing changes
+<a class=anchor href=#remote-development-and-managing-changes>#</a></h1><h2 id=remote-editing>Remote editing
+<a class=anchor href=#remote-editing>#</a></h2><p>Editing in a terminal is somewhat painful, and laboriously copying
+files back and forth between your local machine and Hamilton is
+error-prone.</p><p>A better approach is to use a combination of version control and
+remote editing. I provide brief instructions for <a href=https://code.visualstudio.com>VS
+Code</a> which is a popular editor, and
+very brief instructions for Emacs.</p><h3 id=vs-code>VS Code
+<a class=anchor href=#vs-code>#</a></h3><p>VS Code has an extension for <a href=https://code.visualstudio.com/docs/remote/remote-overview>remote
+editing</a>
+which allows you to edit files on remote systems as if you&rsquo;re running
+locally.</p><p>Search the extensions marketplace and install the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack">Remote
+Development</a>
+extension pack. You can then connect to a remote SSH server (of which
+Hamilton is an example). If you <a href=https://teaching.wence.uk/phys52015/setup/configuration/>followed the instructions</a> to setup simpler ssh logins, then just hit
+<code>F1</code> (to pop up the &ldquo;command palette&rdquo;) and run the &ldquo;Remote-SSH: Connect
+to Host&rdquo; command.</p><p>You can then use VS code, browsing the Hamilton filesystem as if it
+were local.</p><blockquote class="book-hint warning"><p>The way remote editing in VS code works results in it creating a
+directory <code>~/.vscode-server</code> in your home directory on Hamilton.</p><p>You might run in to quota issues (check if the &ldquo;Soft limit&rdquo; for files
+in the output of the <code>quota</code> command is hit).</p><p>To work around this, we can move the vscode directory somewhere else
+and then symlink it back.</p><p>You can run this sequence of commands at the terminal to achieve this,
+you&rsquo;ll only need to do it once.</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ mv <span style=color:#111>$HOME</span>/.vscode-server /ddn/data/<span style=color:#111>$USER</span>/vscode-server
+$ ln -s /ddn/data/<span style=color:#111>$USER</span>/vscode-server <span style=color:#111>$HOME</span>/.vscode-server
+</code></pre></div></blockquote><blockquote class="book-hint info">I don&rsquo;t use VS Code myself, so can&rsquo;t help with further configuration
+or editing, but hopefully this is useful.</blockquote><h3 id=emacs>Emacs
+<a class=anchor href=#emacs>#</a></h3><p>If you use Emacs, then
+<a href=https://www.emacswiki.org/emacs/TrampMode>TRAMP</a> offers similar
+functionality, you can browse the remote filesystem and edit as normal.</p><p>If you want to use <a href=https://magit.vc>magit</a>, the version of <code>git</code>
+available on Hamilton is unfortunately too old. You might be able to
+compile your own version and put it in your <code>PATH</code>, you&rsquo;ll then need
+to add <code>(add-to-list 'tramp-remote-path 'tramp-own-remote-path)</code> to
+your <code>.emacs</code>.</p><h2 id=managing-changes-with-version-control>Managing changes with version control
+<a class=anchor href=#managing-changes-with-version-control>#</a></h2><p>All of the material for the course is maintained in a git repository
+on <a href=https://github.com/wenceorg/phys52015>GitHub</a>. This makes it easy for me to keep things up
+to date. If you have followed the advice to clone a copy of the
+repository then you probably want to know how to</p><ol><li>Keep getting updates that I create</li><li>Make sure your changes are saved</li><li>Move your changes between computers (for example off Hamilton)</li></ol><p>To do this, I recommend the following workflow. You will need a
+<a href=https://github.com>GitHub account</a>, so if you don&rsquo;t have one, go
+away and register.</p><blockquote class="book-hint info">The free tier of GitHub disables some useful features. Fortunately,
+as a student, you can sign up to an educational license which upgrades
+your account for free. After creating your github account, sign up for
+the <a href=https://education.github.com/pack>student developer pack</a>. Your
+Durham email will need to be associated with your account, follow
+instructions
+<a href=https://docs.github.com/en/enterprise/2.15/user/articles/adding-an-email-address-to-your-github-account>here</a>
+if it isn&rsquo;t already.</blockquote><p>With your new account available, &ldquo;fork&rdquo; the course repository. This
+creates a copy associated with your account which you have edit access
+in.</p><p>Now you can edit and commit away in the repository and push and pull
+any changes to your fork.</p><p>To synchronise with my version, you can either do it <a href=https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/syncing-a-fork>on the
+commandline</a>,
+or in the GitHub web interface with pull requests. The <a href=https://www.earthdatascience.org>Earth
+Lab</a> have a <a href=https://www.earthdatascience.org/courses/intro-to-earth-data-science/git-github/github-collaboration/update-github-repositories-with-changes-by-others/>nice
+tutorial</a>
+for the latter approach.</p></article><footer class=book-footer><div class="flex flex-wrap justify-between"><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/commit/d488ecdf20e1aba21512c0e81135546a0c9a77d7 title="Last modified by Lawrence Mitchell | April 7, 2022" target=_blank rel=noopener><img src=/phys52015/svg/calendar.svg class=book-icon alt=Calendar>
+<span>April 7, 2022</span></a></div><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/edit/main/site/content/setup/remote.md target=_blank rel=noopener><img src=/phys52015/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div></div><div class="flex flex-wrap align-right"><p>© 2020&ndash; <a href=mailto:lawrence.mitchell@durham.ac.uk>Lawrence Mitchell</a>, <a href=https://www.ippp.dur.ac.uk/~hschulz/>Holger Schulz</a>, <a href="https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712">Christian Arnold</a> & <a href=https://www.dur.ac.uk/>Durham University</a>.</p><p><a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=/phys52015/cc-by-sa.svg></a>
+This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.</p></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#remote-editing>Remote editing</a><ul><li><a href=#vs-code>VS Code</a></li><li><a href=#emacs>Emacs</a></li></ul></li><li><a href=#managing-changes-with-version-control>Managing changes with version control</a></li></ul></nav></aside></main></body></html>

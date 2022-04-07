@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>MPI: beginnings</title>
+    <link rel="shortcut icon" href="/phys52015/favicon.svg" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/reset.min.css"
+          integrity="sha512-Mjxkx+r7O/OLQeKeIBCQ2yspG1P5muhAtv/J+p2/aPnSenciZWm5Wlnt+NOUNA4SHbnBIE/R2ic0ZBiCXdQNUg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/reveal.min.css"
+          integrity="sha512-WFGU7IgfYR0dq5aORzbD+NApAXdExNZFb7LaoO8olYImBW/iZxAwjKEuT+oYcFR6gOd+DAFssq/icMn8YVbQxQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/theme/solarized.min.css"
+          integrity="sha512-sUF1FAUpi9yPXCDOPsRwzh71zrCVkcT4SfwxBlQeHwMbH1aTGcSdI00GRLaH6iXRSBTazGH/u6sGQTc1tGqofg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/highlight/zenburn.min.css"
+          integrity="sha512-JPxjD2t82edI35nXydY/erE9jVPpqxEJ++6nYEoZEpX2TRsmp2FpZuQqZa+wBCen5U16QZOkMadGXHCfp+tUdg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/reveal.min.js"
+            integrity="sha512-K7P1+dtPriNNHlE4aJr+JKx1X6R0wvy24QBqL2CxaHc4XdkQjrH2t2FCrgoxZGMh6s1TgigNLEdrWa6NJra6Zg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/markdown/markdown.min.js"
+            integrity="sha512-VMIcHSU7cVYRxUYr9l/t/iRO98QUfuTw8inT0mFklWb6HhKwLkjA0F24O42RL39RKGenNEK/TlEWB2NEy8w4Ng=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/highlight/highlight.min.js"
+            integrity="sha512-NVdqCvsrfhXUYzGTEGGBFf5jxheVVcglfdvO8r+WdG0BKMrRYvaiCGIC0S+wf4hkE3Xq43gTd1k3Mwl/UNgdvw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/math/math.min.js"
+            integrity="sha512-3HmB6PODGpVVNHOzPd/iva9nhAtO8o5lNh8ukjgcswV+iQTRZFqdMWJW25dvcSploiX4I4M6uuUKIV9BaogQhw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style type="text/css">
+  .container {
+      display: flex;
+  }
+  .col {
+      flex: 1;
+  }
+  .reveal p {
+      text-align: left;
+  }
+  .reveal .center {
+      margin-left: auto;
+      margin-right: auto;
+      display: inline-block;
+  }
+  .reveal ul {
+      display: block;
+  }
+  .reveal ol {
+      display: block;
+  }
+  .reveal img {
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+  }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section>
+<section data-markdown><textarea data-template>
+
+# MPI: an introduction
+
+<div class="center">
+
+[Introductory notes](/phys52015/notes/mpi/)
+
+</div>
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Main idea
+
+- _Processes_ (not threads), with no shared memory
+- Explicit communication between processes
+- No "special" process
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Picture
+
+Threads share memory
+
+![Threads share memory](/phys52015/images/manual/shared-memory-sketch.svg)
+
+Processes don't
+
+![Processes don't share memory](/phys52015/images/manual/processes-private-memory-sketch.svg)
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+- Most [MPI](https://www.mpi-forum.org/) programs are [single program, multiple
+  data](https://en.wikipedia.org/wiki/SPMD) (SPMD)
+- Every process gets its own copy of _the same_ program
+- ... but each process operates on _its own_ data
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Hello world
+```c [8,12|9,10|11]
+#include <stdio.h>
+#include <mpi.h>
+
+int main(int argc, char **argv)
+{
+  int rank, size, len;
+  MPI_Comm comm;
+  MPI_Init(&argv, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  printf("Hello, World! [%d/%d]\n", rank, size);
+  MPI_Finalize();
+  return 0;
+}
+```
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## On two processes
+
+<div class="container">
+
+<div class="col">
+
+### Process zero
+
+```c [6,7]
+int main(int argc, char **argv)
+{
+  int rank, size, len;
+  MPI_Comm comm;
+  MPI_Init(&argv, &argv);
+  rank = 0;
+  size = 2;
+  printf("Hello, World! [%d/%d]\n",
+         rank, size);
+  MPI_Finalize();
+  return 0;
+}
+```
+
+</div>
+
+<div class="col">
+
+### Process one
+
+```c [6,7]
+int main(int argc, char **argv)
+{
+  int rank, size, len;
+  MPI_Comm comm;
+  MPI_Init(&argv, &argv);
+  rank = 1;
+  size = 2;
+  printf("Hello, World! [%d/%d]\n",
+         rank, size);
+  MPI_Finalize();
+  return 0;
+}
+```
+
+</div>
+</div>
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Communicators
+
+- Messages are passed in context of a
+  [_communicator_](/phys52015/notes/mpi/#communicators)
+- Represent a group of processes
+- Processes identified by `(communicator, rank)` pair
+- Communicators available on startup
+  1. `MPI_COMM_WORLD`: All processes
+  2. `MPI_COMM_SELF`: Every process "on its own"
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Example with eight processes
+
+![Illustration of communicators on eight
+processes](/phys52015/images/manual/comm-world-comm-self.svg)
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Programming
+
+- MPI is a _library_. No special compiler support
+- Need to `#include <mpi.h>`
+- Large API, we will touch on some of it
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Compiling
+
+- Most MPI libraries come with _compiler wrappers_
+  - `mpicc` (for C)
+  - `mpicxx` (for C++)
+  - `mpif90` (for Fortran)
+- Take care of include and link flags
+
+### On Hamilton
+
+```
+module load gcc/9.3.0
+module load intelmpi/gcc/2019.6
+```
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Running
+
+- Amount of parallelism specified at _runtime_
+- Use MPI library's "runner", usually `mpirun` or `mpiexec`
+- On Hamilton use `mpirun`
+
+```
+$ mpirun -n 10 ./myapp
+```
+Run 10 copies of `myapp` in same MPI context
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Important concepts
+
+- No process special
+- Communicators are key
+- Focus on decomposing _data_ and _work_ on that data
+
+Next: [point to point messaging](mpi-ptp.html)
+
+</textarea></section>
+</section>
+</div>
+</div>
+<script>
+  function extend() {
+    var target = {};
+    for (var i = 0; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (source.hasOwnProperty(key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+    return target;
+  }
+
+  // default options to init reveal.js
+  var defaultOptions = {
+    controls: true,
+    progress: true,
+    history: true,
+    slideNumber: true,
+    center: true,
+    transition: 'none', // none/fade/slide/convex/concave/zoom
+    plugins: [
+      RevealMarkdown,
+      RevealHighlight,
+      RevealMath,
+    ],
+    markdown: {smartypants: true}
+  };
+
+  // options from URL query string
+  var queryOptions = Reveal().getQueryHash() || {};
+
+  var options = extend(defaultOptions, {}, queryOptions);
+</script>
+
+
+<script>
+  Reveal.initialize(options);
+</script>
+</body>
+</html>

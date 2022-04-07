@@ -1,0 +1,207 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Hello, World! #  As with every programming course, the first thing we will do is compile and run a &ldquo;Hello world&rdquo; program. Actually we&rsquo;ll do three. The goal of this is to familiarise you with the module system on Hamilton, as well as how to compile code. So take a look at the quickstart guide if you haven&rsquo;t already.
+A serial version #  Log in to Hamilton/COSMA load the relevant compiler modules"><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Parallel Hello World"><meta property="og:description" content="Hello, World! #  As with every programming course, the first thing we will do is compile and run a &ldquo;Hello world&rdquo; program. Actually we&rsquo;ll do three. The goal of this is to familiarise you with the module system on Hamilton, as well as how to compile code. So take a look at the quickstart guide if you haven&rsquo;t already.
+A serial version #  Log in to Hamilton/COSMA load the relevant compiler modules"><meta property="og:type" content="article"><meta property="og:url" content="https://teaching.wence.uk/phys52015/exercises/hello/"><meta property="article:modified_time" content="2022-04-07T18:13:40+01:00"><title>Parallel Hello World | PHYS52015 – Introduction to HPC</title><link rel=manifest href=/phys52015/manifest.json><link rel=icon href=/phys52015/favicon.png type=image/x-icon><link rel=stylesheet href=/phys52015/book.min.0cb0b7d6a1ed5d0e95321cc15edca4d6e9cc406149d1f4a3f25fd532f6a3bb38.css integrity="sha256-DLC31qHtXQ6VMhzBXtyk1unMQGFJ0fSj8l/VMvajuzg="></head><body dir=ltr><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav><div class=book-brand><img class=book-center src=/phys52015/logo.svg alt=Logo><h2><a href=/phys52015>PHYS52015 – Introduction to HPC</a></h2></div><ul><li><span>Administrivia</span><ul><li><a href=/phys52015/setup/remote/>Remote editing/development</a></li><li><a href=/phys52015/setup/hamilton-quickstart/>Hamilton access & quickstart</a></li><li><a href=/phys52015/setup/byod/>Local setup</a></li><li><a href=/phys52015/setup/configuration/>ssh configuration</a></li><li><a href=/phys52015/setup/unix/>Unix resources</a></li></ul></li><li><span>Exercises</span><ul><li><a href=/phys52015/exercises/hello/ class=active>Parallel Hello World</a></li><li><a href=/phys52015/exercises/openmp-loop/>OpenMP: parallel loops</a></li><li><a href=/phys52015/exercises/openmp-stencil/>OpenMP: stencils</a></li><li><a href=/phys52015/exercises/openmp-reduction/>OpenMP: synchronisation</a></li><li><a href=/phys52015/exercises/mpi-ring/>MPI: messages round a ring</a></li><li><a href=/phys52015/exercises/mpi-pi/>MPI: Calculating π</a></li><li><a href=/phys52015/exercises/mpi-ping-pong/>MPI: ping-pong latency</a></li><li><a href=/phys52015/exercises/mpi-collectives/>MPI: simple collectives</a></li><li><a href=/phys52015/exercises/mpi-stencil/>MPI: domain decomposition and halo exchanges</a></li></ul></li><li><a href=/phys52015/coursework/>Coursework: stencils and collectives</a></li><li><span>Notes</span><ul><li><a href=/phys52015/notes/introduction/>Introduction and motivation</a></li><li><span>Theory & concepts</span><ul><li><a href=/phys52015/notes/theory/scaling-laws/>Parallel scaling laws</a></li><li><a href=/phys52015/notes/theory/hardware-parallelism/>Parallelism in hardware: an overview</a></li><li><a href=/phys52015/notes/theory/concepts/>Parallel patterns</a></li></ul></li><li><a href=/phys52015/notes/openmp/>OpenMP</a><ul><li><a href=/phys52015/notes/openmp/intro/>What is OpenMP?</a></li><li><a href=/phys52015/notes/openmp/loop-parallelism/>Loop parallelism</a></li><li><a href=/phys52015/notes/openmp/collectives/>Collectives</a></li></ul></li><li><a href=/phys52015/notes/mpi/>MPI</a><ul><li><a href=/phys52015/notes/mpi/point-to-point/>Point-to-point messaging in MPI</a></li><li><a href=/phys52015/notes/mpi/point-to-point-nb/>Non-blocking point-to-point messaging</a></li><li><a href=/phys52015/notes/mpi/collectives/>Collectives</a></li><li><a href=/phys52015/notes/mpi/advanced/>Advanced topics</a></li></ul></li></ul></li><li><a href=/phys52015/resources/>Further resources</a></li><li><a href=/phys52015/acknowledgements/>Acknowledgements</a></li><li><span>Past editions</span><ul><li><span>2020/21</span><ul><li><a href=/phys52015/past-editions/2020-21/coursework/>Coursework: parallel dense linear algebra</a></li></ul></li></ul></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/phys52015/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Parallel Hello World</strong>
+<label for=toc-control><img src=/phys52015/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#a-serial-version>A serial version</a></li><li><a href=#an-openmp-version>An OpenMP version</a></li><li><a href=#mpi>An MPI version</a></li></ul></nav></aside></header><article class=markdown><blockquote class="book-hint warning"><span>This course page was updated until March 2022 when I left Durham University.
+For future updates, please visit
+the <a href=https://durham-phys52015.github.io/>new version
+of the course pages</a>.</span></blockquote><h1 id=hello-world>Hello, World!
+<a class=anchor href=#hello-world>#</a></h1><p>As with every programming course, the first thing we will do is
+compile and run a &ldquo;Hello world&rdquo; program. Actually we&rsquo;ll do three. The
+goal of this is to familiarise you with the module system on Hamilton,
+as well as how to compile code. So take a look at the <a href=https://teaching.wence.uk/phys52015/setup/hamilton-quickstart/>quickstart
+guide</a> if you haven&rsquo;t already.</p><h2 id=a-serial-version>A serial version
+<a class=anchor href=#a-serial-version>#</a></h2><p>Log in to Hamilton/COSMA load the relevant compiler modules</p><div class=book-tabs><input type=radio class=toggle name="tabs-%!s(<nil>)" id="tabs-%!s(<nil>)-0" checked>
+<label for="tabs-%!s(<nil>)-0">Hamilton</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>intel/xe_2018.2
+gcc/9.3.0
+</code></pre></div></div><input type=radio class=toggle name="tabs-%!s(<nil>)" id="tabs-%!s(<nil>)-1">
+<label for="tabs-%!s(<nil>)-1">COSMA</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>intel_comp/2018
+</code></pre></div></div></div><blockquote class="book-hint info">For the rest of description, I&rsquo;ll just write &ldquo;Hamilton&rdquo;, but you
+should interpret that to mean Hamilton or COSMA depending on which
+you&rsquo;re using. Where there is a particular difference, I&rsquo;ll call it
+out.</blockquote><p>Create a C file <code>serial.c</code> containing the below.</p><div class=book-include><div class=book-include-heading><tt>hello/serial.c</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/hello/serial.c>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+<span style=color:#00a8c8>int</span> <span style=color:#75af00>main</span><span style=color:#111>(</span><span style=color:#00a8c8>void</span><span style=color:#111>)</span>
+<span style=color:#111>{</span>
+  <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;Hello, World!</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>);</span>
+  <span style=color:#00a8c8>return</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#111>}</span>
+</code></pre></div></div></div><blockquote class="book-hint info"><p>All of these code snippets live in the <a href=https://github.com/wenceorg/phys52015>course repository</a>, so rather than copying or downloading, you should clone the
+repository and work in the relevant <code>code</code> subdirectory.</p><p>We&rsquo;re working the in the <code>code/hello</code> subdirectory for this exercise.</p></blockquote><p>Having done that you should compile the code with <code>icc</code></p><pre><code>$ icc -o hello-serial serial.c
+</code></pre><p>The creates an executable named <code>hello-serial</code> from the <code>serial.c</code>
+file.</p><p>Run it on the login node</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ ./hello-serial
+Hello, World!
+</code></pre></div><p>Next, as you saw in the quickstart guide, we should actually do our
+runs on the compute nodes. To do this, we need to create a submission
+script</p><div class=book-include><div class=book-include-heading><tt>hello/serial.slurm</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/hello/serial.slurm>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh><span style=color:#75715e>#!/bin/bash
+</span><span style=color:#75715e></span>
+<span style=color:#75715e># 1 core</span>
+<span style=color:#75715e>#SBATCH -n 1</span>
+<span style=color:#75715e>#SBATCH --job-name=&#34;hello-serial&#34;</span>
+<span style=color:#75715e>#SBATCH -o hello-serial.%J.out</span>
+<span style=color:#75715e>#SBATCH -e hello-serial.%J.err</span>
+<span style=color:#75715e>#SBATCH -t 00:01:00</span>
+<span style=color:#75715e>#SBATCH -p test.q</span>
+
+<span style=color:#111>source</span> /etc/profile.d/modules.sh
+
+module load intel/xe_2018.2
+module load gcc/9.3.0
+
+./hello-serial
+</code></pre></div></div></div><p>Since we only have a small job, we have requested the &ldquo;test&rdquo; queue.
+This has a fast turn-around, but does not allow you to run large
+simulations.</p><blockquote class="book-hint info"><p>On COSMA you need to select the <code>cosma</code> queue (<code>#SBATCH -p cosma</code>) and
+you&rsquo;ll need to select the right account for charging with <code>#SBATCH -A ACCOUNT</code>. This charging account is one that you should have been told about
+when registering, it is used to determine how much time you use.</p><p>For many more details, see the <a href=https://www.dur.ac.uk/icc/cosma/support/queues/>COSMA
+documentation</a>.</p></blockquote><p>Submit your job with</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ sbatch serial.slurm
+</code></pre></div><p>After running, this should create two files named
+<code>hello-serial.SOMENUMBERS.out</code> and <code>hello-serial.SOMENUMBERS.err</code></p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ ls hello-serial.*.<span style=color:#f92672>{</span>err,out<span style=color:#f92672>}</span>
+hello-serial.3186773.err  hello-serial.3186773.out
+</code></pre></div><p>The numbers correspond to the job ID. You can see the contents of
+these by opening them, or <a href=https://linux.die.net/man/1/cat><code>cat</code></a>ing
+them to the screen.</p><p>The error file should be empty:</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ cat hello-serial.3186773.err
+<span style=color:#75715e># No output</span>
+</code></pre></div><p>The output file should contain the string <code>Hello, World!</code></p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ cat hello-serial.3186773.out
+Hello, World!
+</code></pre></div><h2 id=an-openmp-version>An OpenMP version
+<a class=anchor href=#an-openmp-version>#</a></h2><p>One of the parallelisation paradigms we will see in this course is
+shared memory parallelism, for which we use
+<a href=https://www.openmp.org>OpenMP</a>. OpenMP is a specification for
+compiler directives and library routines that can be used to specify
+parallelism at a reasonably high level for Fortran, C, and C++
+programs.</p><p>To compile OpenMP programs, we need the same modules as for the serial
+programs above. Our code now looks a little different.</p><div class=book-include><div class=book-include-heading><tt>hello/openmp.c</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/hello/openmp.c>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;omp.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+<span style=color:#00a8c8>int</span> <span style=color:#75af00>main</span><span style=color:#111>(</span><span style=color:#00a8c8>void</span><span style=color:#111>)</span>
+<span style=color:#111>{</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>nthread</span> <span style=color:#f92672>=</span> <span style=color:#111>omp_get_max_threads</span><span style=color:#111>();</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#00a8c8>thread</span><span style=color:#111>;</span>
+<span style=color:#75715e>#pragma omp parallel private(thread) shared(nthread)
+</span><span style=color:#75715e></span>  <span style=color:#111>{</span>
+    <span style=color:#00a8c8>thread</span> <span style=color:#f92672>=</span> <span style=color:#111>omp_get_thread_num</span><span style=color:#111>();</span>
+    <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;Hello, World! I am thread %d of %d</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span> <span style=color:#00a8c8>thread</span><span style=color:#111>,</span> <span style=color:#111>nthread</span><span style=color:#111>);</span>
+  <span style=color:#111>}</span>
+  <span style=color:#00a8c8>return</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#111>}</span>
+</code></pre></div></div></div><p>If we try and compile this like we did before, we will get an error</p><pre><code>$ icc -o hello-openmp openmp.c
+openmp.c(8): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel private(thread) shared(nthread)
+          ^
+
+/tmp/iccLQGI6H.o: In function `main':
+openmp.c:(.text+0x2a): undefined reference to `omp_get_max_threads'
+openmp.c:(.text+0x32): undefined reference to `omp_get_thread_num'
+</code></pre><p>First the compiler warns us that it saw a <code>#pragma</code> that it did not
+recognise. Then the linker complained that there were two undefined
+functions.</p><p>OpenMP support is implemented in most modern compilers, but has to be
+explicitly requested. To do so we must add the additional flag
+<code>-qopenmp</code> to our compile command</p><pre><code>$ icc -qopenmp -o hello-openmp openmp.c
+</code></pre><p>Our submission script also looks a little different</p><div class=book-include><div class=book-include-heading><tt>hello/openmp.slurm</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/hello/openmp.slurm>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh><span style=color:#75715e>#!/bin/bash
+</span><span style=color:#75715e></span>
+<span style=color:#75715e># 1 node</span>
+<span style=color:#75715e>#SBATCH --nodes=1</span>
+<span style=color:#75715e>#SBATCH --job-name=&#34;hello-openmp&#34;</span>
+<span style=color:#75715e>#SBATCH -o hello-openmp.%J.out</span>
+<span style=color:#75715e>#SBATCH -e hello-openmp.%J.err</span>
+<span style=color:#75715e>#SBATCH -t 00:01:00</span>
+<span style=color:#75715e>#SBATCH -p test.q</span>
+
+<span style=color:#111>source</span> /etc/profile.d/modules.sh
+
+module load intel/xe_2018.2
+module load gcc/9.3.0
+
+<span style=color:#111>export</span> <span style=color:#111>OMP_NUM_THREADS</span><span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>
+./hello-openmp
+</code></pre></div></div></div><p>We select the amount of parallelism by setting the <code>OMP_NUM_THREADS</code>
+environment variable before running the executable.</p><p>After submitting our job with <code>sbatch</code> we again get some output files</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ ls hello-openmp.*.<span style=color:#f92672>{</span>err,out<span style=color:#f92672>}</span>
+hello-openmp.3186885.err  hello-openmp.3186885.out
+</code></pre></div><p>We can inspect the contents as before with <code>cat</code></p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ cat hello-openmp.3186885.out
+Hello, World! I am thread <span style=color:#ae81ff>0</span> of <span style=color:#ae81ff>2</span>
+Hello, World! I am thread <span style=color:#ae81ff>1</span> of <span style=color:#ae81ff>2</span>
+</code></pre></div><p>Note how the individual threads are numbered from zero and live in the
+interval [0, 2).</p><blockquote class=question><h3>Question</h3><span>Try changing the number of threads. What do you notice about the output?</span></blockquote><h2 id=mpi>An MPI version
+<a class=anchor href=#mpi>#</a></h2><p>The other parallisation paradigm we will use is for programming
+<em>distributed memory</em> systems. We will use
+<a href=https://www.mpi-forum.org>MPI</a> for this. MPI is a specification for
+a library-based programming model. The standard specifies Fortran
+and C/C++ interfaces, and there are wrappers for many popular programming
+languages including
+<a href=https://mpi4py.readthedocs.io/en/stable/>Python</a> and
+<a href=https://github.com/JuliaParallel/MPI.jl>Julia</a>.</p><p>To compile MPI programs, we need to load, in additional to the
+previous modules, the right MPI version. So execute</p><div class=book-tabs><input type=radio class=toggle name=tabs-MPI-modules id=tabs-MPI-modules-0 checked>
+<label for=tabs-MPI-modules-0>Hamilton</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ module load intelmpi/intel/2018.2
+</code></pre></div></div><input type=radio class=toggle name=tabs-MPI-modules id=tabs-MPI-modules-1>
+<label for=tabs-MPI-modules-1>COSMA</label><div class="book-tabs-content markdown-inner"><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh>$ module load intel_mpi/2018
+</code></pre></div></div></div><p>in addition to the other module load commands.</p><p>Our code again looks different</p><div class=book-include><div class=book-include-heading><tt>hello/mpi.c</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/hello/mpi.c>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;mpi.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+<span style=color:#00a8c8>int</span> <span style=color:#75af00>main</span><span style=color:#111>(</span><span style=color:#00a8c8>void</span><span style=color:#111>)</span>
+<span style=color:#111>{</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>rank</span><span style=color:#111>,</span> <span style=color:#111>size</span><span style=color:#111>,</span> <span style=color:#111>len</span><span style=color:#111>;</span>
+  <span style=color:#111>MPI_Comm</span> <span style=color:#111>comm</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>char</span> <span style=color:#111>name</span><span style=color:#111>[</span><span style=color:#111>MPI_MAX_PROCESSOR_NAME</span><span style=color:#111>];</span>
+  <span style=color:#111>MPI_Init</span><span style=color:#111>(</span><span style=color:#111>NULL</span><span style=color:#111>,</span> <span style=color:#111>NULL</span><span style=color:#111>);</span>
+  <span style=color:#111>comm</span> <span style=color:#f92672>=</span> <span style=color:#111>MPI_COMM_WORLD</span><span style=color:#111>;</span>
+  <span style=color:#111>MPI_Comm_rank</span><span style=color:#111>(</span><span style=color:#111>comm</span><span style=color:#111>,</span> <span style=color:#f92672>&amp;</span><span style=color:#111>rank</span><span style=color:#111>);</span>
+  <span style=color:#111>MPI_Comm_size</span><span style=color:#111>(</span><span style=color:#111>comm</span><span style=color:#111>,</span> <span style=color:#f92672>&amp;</span><span style=color:#111>size</span><span style=color:#111>);</span>
+  <span style=color:#111>MPI_Get_processor_name</span><span style=color:#111>(</span><span style=color:#111>name</span><span style=color:#111>,</span> <span style=color:#f92672>&amp;</span><span style=color:#111>len</span><span style=color:#111>);</span>
+  <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;Hello, World! I am rank %d of %d. Running on node %s</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span>
+         <span style=color:#111>rank</span><span style=color:#111>,</span> <span style=color:#111>size</span><span style=color:#111>,</span> <span style=color:#111>name</span><span style=color:#111>);</span>
+  <span style=color:#111>MPI_Finalize</span><span style=color:#111>();</span>
+  <span style=color:#00a8c8>return</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#111>}</span>
+</code></pre></div></div></div><p>Notice how compared to the OpenMP version, there are no pragmas and
+the parallelism is not explicitly annotated, there are just calls to
+library functions from MPI.</p><p>If we try and compile with <code>icc</code>, we get errors.</p><pre><code>$ icc -o hello-mpi mpi.c
+mpi.c(2): catastrophic error: cannot open source file &quot;mpi.h&quot;
+  #include &lt;mpi.h&gt;
+                  ^
+
+compilation aborted for mpi.c (code 4)
+</code></pre><p>To compile this file, we need to tell the compiler about all the
+MPI-relevant include files and libraries to link. Since this is
+complicated, MPI library implementors typically ship with <em>compiler
+wrappers</em> that set the right flags. On Hamilton these are named
+<code>mpicc</code> (for the MPI wrapper around the C compiler), <code>mpicxx</code> (for the
+wrapper around the C++ compiler), and <code>mpif90</code> (for the Fortran
+wrapper). Since we have a C source file, we should use <code>mpicc</code></p><pre><code>$ mpicc -o hello-mpi mpi.c
+</code></pre><p>Running the executable is now also more complicated, we need to use
+<code>mpirun</code> to launch it. This takes care of allocating parallel
+resources and setting up the processes such that they can communicate
+with one another.</p><div class=book-include><div class=book-include-heading><tt>hello/mpi.slurm</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/hello/mpi.slurm>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-sh data-lang=sh><span style=color:#75715e>#!/bin/bash
+</span><span style=color:#75715e></span>
+<span style=color:#75715e># 1 node</span>
+<span style=color:#75715e>#SBATCH --nodes=1</span>
+<span style=color:#75715e>#SBATCH --ntasks-per-node=24</span>
+<span style=color:#75715e>#SBATCH --job-name=&#34;hello-mpi&#34;</span>
+<span style=color:#75715e>#SBATCH -o hello-mpi.%J.out</span>
+<span style=color:#75715e>#SBATCH -e hello-mpi.%J.err</span>
+<span style=color:#75715e>#SBATCH -t 00:01:00</span>
+<span style=color:#75715e>#SBATCH -p par7.q</span>
+
+<span style=color:#111>source</span> /etc/profile.d/modules.sh
+
+module load intel/xe_2018.2
+module load gcc/9.3.0
+module load intelmpi/intel/2018.2
+
+mpirun ./hello-mpi
+</code></pre></div></div></div><p>Notice this time how we specified the <code>par7</code> queue (you can stick with
+the <code>cosma</code> queue on COSMA, although you need to change the number of
+tasks to 16). You can get information about all the available queues
+with <code>sinfo</code>. A summary of the types is also available with <code>sfree</code>.</p><blockquote class="book-hint info"><p>On some systems you need to specify the number of processes you want
+to use when executing <code>mpirun</code>. However, on Hamilton, the metadata in
+the scheduler is used to determine the number of processes. Here we
+request 1 node and 24 tasks per node.</p><p>Hence you should only explicitly specify if you want to run with an
+amount of parallelism different to that specified in your submission
+script.</p></blockquote><blockquote class=question><h3>Question</h3><span>Try running on two compute nodes, by changing the <code>--nodes=1</code> line to
+<code>--nodes=2</code>. How many total processes do you now have? What do you
+notice about the node names?</span></blockquote></article><footer class=book-footer><div class="flex flex-wrap justify-between"><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/commit/d488ecdf20e1aba21512c0e81135546a0c9a77d7 title="Last modified by Lawrence Mitchell | April 7, 2022" target=_blank rel=noopener><img src=/phys52015/svg/calendar.svg class=book-icon alt=Calendar>
+<span>April 7, 2022</span></a></div><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/edit/main/site/content/exercises/hello.md target=_blank rel=noopener><img src=/phys52015/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div></div><div class="flex flex-wrap align-right"><p>© 2020&ndash; <a href=mailto:lawrence.mitchell@durham.ac.uk>Lawrence Mitchell</a>, <a href=https://www.ippp.dur.ac.uk/~hschulz/>Holger Schulz</a>, <a href="https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712">Christian Arnold</a> & <a href=https://www.dur.ac.uk/>Durham University</a>.</p><p><a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=/phys52015/cc-by-sa.svg></a>
+This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.</p></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#a-serial-version>A serial version</a></li><li><a href=#an-openmp-version>An OpenMP version</a></li><li><a href=#mpi>An MPI version</a></li></ul></nav></aside></main></body></html>

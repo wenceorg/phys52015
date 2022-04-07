@@ -1,0 +1,179 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Scaling laws (models) #  Suppose we have a simulation that has been parallelised. What should we expect of its performance when we run it in parallel? Answering this question will allow us to determine an appropriate level of parallelism to use when running the simulation. It can also help us determine how much effort to put into parallelising a serial code, or improving an existing parallel code.
+Some simple examples1 #  The type of parallelism we will cover in this course is that where we, as programmers, are explicitly in control of what is going on."><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Parallel scaling laws"><meta property="og:description" content="Scaling laws (models) #  Suppose we have a simulation that has been parallelised. What should we expect of its performance when we run it in parallel? Answering this question will allow us to determine an appropriate level of parallelism to use when running the simulation. It can also help us determine how much effort to put into parallelising a serial code, or improving an existing parallel code.
+Some simple examples1 #  The type of parallelism we will cover in this course is that where we, as programmers, are explicitly in control of what is going on."><meta property="og:type" content="article"><meta property="og:url" content="https://teaching.wence.uk/phys52015/notes/theory/scaling-laws/"><meta property="article:modified_time" content="2022-04-07T18:13:40+01:00"><title>Parallel scaling laws | PHYS52015 – Introduction to HPC</title><link rel=manifest href=/phys52015/manifest.json><link rel=icon href=/phys52015/favicon.png type=image/x-icon><link rel=stylesheet href=/phys52015/book.min.0cb0b7d6a1ed5d0e95321cc15edca4d6e9cc406149d1f4a3f25fd532f6a3bb38.css integrity="sha256-DLC31qHtXQ6VMhzBXtyk1unMQGFJ0fSj8l/VMvajuzg="><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css integrity=sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X crossorigin=anonymous><script defer src=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js integrity=sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4 crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js integrity=sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa crossorigin=anonymous></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false},{left:"\\(",right:"\\)",display:false},{left:"\\[",right:"\\]",display:true}]})});</script></head><body dir=ltr><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav><div class=book-brand><img class=book-center src=/phys52015/logo.svg alt=Logo><h2><a href=/phys52015>PHYS52015 – Introduction to HPC</a></h2></div><ul><li><span>Administrivia</span><ul><li><a href=/phys52015/setup/remote/>Remote editing/development</a></li><li><a href=/phys52015/setup/hamilton-quickstart/>Hamilton access & quickstart</a></li><li><a href=/phys52015/setup/byod/>Local setup</a></li><li><a href=/phys52015/setup/configuration/>ssh configuration</a></li><li><a href=/phys52015/setup/unix/>Unix resources</a></li></ul></li><li><span>Exercises</span><ul><li><a href=/phys52015/exercises/hello/>Parallel Hello World</a></li><li><a href=/phys52015/exercises/openmp-loop/>OpenMP: parallel loops</a></li><li><a href=/phys52015/exercises/openmp-stencil/>OpenMP: stencils</a></li><li><a href=/phys52015/exercises/openmp-reduction/>OpenMP: synchronisation</a></li><li><a href=/phys52015/exercises/mpi-ring/>MPI: messages round a ring</a></li><li><a href=/phys52015/exercises/mpi-pi/>MPI: Calculating π</a></li><li><a href=/phys52015/exercises/mpi-ping-pong/>MPI: ping-pong latency</a></li><li><a href=/phys52015/exercises/mpi-collectives/>MPI: simple collectives</a></li><li><a href=/phys52015/exercises/mpi-stencil/>MPI: domain decomposition and halo exchanges</a></li></ul></li><li><a href=/phys52015/coursework/>Coursework: stencils and collectives</a></li><li><span>Notes</span><ul><li><a href=/phys52015/notes/introduction/>Introduction and motivation</a></li><li><span>Theory & concepts</span><ul><li><a href=/phys52015/notes/theory/scaling-laws/ class=active>Parallel scaling laws</a></li><li><a href=/phys52015/notes/theory/hardware-parallelism/>Parallelism in hardware: an overview</a></li><li><a href=/phys52015/notes/theory/concepts/>Parallel patterns</a></li></ul></li><li><a href=/phys52015/notes/openmp/>OpenMP</a><ul><li><a href=/phys52015/notes/openmp/intro/>What is OpenMP?</a></li><li><a href=/phys52015/notes/openmp/loop-parallelism/>Loop parallelism</a></li><li><a href=/phys52015/notes/openmp/collectives/>Collectives</a></li></ul></li><li><a href=/phys52015/notes/mpi/>MPI</a><ul><li><a href=/phys52015/notes/mpi/point-to-point/>Point-to-point messaging in MPI</a></li><li><a href=/phys52015/notes/mpi/point-to-point-nb/>Non-blocking point-to-point messaging</a></li><li><a href=/phys52015/notes/mpi/collectives/>Collectives</a></li><li><a href=/phys52015/notes/mpi/advanced/>Advanced topics</a></li></ul></li></ul></li><li><a href=/phys52015/resources/>Further resources</a></li><li><a href=/phys52015/acknowledgements/>Acknowledgements</a></li><li><span>Past editions</span><ul><li><span>2020/21</span><ul><li><a href=/phys52015/past-editions/2020-21/coursework/>Coursework: parallel dense linear algebra</a></li></ul></li></ul></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/phys52015/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Parallel scaling laws</strong>
+<label for=toc-control><img src=/phys52015/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#some-simple-examples3>Some simple examples</a></li><li><a href=#a-thought-experiment>A thought experiment</a></li><li><a href=#amdahl>Amdahl&rsquo;s law and strong scaling</a></li><li><a href=#gustafsons-law-and-weak-scaling>Gustafson&rsquo;s law and weak scaling</a></li><li><a href=#pitfalls-and-shortcomings>Pitfalls and shortcomings</a></li><li><a href=#summary>Summary</a></li></ul></nav></aside></header><article class=markdown><blockquote class="book-hint warning"><span>This course page was updated until March 2022 when I left Durham University.
+For future updates, please visit
+the <a href=https://durham-phys52015.github.io/>new version
+of the course pages</a>.</span></blockquote><h1 id=scaling-laws-models>Scaling laws (models)
+<a class=anchor href=#scaling-laws-models>#</a></h1><p>Suppose we have a simulation that has been parallelised. What should
+we expect of its performance when we run it in parallel? Answering
+this question will allow us to determine an <em>appropriate</em> level of
+parallelism to use when running the simulation. It can also help us
+determine how much effort to put into parallelising a serial code, or
+improving an existing parallel code.</p><h2 id=some-simple-examples3>Some simple examples<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup>
+<a class=anchor href=#some-simple-examples3>#</a></h2><p>The type of parallelism we will cover in this course is that where we,
+as programmers, are explicitly in control of what is going on. That
+is, we decide how to divide up work between processes, and how to
+schedule that work. We will generally focus on programming models that
+enable &ldquo;tightly coupled&rdquo; parallelism. That is, we have a single task
+that we want to split up (so that we can get the answer faster, or ask
+a larger question, or both).</p><p>Here&rsquo;s a very simple example, adding together two vectors of length
+\(n\). The core loop of this operation written in C looks like</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#111>size_t</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>n</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span>
+  <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>+</span> <span style=color:#111>c</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+</code></pre></div><p>We can carry out this loop on up to \(n\) processors <sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup>. A more
+general strategy would be to chunk the loop up into \(p\) pieces (if
+we have \(p\) processors, and let each processor handle part of the
+loop</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#111>size_t</span> <span style=color:#111>start</span> <span style=color:#f92672>=</span> <span style=color:#111>figure_out_start</span><span style=color:#111>(...)</span>
+<span style=color:#111>size_t</span> <span style=color:#111>end</span> <span style=color:#f92672>=</span> <span style=color:#111>figure_out_end</span><span style=color:#111>(...)</span>
+<span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#111>size_t</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#111>start</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>end</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span>
+  <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>+</span> <span style=color:#111>c</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+</code></pre></div><p>So the execution time is linearly reduced with the number of
+processors. Suppose that each addition takes one time unit. In serial,
+our code takes time \(n\), and parallel execution takes time
+\(\frac{n}{p}\), and is a factor of \(p\) faster.</p><p>This algorithm didn&rsquo;t really require any reworking to run in parallel.
+Let&rsquo;s now look at example that does.</p><p>Consider, instead of adding two vectors pointwise, computing the dot
+product of two vectors</p><p>$$
+s = a \cdot b =: \sum_{i=1}^n a_i b_i
+$$</p><p>In serial, the C code looks familiar and straightforward</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#111>s</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#111>size_t</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>n</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span>
+  <span style=color:#111>s</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>*</span> <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+</code></pre></div><p>Now parallelisation does not look as straightforward, since there is a
+<a href=https://en.wikipedia.org/wiki/Loop_dependence_analysis>loop carried
+dependency</a>.
+Iteration 1 requires that iteration 0 is finished, iteration 2
+requires that iteration 1 is finished, and so forth.</p><p>However, if we are willing to pay some more storage, we can rework
+this single loop into the following.</p><div class=highlight><div style=color:#272822;background-color:#fafafa><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#272822;background-color:#fafafa><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#00a8c8>double</span> <span style=color:#111>tmp</span><span style=color:#111>[</span><span style=color:#111>n</span><span style=color:#111>];</span>
+<span style=color:#75715e>/* We can parallelise this as before */</span>
+<span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#111>size_t</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>n</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span>
+  <span style=color:#111>tmp</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>*</span> <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+
+<span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#111>size_t</span> <span style=color:#111>s</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>2</span><span style=color:#111>;</span> <span style=color:#111>s</span> <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>2</span><span style=color:#f92672>*</span><span style=color:#111>n</span><span style=color:#111>;</span> <span style=color:#111>s</span> <span style=color:#f92672>*=</span> <span style=color:#ae81ff>2</span><span style=color:#111>)</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#111>size_t</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>n</span> <span style=color:#f92672>-</span> <span style=color:#111>s</span><span style=color:#f92672>/</span><span style=color:#ae81ff>2</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>+=</span> <span style=color:#111>s</span><span style=color:#111>)</span>
+    <span style=color:#111>tmp</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>+=</span> <span style=color:#111>tmp</span><span style=color:#111>[</span><span style=color:#111>i</span> <span style=color:#f92672>+</span> <span style=color:#111>s</span><span style=color:#f92672>/</span><span style=color:#ae81ff>2</span><span style=color:#111>];</span>
+
+<span style=color:#111>s</span> <span style=color:#f92672>=</span> <span style=color:#111>tmp</span><span style=color:#111>[</span><span style=color:#ae81ff>0</span><span style=color:#111>]</span>
+</code></pre></td></tr></table></div></div><p>First we compute the pointwise product, then we perform some partial
+sums. The inner loop on line 7 is now a loop with \(\frac{n}{s}\)
+iterations that can be carried out in parallel. The outer loop now has
+\(\log_2 n\) iterations. So if we parallelise the inner loop, we
+have a parallel runtime of \(\frac{n \log_2 n}{p}\). So the speedup
+is \(\frac{p}{\log_2 n}\).</p><p>Even for these two very simple examples we can make some
+observations.</p><ol><li>Sometimes, we might need to rewrite an algorithm slightly to expose
+parallelism;</li><li>A parallel algorithm may not exhibit perfect speedup. That is, we
+may not get a performance increase of \(p\) when we employ
+\(p\) processors.</li></ol><p>In these examples we note that we&rsquo;ve rewritten them to expose
+potential parallelism, but haven&rsquo;t looked yet at how to realise that
+parallelism. We&rsquo;ll do so when we introduce programming models.</p><h2 id=a-thought-experiment>A thought experiment
+<a class=anchor href=#a-thought-experiment>#</a></h2><p>In the previous examples, we set up a problem where we had some piece
+of code and needed to parallelise it. We saw that even if the code is
+perfectly parallel, the potential speedup may be less than perfect.</p><p>The examples we showed were not whole programs, and the real world is
+far from perfect, so we might expect that more realistic performance
+models are more complicated. Before we look at two of them, let&rsquo;s see
+if we can construct a model for ourselves.</p><p>The setting we have in mind is that we have some computation that
+requires \(N\) units of work, taking \(T\) seconds on a single
+process.</p><blockquote class=exercise><h3>Exercise</h3><p>Write down a formula (model) for the time to solution on \(P\) processes,
+given that a program takes \(T\) seconds on one computer.</p><blockquote class=question><h3>Question</h3><span><p>Given your model, how would you define <em>speedup</em> and <em>efficiency</em>?</p><p>What assumptions did you make in constructing your model?</p><p>Can you think of any reasons why the observed speedup in &ldquo;real life&rdquo;
+might be lower than predicted by your model?</p></span></blockquote></blockquote><h2 id=amdahl>Amdahl&rsquo;s law and strong scaling
+<a class=anchor href=#amdahl>#</a></h2><p>This model considers a fixed problem size. That is, we fix the \(N\)
+units of work that we want to perform. It then makes an assumption
+about how much of that work is (potentially) parallelisable and
+attempts to answer the question of what speedup we might obtain if we
+were able to parallelise that part of the code perfectly.</p><p>Let \(F_s\) be the <em>serial fraction</em> and \(F_p := 1 - F_s\) the
+<em>parallel fraction</em> of a given code and suppose that a problem takes
+\(T_1\) seconds on a single process.</p><figure style=width:75%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/serial-fraction.svg alt="Division of a code into serial and parallelisable parts."><figcaption><p>Division of a code into serial and parallelisable parts.</p></figcaption></figure><p>We assume that we can perfectly parallelise the parallel fraction, and
+so the total parallel execution time on \(P\)
+processors is</p><p>$$
+T_P := T_1 \left(F_s + \frac{F_p}{P}\right).
+$$</p><p>Defining the speedup as the ratio
+$$
+S_P := \frac{T_1}{T_P}
+$$</p><p>we observe that the maximum speedup we can obtain is</p><p>$$
+S_\infty = \lim_{P \to \infty} \frac{T_1}{T_1\left(F_s +
+\frac{F_p}{P}\right)} = \frac{1}{F_s}.
+$$</p><p>This phenomenon, where the maximum speedup is limited by the serial
+fraction of the code, is known as <a href=https://dl.acm.org/doi/10.1145/1465482.1465560>Amdahl&rsquo;s
+law</a> after <a href=https://en.wikipedia.org/wiki/Gene_Amdahl>Gene
+Amdahl</a>.</p><blockquote class=exercise><h3>Exercise</h3><p>Consider a code that has a 2 second serial setup phase, and then
+carries out a parallelisable computation for 1200 seconds on a single
+processor.</p><p>What does Amdahl&rsquo;s law predict the speedup and efficiency to be when
+executed on</p><ol><li>100 processors;</li><li>500 processors?</li></ol></blockquote><blockquote class=exercise><h3>Exercise</h3>Consider the implications of Amdahl&rsquo;s law. Suppose we wish to maintain
+a fixed parallel efficiency of 80%. How does the parallel fraction of
+the code have to increase as a function of the number of processors?</blockquote><p>This type of parallel scaling, where we <em>fix</em> the problem size and add
+more compute resources, is termed <em>strong scaling</em>. That is, fix have
+a fixed total work \(N\) and each process performs a decreasing
+fraction of the work \(\frac{N}{P}\) as we add more processes.</p><p>This is an appropriate metric to consider when what we want to do is
+take a fixed size problem and ask ourselves how fast we might possibly
+run it.</p><p>Amdahl&rsquo;s law seems to paint a rather disappointing picture. If I have
+even 1% serial fraction in my code, the best possible speedup I can
+expect from applying parallelism is 100.</p><figure style=width:75%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/strong-scaling.svg alt="Strong scaling eventually runs into Amdahl&amp;rsquo;s law. The serial fraction eventually dominates the computation time."><figcaption><p>Strong scaling eventually runs into Amdahl&rsquo;s law. The serial fraction eventually dominates the computation time.</p></figcaption></figure><p>Fortunately, there is an implicit assumption hiding in Amdahl&rsquo;s model,
+which is that we are only ever interested in <em>fixed</em> problem sizes. In
+typical use, this is not the case, since there is often a way we can
+increase the size of a problem. For example, we might add more
+resolution to a weather forecast so that we have more accurate
+predictions of where <em>exactly</em> in Durham it will be raining<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup>.</p><p>This leads us to a different way of thinking about parallel scaling
+and efficiency.</p><h2 id=gustafsons-law-and-weak-scaling>Gustafson&rsquo;s law and weak scaling
+<a class=anchor href=#gustafsons-law-and-weak-scaling>#</a></h2><p>Rather than starting with sequential code and asking how it will
+speedup when parallelising it, here we start with a problem that runs
+in parallel, again with known serial and parallel fractions. Now we
+ask ourselves if we had run the code in serial, how long would it have
+taken?</p><p>That is, we know \(T_P\), the time on \(P\) processors, and we
+derive the time on one processor</p><p>$$
+T_1 = T_P F_s + P F_p T_P.
+$$</p><p>Here, we used that the parallel splits into a serial part and a
+parallelisable part. The serial part contributes the same to the runtime in
+serial or parallel, in serial the parallelisable part takes \(P\)
+times as long one one process as on \(P\) processes.</p><p>Again, we can write the speedup</p><p>$$
+S_P = \frac{T_1}{T_P} = F_s + P F_p = P + (1 - P)F_s.
+$$</p><p>This approach models the setup where we have a serial fraction that is
+independent of the problem size, and a parallel fraction that we can
+replicate arbitrarily.</p><p>This type of parallel scalability is called <em>weak scaling</em>. In this
+scenario we fix the problem size <em>per process</em>. In this scenario, the
+total work \(N\) increases when we add more processes, since we
+require that the ratio \(\frac{N}{P}\) is constant as we change \(P\).</p><p>This metric is an appropriate one to consider when we have a fixed
+runtime we are targetting and are asking how large a problem we could
+run (by adding more compute resources).</p><figure style=width:75%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/weak-scaling.svg alt="Perfect weak scaling matches the number of processes to the problem size, giving constant runtime for increasing problem sizes by adding more processes."><figcaption><p>Perfect weak scaling matches the number of processes to the problem size, giving constant runtime for increasing problem sizes by adding more processes.</p></figcaption></figure><blockquote class=exercise><h3>Exercise</h3><p>Produce plots of the normalised speedup as given by the two approaches
+for a range of serial fractions from \( F_s = 0.01 \) to \( F_s =
+0.5 \).</p><p>Compare the behaviour of the speedup curve over a range of processes
+from 1 to 1000.</p><p>What observations can you make?</p></blockquote><h2 id=pitfalls-and-shortcomings>Pitfalls and shortcomings
+<a class=anchor href=#pitfalls-and-shortcomings>#</a></h2><p>These two speedup models are our first encounter with <em>performance
+models</em>. They can be useful, but we should note some of their
+shortcomings.</p><p>First, they are very simplistic. They suppose that a (potentially
+complicated) program can be divided into two separate parts which may
+then be treated independently. In fact, it is very likely that
+changing a program such that it runs in parallel will effect the
+execution of serial parts of that same program on real hardware. This
+might be, for example, due to <a href=https://travisdowns.github.io/blog/2020/08/19/icl-avx512-freq.html>frequency
+scaling</a>
+or <a href=https://igoro.com/archive/gallery-of-processor-cache-effects/>cache
+effects</a>.</p><p>Another issue is that these models do not consider any overhead that
+comes from introducing parallelism. We will see some examples of this
+later in the course.</p><p>Some of these problems, especially in relation to Amdahl&rsquo;s law, are
+discussed in more detail by Michael Wolfe in an <a href=https://www.hpcwire.com/2015/01/22/compilers-amdahls-law-still-relevant/>article on
+hpcwire</a>.</p><p>We should also note that speedup in these models is reported relative
+to the serial performance. Can you think of why that might be a bad idea?</p><blockquote class=exercise><h3>Exercise</h3><p>Can you think of any ways that you could &ldquo;cheat&rdquo; these scaling models?</p><p>For example, how could you improve the scalability without actually
+improving the time to solution?</p><p>Hint: is scalable code good code? What information does a scaling plot
+<em>not</em> give you?</p></blockquote><h2 id=summary>Summary
+<a class=anchor href=#summary>#</a></h2><p>We considered two different ways of measuring the speedup of a
+parallel program. Which one is most relevant depends on what the
+properties of the problem you are trying to parallelise are.</p><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>These examples are adapted from section 2.1 of Victor Eijkhout&rsquo;s
+<a href=https://pages.tacc.utexas.edu/istc/istc.html>Introduction to High Performance Scientific
+Computing</a>,
+reproduced under <a href=https://creativecommons.org/licenses/by/3.0/>CC-BY
+3.0</a>. <a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p>It is probably not efficient to use that many! <a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p>Some might claim this is easy, namely that it is always raining
+everywhere in Durham. <a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></article><footer class=book-footer><div class="flex flex-wrap justify-between"><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/commit/d488ecdf20e1aba21512c0e81135546a0c9a77d7 title="Last modified by Lawrence Mitchell | April 7, 2022" target=_blank rel=noopener><img src=/phys52015/svg/calendar.svg class=book-icon alt=Calendar>
+<span>April 7, 2022</span></a></div><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/edit/main/site/content/notes/theory/scaling-laws.md target=_blank rel=noopener><img src=/phys52015/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div></div><div class="flex flex-wrap align-right"><p>© 2020&ndash; <a href=mailto:lawrence.mitchell@durham.ac.uk>Lawrence Mitchell</a>, <a href=https://www.ippp.dur.ac.uk/~hschulz/>Holger Schulz</a>, <a href="https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712">Christian Arnold</a> & <a href=https://www.dur.ac.uk/>Durham University</a>.</p><p><a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=/phys52015/cc-by-sa.svg></a>
+This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.</p></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#some-simple-examples3>Some simple examples</a></li><li><a href=#a-thought-experiment>A thought experiment</a></li><li><a href=#amdahl>Amdahl&rsquo;s law and strong scaling</a></li><li><a href=#gustafsons-law-and-weak-scaling>Gustafson&rsquo;s law and weak scaling</a></li><li><a href=#pitfalls-and-shortcomings>Pitfalls and shortcomings</a></li><li><a href=#summary>Summary</a></li></ul></nav></aside></main></body></html>

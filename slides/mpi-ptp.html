@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>MPI: point to point</title>
+    <link rel="shortcut icon" href="/phys52015/favicon.svg" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/reset.min.css"
+          integrity="sha512-Mjxkx+r7O/OLQeKeIBCQ2yspG1P5muhAtv/J+p2/aPnSenciZWm5Wlnt+NOUNA4SHbnBIE/R2ic0ZBiCXdQNUg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/reveal.min.css"
+          integrity="sha512-WFGU7IgfYR0dq5aORzbD+NApAXdExNZFb7LaoO8olYImBW/iZxAwjKEuT+oYcFR6gOd+DAFssq/icMn8YVbQxQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/theme/solarized.min.css"
+          integrity="sha512-sUF1FAUpi9yPXCDOPsRwzh71zrCVkcT4SfwxBlQeHwMbH1aTGcSdI00GRLaH6iXRSBTazGH/u6sGQTc1tGqofg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/highlight/zenburn.min.css"
+          integrity="sha512-JPxjD2t82edI35nXydY/erE9jVPpqxEJ++6nYEoZEpX2TRsmp2FpZuQqZa+wBCen5U16QZOkMadGXHCfp+tUdg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/reveal.min.js"
+            integrity="sha512-K7P1+dtPriNNHlE4aJr+JKx1X6R0wvy24QBqL2CxaHc4XdkQjrH2t2FCrgoxZGMh6s1TgigNLEdrWa6NJra6Zg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/markdown/markdown.min.js"
+            integrity="sha512-VMIcHSU7cVYRxUYr9l/t/iRO98QUfuTw8inT0mFklWb6HhKwLkjA0F24O42RL39RKGenNEK/TlEWB2NEy8w4Ng=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/highlight/highlight.min.js"
+            integrity="sha512-NVdqCvsrfhXUYzGTEGGBFf5jxheVVcglfdvO8r+WdG0BKMrRYvaiCGIC0S+wf4hkE3Xq43gTd1k3Mwl/UNgdvw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.1.2/plugin/math/math.min.js"
+            integrity="sha512-3HmB6PODGpVVNHOzPd/iva9nhAtO8o5lNh8ukjgcswV+iQTRZFqdMWJW25dvcSploiX4I4M6uuUKIV9BaogQhw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style type="text/css">
+  .container {
+      display: flex;
+  }
+  .col {
+      flex: 1;
+  }
+  .reveal p {
+      text-align: left;
+  }
+  .reveal .center {
+      margin-left: auto;
+      margin-right: auto;
+      display: inline-block;
+  }
+  .reveal ul {
+      display: block;
+  }
+  .reveal ol {
+      display: block;
+  }
+  .reveal img {
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+  }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section>
+<section data-markdown><textarea data-template>
+
+# MPI: point to point messages
+
+<div class="center">
+
+[Notes](/phys52015/notes/mpi/point-to-point)
+
+</div>
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Main idea
+
+- Two-sided communication (sender and receiver)
+- Processes identified by `(communicator, rank)` pair
+- Need to "describe" data to the library
+  - How much data to send, where to get it from
+  - How much data to receive, where to put it
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Pointers and datatypes
+
+```c
+int MPI_Send(const void *buffer, int count, MPI_Datatype dtype,
+     int dest, int tag, MPI_Comm comm);
+
+int MPI_Recv(void *buffer, int count, MPI_Datatype dtype,
+     int src, int tag, MPI_Comm comm, MPI_Status *status);
+```
+
+- To pass data to library, pass _pointer_ to first element
+
+```c
+/* Sending from an array */
+int *data = ...;
+MPI_Send(data, ...);
+
+/* Sending a scalar value */
+double scalar = 10;
+MPI_Send(&scalar, ...);
+```
+
+</textarea></section>
+<section data-markdown><textarea data-template>
+
+### How does MPI know what to send?
+
+- `count` and `datatype` arguments
+  - `MPI_Datatype` describes single "unit"
+  - `count` how many copies of the unit described by the datatype?
+  
+| C type   | MPI_Datatype |
+|:---------|:-------------|
+| `char`   | MPI_CHAR     |
+| `int`    | MPI_INT      |
+| `float`  | MPI_FLOAT    |
+| `double` | MPI_DOUBLE   |
+
+</textarea></section>
+<section data-markdown><textarea data-template>
+
+### Example
+
+```c
+/* Single scalar value */
+double value = ...;
+MPI_Send(&value, 1, MPI_DOUBLE, ...);
+```
+
+```c
+/* Second entry of array */
+double *array = ...;
+MPI_Send(&array[1], 1, MPI_DOUBLE, ...)
+```
+
+```c
+/* Five entries of the array */
+double *array = ...;
+MPI_Send(array, 5, MPI_DOUBLE, ...)
+```
+
+</textarea></section>
+<section data-markdown><textarea data-template>
+
+### _No type-checking_
+
+- Datatype description is _independent_ of actual type of data buffer
+- If you describe your data incorrectly, MPI won't complain
+  - You get to keep both pieces
+  
+```c
+int value = ...;
+/* MPI will not complain, buffer overflow */
+MPI_Send(&value, 5, MPI_INT, ...);
+```
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Message matching
+
+- Messages sent/received over a communicator: `(rank, comm)` pair
+- Messages with the same `(rank, comm)` pair can be distinguished by
+  _tags_
+- No matching on count or datatype (can differ on sender and receiver)
+- No message overtaking
+
+</textarea></section>
+<section data-markdown><textarea data-template>
+
+### Example
+
+```c
+if (rank == 0) {
+  /* This message is matched ... */
+  MPI_Send(..., 1 /* dest */, 0 /* tag */, MPI_COMM_WORLD);
+} else if (rank == 1) {
+  /* ... here */
+  MPI_Recv(..., 0 /* src  */, 0 /* tag */,
+           MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+}
+```
+
+</textarea></section>
+<section data-markdown><textarea data-template>
+
+### Example: mismatch
+
+```c
+if (rank == 0) {
+  /* This message is not matched ... */
+  MPI_Send(..., 1 /* dest */, 0 /* tag */, MPI_COMM_WORLD);
+} else if (rank == 1) {
+  /* ... the tag is different */
+  MPI_Recv(..., 0 /* src  */, 1 /* tag */,
+           MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+}
+```
+
+</textarea></section>
+</section>
+<section>
+<section data-markdown><textarea data-template>
+
+## Deadlocks
+
+- Ordering of sends and receives is important
+
+```c
+if (rank == 0) {
+  MPI_Send(sendbuf, nentries, MPI_INT, 1, 0, ...);
+  MPI_Recv(recvbuf, nentries, MPI_INT, 1, 0, ...);
+} else if (rank == 1) {
+  MPI_Send(sendbuf, nentries, MPI_INT, 0, 0, ...);
+  MPI_Recv(recvbuf, nentries, MPI_INT, 0, 0, ...);
+}
+```
+
+- Deadlock (both waiting for a receive to appear)
+
+- Exercise:
+  [deadlocks](/phys52015/notes/mpi/point-to-point/#deadlock-exercise)
+  
+---
+
+## Over to you
+
+- MPI [hello world](/phys52015/exercises/hello/#mpi)
+- Exercises in [point to point
+  notes](/phys52015/notes/mpi/point-to-point/)
+- Messages [around a ring](/phys52015/exercises/mpi-ring/)
+
+</textarea></section>
+</section>
+</div>
+</div>
+<script>
+  function extend() {
+    var target = {};
+    for (var i = 0; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (source.hasOwnProperty(key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+    return target;
+  }
+
+  // default options to init reveal.js
+  var defaultOptions = {
+    controls: true,
+    progress: true,
+    history: true,
+    slideNumber: true,
+    center: true,
+    transition: 'none', // none/fade/slide/convex/concave/zoom
+    plugins: [
+      RevealMarkdown,
+      RevealHighlight,
+      RevealMath,
+    ],
+    markdown: {smartypants: true}
+  };
+
+  // options from URL query string
+  var queryOptions = Reveal().getQueryHash() || {};
+
+  var options = extend(defaultOptions, {}, queryOptions);
+</script>
+
+
+<script>
+  Reveal.initialize(options);
+</script>
+</body>
+</html>

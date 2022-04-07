@@ -1,0 +1,117 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Data parallel stencil computations #  In this exercise we&rsquo;re going to explore an MPI-parallelisation of a simple image processing problem.
+In particular, we are going to reconstruct an image from its edges.
+Introduction and background #  A particularly simple way of detecting the edges in an image is to convolve it with a Laplacian kernel. That is, given some image $I$, we can obtain its edges with
+$$ E = \nabla^2 I."><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="MPI: domain decomposition and halo exchanges"><meta property="og:description" content="Data parallel stencil computations #  In this exercise we&rsquo;re going to explore an MPI-parallelisation of a simple image processing problem.
+In particular, we are going to reconstruct an image from its edges.
+Introduction and background #  A particularly simple way of detecting the edges in an image is to convolve it with a Laplacian kernel. That is, given some image $I$, we can obtain its edges with
+$$ E = \nabla^2 I."><meta property="og:type" content="article"><meta property="og:url" content="https://teaching.wence.uk/phys52015/exercises/mpi-stencil/"><meta property="article:modified_time" content="2022-04-07T18:13:40+01:00"><title>MPI: domain decomposition and halo exchanges | PHYS52015 – Introduction to HPC</title><link rel=manifest href=/phys52015/manifest.json><link rel=icon href=/phys52015/favicon.png type=image/x-icon><link rel=stylesheet href=/phys52015/book.min.0cb0b7d6a1ed5d0e95321cc15edca4d6e9cc406149d1f4a3f25fd532f6a3bb38.css integrity="sha256-DLC31qHtXQ6VMhzBXtyk1unMQGFJ0fSj8l/VMvajuzg="><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css integrity=sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X crossorigin=anonymous><script defer src=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js integrity=sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4 crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js integrity=sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa crossorigin=anonymous></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false},{left:"\\(",right:"\\)",display:false},{left:"\\[",right:"\\]",display:true}]})});</script></head><body dir=ltr><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav><div class=book-brand><img class=book-center src=/phys52015/logo.svg alt=Logo><h2><a href=/phys52015>PHYS52015 – Introduction to HPC</a></h2></div><ul><li><span>Administrivia</span><ul><li><a href=/phys52015/setup/remote/>Remote editing/development</a></li><li><a href=/phys52015/setup/hamilton-quickstart/>Hamilton access & quickstart</a></li><li><a href=/phys52015/setup/byod/>Local setup</a></li><li><a href=/phys52015/setup/configuration/>ssh configuration</a></li><li><a href=/phys52015/setup/unix/>Unix resources</a></li></ul></li><li><span>Exercises</span><ul><li><a href=/phys52015/exercises/hello/>Parallel Hello World</a></li><li><a href=/phys52015/exercises/openmp-loop/>OpenMP: parallel loops</a></li><li><a href=/phys52015/exercises/openmp-stencil/>OpenMP: stencils</a></li><li><a href=/phys52015/exercises/openmp-reduction/>OpenMP: synchronisation</a></li><li><a href=/phys52015/exercises/mpi-ring/>MPI: messages round a ring</a></li><li><a href=/phys52015/exercises/mpi-pi/>MPI: Calculating π</a></li><li><a href=/phys52015/exercises/mpi-ping-pong/>MPI: ping-pong latency</a></li><li><a href=/phys52015/exercises/mpi-collectives/>MPI: simple collectives</a></li><li><a href=/phys52015/exercises/mpi-stencil/ class=active>MPI: domain decomposition and halo exchanges</a></li></ul></li><li><a href=/phys52015/coursework/>Coursework: stencils and collectives</a></li><li><span>Notes</span><ul><li><a href=/phys52015/notes/introduction/>Introduction and motivation</a></li><li><span>Theory & concepts</span><ul><li><a href=/phys52015/notes/theory/scaling-laws/>Parallel scaling laws</a></li><li><a href=/phys52015/notes/theory/hardware-parallelism/>Parallelism in hardware: an overview</a></li><li><a href=/phys52015/notes/theory/concepts/>Parallel patterns</a></li></ul></li><li><a href=/phys52015/notes/openmp/>OpenMP</a><ul><li><a href=/phys52015/notes/openmp/intro/>What is OpenMP?</a></li><li><a href=/phys52015/notes/openmp/loop-parallelism/>Loop parallelism</a></li><li><a href=/phys52015/notes/openmp/collectives/>Collectives</a></li></ul></li><li><a href=/phys52015/notes/mpi/>MPI</a><ul><li><a href=/phys52015/notes/mpi/point-to-point/>Point-to-point messaging in MPI</a></li><li><a href=/phys52015/notes/mpi/point-to-point-nb/>Non-blocking point-to-point messaging</a></li><li><a href=/phys52015/notes/mpi/collectives/>Collectives</a></li><li><a href=/phys52015/notes/mpi/advanced/>Advanced topics</a></li></ul></li></ul></li><li><a href=/phys52015/resources/>Further resources</a></li><li><a href=/phys52015/acknowledgements/>Acknowledgements</a></li><li><span>Past editions</span><ul><li><span>2020/21</span><ul><li><a href=/phys52015/past-editions/2020-21/coursework/>Coursework: parallel dense linear algebra</a></li></ul></li></ul></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/phys52015/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>MPI: domain decomposition and halo exchanges</strong>
+<label for=toc-control><img src=/phys52015/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#introduction-and-background>Introduction and background</a></li><li><a href=#implementation>Implementation</a><ul><li><a href=#parallelisation>Parallelisation</a></li><li><a href=#data-distribution>Data distribution</a></li><li><a href=#halo-exchange>Halo exchange</a></li></ul></li></ul></nav></aside></header><article class=markdown><blockquote class="book-hint warning"><span>This course page was updated until March 2022 when I left Durham University.
+For future updates, please visit
+the <a href=https://durham-phys52015.github.io/>new version
+of the course pages</a>.</span></blockquote><h1 id=data-parallel-stencil-computations>Data parallel stencil computations
+<a class=anchor href=#data-parallel-stencil-computations>#</a></h1><p>In this exercise we&rsquo;re going to explore an MPI-parallelisation of a
+simple image processing problem.</p><p>In particular, we are going to reconstruct an image from its edges.</p><h2 id=introduction-and-background>Introduction and background
+<a class=anchor href=#introduction-and-background>#</a></h2><p>A particularly simple way of detecting the edges in an image is to
+convolve it with a <a href=https://aishack.in/tutorials/sobel-laplacian-edge-detectors/>Laplacian
+kernel</a>.
+That is, given some image $I$, we can obtain its edges with</p><p>$$
+E = \nabla^2 I.
+$$</p><p>I discretise the $\nabla^2$ operator with a <a href=https://en.wikipedia.org/wiki/Five-point_stencil>five-point finite
+difference stencil</a>.</p><p>Given an image of edges $E$, we can (approximately) reconstruct the
+image $I$ by applying the inverse $\left(\nabla^2\right)^{-1}$. The
+approximate reconstructed image is</p><p>$$
+I^r = \left(\nabla^2\right)^{-1} E.
+$$</p><p>We discretise the image as a 2D array, computing the edges can be done
+in one step</p><p>$$
+E_{i, j} = I_{i-1, j} + I_{i+1, j} + I_{i, j-1} + I_{i, j+1} - 4I_{i,j}
+$$</p><p>for all pixels $i, j$ in the image.</p><p>To reconstruct the image, we will use a <a href=https://en.wikipedia.org/wiki/Jacobi_method>Jacobi
+iteration</a>, given an
+initial guess for the reconstructed image, $I^{r, 0}$, we set
+$k = 0$ and then an improved guess is given by</p><p>$$
+I_{i,j}^{r,k+1} = \frac{1}{4}\left(I_{i-1, j}^{r,k} + I_{i+1,j}^{r,k} +
+I_{i,j-1}^{r,k} + I_{i,j+1}^{r,k} - E_{i,j}\right)
+$$</p><p>for all pixels $i, j$ in the image.</p><p>After many many iterations ($k \to \infty$), this will converge to a
+good approximation to the initial image.</p><blockquote class="book-hint danger"><p><strong>WARNING, WARNING</strong>. This is a <em>terrible</em> way of inverting the
+Laplacian, we&rsquo;re using it to illustrate some domain decomposition and
+parallelisation approaches.</p><p>If you actually want to do this kind of thing in the wild, please get
+in touch and we can figure out a better way.</p></blockquote><h2 id=implementation>Implementation
+<a class=anchor href=#implementation>#</a></h2><p>In the <code>code/mpi/image-reconstruction</code> subdirectory of the
+<a href=https://github.com/wenceorg/phys52015>repository</a>, I provide some skeleton code. It runs
+correctly in serial to reconstruct images. Build the code with <code>make</code>
+and then run it like so (there are some sample images in the <code>images</code>
+subdirectory)</p><pre><code>$ ./main images/mario.pgm edges.pgm reconstructed.pgm 100
+</code></pre><p>The detected edges are written to <code>edges.pgm</code>, the reconstructed image
+to <code>reconstructed.pgm</code> and the number of iterations is selected as
+100.</p><blockquote class=exercise><h3>Exercise</h3><p>Build and run the code and look at the input, edge, and reconstructed
+images.</p><p>With X-forwarding enabled (<code>ssh -Y</code> or <code>ssh -X</code>) you can view these
+images on Hamilton with <code>display imagename</code>.</p></blockquote><h3 id=parallelisation>Parallelisation
+<a class=anchor href=#parallelisation>#</a></h3><p>To parallelise this code we need to do three things:</p><ol><li>Split the input image up across the processes;</li><li>Correctly exchange data during the Jacobi iteration;</li><li>Gather the partial images for final output.</li></ol><p>I&rsquo;ve already implemented gathering (in <code>GatherImage</code>), you need to
+implement <code>DistributeImage</code> (to split the image up) and add
+communication in <code>ReconstructFromEdges</code>.</p><h3 id=data-distribution>Data distribution
+<a class=anchor href=#data-distribution>#</a></h3><p>The parallelisation strategy we use is termed domain decomposition. We
+divide up the whole domain (in this case the image) approximately
+equally among all processes. For 2D problems, we would usually use a
+two-dimensional decomposition, as illustrated in the figure below.</p><figure style=width:50%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/image-decomposition.svg alt="Decomposition of a 2D image into nine pieces"><figcaption><p>Decomposition of a 2D image into nine pieces</p></figcaption></figure><p>To simplify the implementation here, we&rsquo;ll only use a one-dimensional
+distribution. Each process will work on a contiguous chunk of image
+rows.</p><p>An image object is represented as a pointer to a struct</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#00a8c8>struct</span> <span style=color:#111>_p_Image</span> <span style=color:#111>{</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>NX</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>NY</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>threshold</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>float</span> <span style=color:#f92672>*</span><span style=color:#111>data</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>float</span> <span style=color:#f92672>*</span><span style=color:#111>top_boundary</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>float</span> <span style=color:#f92672>*</span><span style=color:#111>bottom_boundary</span><span style=color:#111>;</span>
+<span style=color:#111>};</span>
+<span style=color:#00a8c8>typedef</span> <span style=color:#00a8c8>struct</span> <span style=color:#111>_p_Image</span> <span style=color:#f92672>*</span> <span style=color:#111>Image</span><span style=color:#111>;</span>
+</code></pre></div><p>For an image, the number of rows is <code>image->NY</code>, the number of columns
+is <code>image->NX</code>. The threshold (the maximum value in the image) is in
+<code>image->threshold</code> (you should just copy this around).</p><p>The image data itself is in <code>image->data</code>, to index, I provide a
+<code>linear_index</code> function:</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#00a8c8>int</span> <span style=color:#75af00>linear_index</span><span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>row</span><span style=color:#111>,</span> <span style=color:#00a8c8>int</span> <span style=color:#111>col</span><span style=color:#111>,</span> <span style=color:#00a8c8>int</span> <span style=color:#111>NX</span><span style=color:#111>);</span>
+</code></pre></div><p>which turns a row and and column index (counting from the top-left
+corner) into a single index into <code>image->data</code>. An image distribution
+on two processes is shown below.</p><figure style=width:40%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/image-two-ranks.svg alt="Decomposition of a 2D image between two processes."><figcaption><p>Decomposition of a 2D image between two processes.</p></figcaption></figure><p>There are some utility functions for allocating images and setting up
+the sizes. To create an image with space allocated we first create an
+empty image and then set the number of pixels in the X and Y
+directions (these should be the number of pixels for the local part of
+the image), along with the threshold (you can either set this to 255,
+or else copy it from an existing image):</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#111>Image</span> <span style=color:#111>image</span><span style=color:#111>;</span>
+<span style=color:#111>CreateImage</span><span style=color:#111>(</span><span style=color:#f92672>&amp;</span><span style=color:#111>image</span><span style=color:#111>);</span>
+<span style=color:#111>SetSizes</span><span style=color:#111>(</span><span style=color:#111>image</span><span style=color:#111>,</span> <span style=color:#111>NX</span><span style=color:#111>,</span> <span style=color:#111>NY</span><span style=color:#111>);</span>
+<span style=color:#111>SetThreshold</span><span style=color:#111>(</span><span style=color:#111>image</span><span style=color:#111>,</span> <span style=color:#111>threshold</span><span style=color:#111>);</span>
+
+<span style=color:#75715e>/* Deallocate all data */</span>
+<span style=color:#111>DestroyImage</span><span style=color:#111>(</span><span style=color:#f92672>&amp;</span><span style=color:#111>image</span><span style=color:#111>);</span>
+</code></pre></div><blockquote class=exercise><h3>Exercise</h3><p>Implement distribution of the image amongst the processes. You can
+look at the <code>GatherImage</code> function for inspiration. You should scatter
+the input image (read on rank 0) across all processes using the
+inverse of the gathering approach.</p><p>Having done this, you can now run the code in parallel. It will work,
+but will produce incorrect answers since at the boundary of the
+partial images there is no data exchange.</p><details><summary>Hint</summary><div class=markdown-inner>I save the partial images on each process with names starting with
+<code>rankXX</code>, looking at these might help to debug if things go wrong.</div></details></blockquote><h3 id=halo-exchange>Halo exchange
+<a class=anchor href=#halo-exchange>#</a></h3><p>Remember that in MPI, each process has its own memory space. So the
+different processes can&rsquo;t directly access data that is on neighbouring
+processes. So the picture is perhaps better drawn with separation
+between the neighbours.</p><figure style=width:30%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/image-two-ranks-split.svg alt="Decomposition of a 2D image showing separation of memory"><figcaption><p>Decomposition of a 2D image showing separation of memory</p></figcaption></figure><p>This presents us with a problem, because the stencil computation needs
+to read pixels in a small neighbourhood around each pixel in the
+image.</p><p>We can arrange that the correct data are available by extending the
+extent of the image by the stencil width (one pixel in this case),
+creating <em>halo</em> or <em>ghost</em> regions. Before computing we copy
+up-to-date data from the relevant process into the halo. We then
+compute on the owned data. These are the <code>top_boundary</code> and
+<code>bottom_boundary</code> arrays in the image struct. This copying is shown
+schematically below.</p><figure style=width:40%><img class=scaled src=https://teaching.wence.uk/phys52015/images/manual/image-decomposition-split-halo.svg alt="Halo region copies between processes"><figcaption><p>Halo region copies between processes</p></figcaption></figure><p>The image struct contains some space for these boundaries in the
+<code>top_boundary</code> and <code>bottom_boundary</code> arrays. The code in
+<code>ReconstructFromEdges</code> is already setup to use these correctly, you
+just need to populate them with the correct values.</p><blockquote class="book-hint info">Usually we would allocate halo data as part of the full image array
+and adjust our loops accordingly. The approach I use here simplifies
+the implementation a little bit, and is conceptually equivalent.</blockquote><blockquote class=exercise><h3>Exercise</h3><p>You should implement the halo exchange in the <code>ReconstructFromEdges</code>
+function. There&rsquo;s a comment indicating where it should occur.</p><p>With this done, you should be able to run the code in parallel and
+recover images from their edges.</p><details><summary>Hint</summary><div class=markdown-inner>You should need two receives (one from above one from below) and two
+sends (similarly). To avoid the need to special case at the edges of
+the full image, you can use <code>MPI_PROC_NULL</code> as a source or destination
+rank. This turns any message into a &ldquo;no-op&rdquo; which returns immediately.</div></details></blockquote></article><footer class=book-footer><div class="flex flex-wrap justify-between"><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/commit/d488ecdf20e1aba21512c0e81135546a0c9a77d7 title="Last modified by Lawrence Mitchell | April 7, 2022" target=_blank rel=noopener><img src=/phys52015/svg/calendar.svg class=book-icon alt=Calendar>
+<span>April 7, 2022</span></a></div><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/edit/main/site/content/exercises/mpi-stencil.md target=_blank rel=noopener><img src=/phys52015/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div></div><div class="flex flex-wrap align-right"><p>© 2020&ndash; <a href=mailto:lawrence.mitchell@durham.ac.uk>Lawrence Mitchell</a>, <a href=https://www.ippp.dur.ac.uk/~hschulz/>Holger Schulz</a>, <a href="https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712">Christian Arnold</a> & <a href=https://www.dur.ac.uk/>Durham University</a>.</p><p><a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=/phys52015/cc-by-sa.svg></a>
+This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.</p></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#introduction-and-background>Introduction and background</a></li><li><a href=#implementation>Implementation</a><ul><li><a href=#parallelisation>Parallelisation</a></li><li><a href=#data-distribution>Data distribution</a></li><li><a href=#halo-exchange>Halo exchange</a></li></ul></li></ul></nav></aside></main></body></html>

@@ -1,0 +1,247 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Overview #  The submission deadline for this work is 2022-01-10 at 14:00UTC.  This coursework has two parts. In the first part, you will design and implement OpenMP parallelisation of a simple stencil code. In the second part, you will develop a tree-based implementation of MPI_Allreduce, and then perform some benchmarking of your implementation against both the vendor-provided version, and the non-scalable version we saw in the exercises.
+You will be assessed by submitting both your code, and brief writeups of your findings through GitHub classroom."><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Coursework: stencils and collectives"><meta property="og:description" content="Overview #  The submission deadline for this work is 2022-01-10 at 14:00UTC.  This coursework has two parts. In the first part, you will design and implement OpenMP parallelisation of a simple stencil code. In the second part, you will develop a tree-based implementation of MPI_Allreduce, and then perform some benchmarking of your implementation against both the vendor-provided version, and the non-scalable version we saw in the exercises.
+You will be assessed by submitting both your code, and brief writeups of your findings through GitHub classroom."><meta property="og:type" content="article"><meta property="og:url" content="https://teaching.wence.uk/phys52015/coursework/"><meta property="article:modified_time" content="2022-04-07T18:13:40+01:00"><title>Coursework: stencils and collectives | PHYS52015 – Introduction to HPC</title><link rel=manifest href=/phys52015/manifest.json><link rel=icon href=/phys52015/favicon.png type=image/x-icon><link rel=stylesheet href=/phys52015/book.min.0cb0b7d6a1ed5d0e95321cc15edca4d6e9cc406149d1f4a3f25fd532f6a3bb38.css integrity="sha256-DLC31qHtXQ6VMhzBXtyk1unMQGFJ0fSj8l/VMvajuzg="><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css integrity=sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X crossorigin=anonymous><script defer src=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js integrity=sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4 crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js integrity=sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa crossorigin=anonymous></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false},{left:"\\(",right:"\\)",display:false},{left:"\\[",right:"\\]",display:true}]})});</script></head><body dir=ltr><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav><div class=book-brand><img class=book-center src=/phys52015/logo.svg alt=Logo><h2><a href=/phys52015>PHYS52015 – Introduction to HPC</a></h2></div><ul><li><span>Administrivia</span><ul><li><a href=/phys52015/setup/remote/>Remote editing/development</a></li><li><a href=/phys52015/setup/hamilton-quickstart/>Hamilton access & quickstart</a></li><li><a href=/phys52015/setup/byod/>Local setup</a></li><li><a href=/phys52015/setup/configuration/>ssh configuration</a></li><li><a href=/phys52015/setup/unix/>Unix resources</a></li></ul></li><li><span>Exercises</span><ul><li><a href=/phys52015/exercises/hello/>Parallel Hello World</a></li><li><a href=/phys52015/exercises/openmp-loop/>OpenMP: parallel loops</a></li><li><a href=/phys52015/exercises/openmp-stencil/>OpenMP: stencils</a></li><li><a href=/phys52015/exercises/openmp-reduction/>OpenMP: synchronisation</a></li><li><a href=/phys52015/exercises/mpi-ring/>MPI: messages round a ring</a></li><li><a href=/phys52015/exercises/mpi-pi/>MPI: Calculating π</a></li><li><a href=/phys52015/exercises/mpi-ping-pong/>MPI: ping-pong latency</a></li><li><a href=/phys52015/exercises/mpi-collectives/>MPI: simple collectives</a></li><li><a href=/phys52015/exercises/mpi-stencil/>MPI: domain decomposition and halo exchanges</a></li></ul></li><li><a href=/phys52015/coursework/ class=active>Coursework: stencils and collectives</a></li><li><span>Notes</span><ul><li><a href=/phys52015/notes/introduction/>Introduction and motivation</a></li><li><span>Theory & concepts</span><ul><li><a href=/phys52015/notes/theory/scaling-laws/>Parallel scaling laws</a></li><li><a href=/phys52015/notes/theory/hardware-parallelism/>Parallelism in hardware: an overview</a></li><li><a href=/phys52015/notes/theory/concepts/>Parallel patterns</a></li></ul></li><li><a href=/phys52015/notes/openmp/>OpenMP</a><ul><li><a href=/phys52015/notes/openmp/intro/>What is OpenMP?</a></li><li><a href=/phys52015/notes/openmp/loop-parallelism/>Loop parallelism</a></li><li><a href=/phys52015/notes/openmp/collectives/>Collectives</a></li></ul></li><li><a href=/phys52015/notes/mpi/>MPI</a><ul><li><a href=/phys52015/notes/mpi/point-to-point/>Point-to-point messaging in MPI</a></li><li><a href=/phys52015/notes/mpi/point-to-point-nb/>Non-blocking point-to-point messaging</a></li><li><a href=/phys52015/notes/mpi/collectives/>Collectives</a></li><li><a href=/phys52015/notes/mpi/advanced/>Advanced topics</a></li></ul></li></ul></li><li><a href=/phys52015/resources/>Further resources</a></li><li><a href=/phys52015/acknowledgements/>Acknowledgements</a></li><li><span>Past editions</span><ul><li><span>2020/21</span><ul><li><a href=/phys52015/past-editions/2020-21/coursework/>Coursework: parallel dense linear algebra</a></li></ul></li></ul></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/phys52015/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Coursework: stencils and collectives</strong>
+<label for=toc-control><img src=/phys52015/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#part-1-openmp>Part 1: OpenMP</a><ul><li><a href=#task-design-and-implement-an-openmp-parallelisation-scheme>Task: design and implement an OpenMP parallelisation scheme</a></li><li><a href=#part-1-writeup>Part 1 writeup</a></li></ul></li><li><a href=#part-2-mpi>Part 2: MPI</a><ul><li><a href=#task-implement-tree_allreduce>Task: implement <code>tree_allreduce</code></a></li><li><a href=#task-benchmarking-and-comparison-to-mpi_allreduce>Task: benchmarking and comparison to <code>MPI_Allreduce</code></a></li><li><a href=#part-2-writeup>Part 2 writeup</a></li></ul></li><li><a href=#submission>Mark scheme and submission</a></li></ul></nav></aside></header><article class=markdown><blockquote class="book-hint warning"><span>This course page was updated until March 2022 when I left Durham University.
+For future updates, please visit
+the <a href=https://durham-phys52015.github.io/>new version
+of the course pages</a>.</span></blockquote><h1 id=overview>Overview
+<a class=anchor href=#overview>#</a></h1><blockquote class="book-hint warning">The submission deadline for this work is 2022-01-10 at 14:00UTC.</blockquote><p>This coursework has two parts. In the first part, you will design and
+implement OpenMP parallelisation of a simple stencil code. In the
+second part, you will develop a tree-based implementation of
+<a href=https://teaching.wence.uk/phys52015/notes/mpi/collectives/#reductions><code>MPI_Allreduce</code></a>,
+and then perform some benchmarking of your implementation against both
+the vendor-provided version, and the non-scalable version we <a href=https://teaching.wence.uk/phys52015/exercises/mpi-ring/>saw in
+the exercises</a>.</p><p>You will be assessed by submitting both your code, and brief writeups
+of your findings through GitHub classroom. See details <a href=#submission>below</a>.</p><p>To gain access to the template code, you should <a href=https://classroom.github.com/a/2XXzmcuE>accept the classroom
+assignment</a>.</p><h2 id=part-1-openmp>Part 1: OpenMP
+<a class=anchor href=#part-1-openmp>#</a></h2><p>The <a href=https://en.wikipedia.org/wiki/Gauss%e2%80%93Seidel_method>Gauss-Seidel</a>
+method is a building block of many numerical algorithms for the
+solution of linear systems of equations.</p><p>Given some square matrix $A$ and vector $b$, it can be used to solve
+the matrix equation
+$$
+A x = b.
+$$
+To do this, we split $A$ into lower and strictly upper triangular
+parts:
+$$
+A = L_* + U
+$$
+where
+$$
+L_* =
+\begin{bmatrix}
+a_{11} & 0 & \cdots & 0 \\
+a_{21} & a_{22} & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & \cdots & \cdots & a_{nn}
+\end{bmatrix}
+\quad
+\text{and}
+\quad
+U =
+\begin{bmatrix}
+0 & a_{12} & \cdots & a_{1n} \\
+0 & 0 & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & \cdots & \cdots & 0
+\end{bmatrix}.
+$$
+Starting from some initial guess for $x$, call it $x^{(k)}$, a new guess
+is obtained by
+$$
+x^{(k+1)} = L_*^{-1}(b - U x^{(k)}).
+$$
+Since $L_*$ is lower-triangular, its inverse can be computed
+efficiently by forward substitution and so we have, for each entry of
+the solution vector
+$$
+x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j=1}^{i-1}
+a_{ij}x_j^{(k+1)} - \sum_{j=i+1}^n a_{ij} x_j^{(k)}\right).
+$$</p><p>We will apply Gauss-Seidel iteration to solve the same image
+reconstruction problem we saw in the <a href=https://teaching.wence.uk/phys52015/exercises/mpi-stencil/>MPI stencil exercise</a>.</p><h3 id=task-design-and-implement-an-openmp-parallelisation-scheme>Task: design and implement an OpenMP parallelisation scheme
+<a class=anchor href=#task-design-and-implement-an-openmp-parallelisation-scheme>#</a></h3><h4 id=overview-of-code>Overview of code
+<a class=anchor href=#overview-of-code>#</a></h4><p>The code for this part is in the <code>openmp</code> subdirectory of the template
+repository. You can build the code with <code>make</code> which produces a
+<code>./main</code> executable. A sample image if provided in <code>images/</code>, but any
+other PGM image will also work.</p><blockquote class="book-hint info"><p>On Hamilton you&rsquo;ll want to load the following modules</p><pre><code>gcc/9.3.0
+</code></pre></blockquote><p>When run on an image, the code produces some output on the convergence
+of the scheme. For example, before making any modifications from the
+template code:</p><pre><code>$ ./main images/mario.pgm edges.pgm recon.pgm 1000
+     0 ||r||/||r0|| = 1
+   100 ||r||/||r0|| = 0.00320287
+   200 ||r||/||r0|| = 0.0018596
+   300 ||r||/||r0|| = 0.00135849
+   400 ||r||/||r0|| = 0.00108396
+   500 ||r||/||r0|| = 0.000904829
+   600 ||r||/||r0|| = 0.000776414
+   700 ||r||/||r0|| = 0.000678938
+   800 ||r||/||r0|| = 0.000602047
+   900 ||r||/||r0|| = 0.000539689
+  1000 ||r||/||r0|| = 0.00048804
+</code></pre><p>We are solving a linear system of equations
+$$
+A x = b,
+$$
+given a guess of the solution $x^*$, the residual is
+$$
+r = b - A x^*.
+$$
+The executable prints out the
+<a href=https://en.wikipedia.org/wiki/Norm_%28mathematics%29>2-norm</a> of this
+residual, divided by the 2-norm of the initial residual (so that
+everything is normalised).</p><p>As the iterations converge to the solution, the residual should drop
+to zero.</p><p><strong>DO NOT</strong> change the format of the output, it is used by the
+automated testing framework to perform some basic tests of
+correctness. You can run these tests with the python script
+<code>check-convergence.py</code>. Redirect the output of the <code>main</code> program to a
+file and then run the check-convergence script:</p><pre><code>$ ./main images/mario.pgm edges.pgm recon.pgm 1000 &gt; output.txt
+$ python3 check-convergence.py output.txt
+Checking number of lines in output...ok
+Parsing output...ok
+Checking iteration counts are correct...ok
+Checking first residual is correctv...ok
+Checking residuals decrease monotonically...ok
+Checking final residual is small enough...ok
+</code></pre><p>The checker does not check exact outputs, since even a correct
+parallel scheme may not produce the same results as a serial scheme.</p><h4 id=parallelisation-goal>Parallelisation goal
+<a class=anchor href=#parallelisation-goal>#</a></h4><p>You goal is to parallelise the reconstruction of the image in the
+<code>ReconstructFromEdges</code> function. Take care that your parallelisation
+scheme does not suffer from <a href=https://teaching.wence.uk/phys52015/notes/openmp/loop-parallelism/#data-races>data races</a>. Is there a way you
+can parallelise both the loops over <code>i</code> and <code>j</code>?</p><blockquote class="book-hint info">The Gauss-Seidel iteration is order-dependent, so if you change the
+iteration order you will not obtain exactly the same answers <em>even with a
+correct implementation</em>.</blockquote><details><summary>Hint</summary><div class=markdown-inner>Think about which entries of the <code>data</code> array are read from for a
+particular iteration. Is there a way you can split the loops so that
+you can run them in parallel without data races? Breaking iterations
+into independent sets that can run in parallel is often termed
+&ldquo;colouring&rdquo;. You can see a description of this for Gauss-Seidel
+iterations in pages 14-16 of <a href=http://adl.stanford.edu/cme342/Lecture_Notes_files/lecture10-14.pdf>these slides</a>.</div></details><p>Make sure that you commit your changes and push them to your GitHub
+repository. Ensure that your code compiles without warnings and does
+not leak any memory.</p><blockquote class="book-hint info">Some basic tests of functionality are run by the GitHub CI server
+every time you push. You should make sure that your code at least
+passes these.</blockquote><h3 id=part-1-writeup>Part 1 writeup
+<a class=anchor href=#part-1-writeup>#</a></h3><p>Write up a short description (max one page) of your OpenMP
+parallelisation scheme. You should explain what problems arise when
+trying to parallelise the loops, and how you solve them. You should
+include this writeup in your repository as a PDF file called
+<code>part1.pdf</code>.</p><h2 id=part-2-mpi>Part 2: MPI
+<a class=anchor href=#part-2-mpi>#</a></h2><p>In the one of the <a href=https://teaching.wence.uk/phys52015/exercises/mpi-ring/>first MPI exercises</a>, we
+implemented a simple collective operation where we passed messages
+around a one-dimensional ring.</p><p>Now we&rsquo;re going to implement a more sophisticated
+version of this collective operation, using a tree reduction,
+discussed when we introduced <a href=https://teaching.wence.uk/phys52015/notes/mpi/collectives/>collectives</a>.</p><p>We will then benchmark the ring reduction, tree reduction, and the
+builtin <code>MPI_Allreduce</code> for a range of problem sizes, and compare to the
+simple performance models <a href=https://teaching.wence.uk/phys52015/notes/mpi/collectives/>we saw in lectures</a>.</p><p>For this part of the coursework, the template code lives in the <code>mpi</code>
+subdirectory. The <code>Makefile</code> builds an executable <code>main</code>.</p><blockquote class="book-hint info"><p>On Hamilton you&rsquo;ll want to load the following modules</p><pre><code>gcc/9.3.0
+intelmpi/gcc/2019.6
+</code></pre></blockquote><p>We can see how to use it by running with the <code>-h</code> flag</p><pre><code>$ make
+$ ./main -h
+Usage:
+./main -N N [-t MODE] [-h]
+Run benchmarking or checking of allreduce.
+
+Options:
+ -N N
+    Set the message count (required).
+
+ -t BENCH | CHECK
+    Select execution mode (default CHECK).
+    CHECK: non-exhaustive check of correctness.
+    BENCH: print timing data.
+ -h
+    Print this help.
+</code></pre><p>In checking mode, your <code>tree_allreduce</code> implementation is compared for
+correctness against <code>MPI_Allreduce</code>, and some output is printed.
+Initially all tests will fail because there is no implementation. A
+successful test run will look like the below. You should check that
+the tests run correctly for a variety of different process counts.</p><pre><code>$ mpiexec -n 2 ./main -t CHECK
+1..16
+ok 1 - MPI_SUM count 1
+ok 2 - MPI_PROD count 1
+ok 3 - MPI_MIN count 1
+ok 4 - MPI_MAX count 1
+ok 5 - MPI_SUM count 3
+ok 6 - MPI_PROD count 3
+ok 7 - MPI_MIN count 3
+ok 8 - MPI_MAX count 3
+ok 9 - MPI_SUM count 12
+ok 10 - MPI_PROD count 12
+ok 11 - MPI_MIN count 12
+ok 12 - MPI_MAX count 12
+ok 13 - MPI_SUM count 1048577
+ok 14 - MPI_PROD count 1048577
+ok 15 - MPI_MIN count 1048577
+ok 16 - MPI_MAX count 1048577
+</code></pre><h3 id=task-implement-tree_allreduce>Task: implement <code>tree_allreduce</code>
+<a class=anchor href=#task-implement-tree_allreduce>#</a></h3><p>The full version of <code>MPI_Allreduce</code> can handle arbitrary datatypes and
+combining operations (including user operations). For our
+implementation, we will restrict to the <code>MPI_INT</code> data and the builtin
+operations <code>MPI_SUM</code>, <code>MPI_PROD</code>, <code>MPI_MIN</code>, and <code>MPI_MAX</code>.</p><p>We will also restrict ourselves to reductions over communicators whose
+size is a power of two (for example 1, 2, 4, 8, &mldr;).</p><details><summary>Optional extra</summary><div class=markdown-inner>Extension to arbitrary sized communicators is not conceptually
+difficult, but does introduce quite a bit of fiddly book-keeping.</div></details><p>In <code>reduce.c</code> is a stub function <code>tree_allreduce</code> in which you should
+implement the reduction.</p><p>Recall, from the introduction to <a href=https://teaching.wence.uk/phys52015/notes/mpi/collectives/>collectives</a>, the picture of a tree reduction where at
+each level pairs of processes produce partial results. To obtain the
+final result on all processes, the sequence of messages is reversed
+from root to leaf.</p><p>Ensure that your code performs correctly, does not leak any memory
+(all objects that you allocate in <code>tree_allreduce</code> should be freed),
+and compiles without warnings.</p><blockquote class="book-hint info">Some basic tests of functionality are run by the GitHub CI server
+every time you push. You should make sure that your code at least
+passes these.</blockquote><h3 id=task-benchmarking-and-comparison-to-mpi_allreduce>Task: benchmarking and comparison to <code>MPI_Allreduce</code>
+<a class=anchor href=#task-benchmarking-and-comparison-to-mpi_allreduce>#</a></h3><p>The main executable has some benchmarking options which you can run
+that control the algorithm choice for reductions, and the size of the
+messages being sent.</p><blockquote class="book-hint info"><p>You will need to do the benchmarking on the compute notes of Hamilton,
+so you will need to write a batch script and submit your code to the
+batch system.</p><p>Leave yourself enough time to get your benchmarking runs completed,
+since Hamilton often has significant usage.</p></blockquote><p>If you run in benchmarking mode, it prints out a short timing summary
+of the time to perform the reductions.</p><pre><code>$ mpiexec -n 4 ./main -N 1024 -t BENCH
+1024 366972 1.29243e-05 2.84218e-05 2.93392e-06
+</code></pre><p>In order, these give</p><ol><li>Count (number of integers in the reduction)</li><li>Number of repetitions</li><li>Time for one repetition of <code>ring_allreduce</code></li><li>Time for one repetition of <code>tree_allreduce</code></li><li>Time for one repetition of <code>MPI_Allreduce</code></li></ol><p>Recall from the lectures that we <a href=https://teaching.wence.uk/phys52015/notes/mpi/collectives/>constructed models</a> for how ring and tree reductions
+should behave in terms of the number of processes. For a reduction
+involving $P$ processes, the ring-based scheme takes time</p><p>$$
+T_\text{ring}(B) = (P-1)T_\text{message}(B)
+$$
+and the tree-based scheme takes
+$$
+T_\text{tree}(B) = 2 (\log_2 P) T_\text{message}(B),
+$$
+where $T_\text{message}(B)$ is the time to send a message of $B$ bytes.</p><p>Your task is to benchmark the ring and tree-based implementations, as
+well as the vendor-provided <code>MPI_Allreduce</code>, with a goal of comparing
+the results to our simple models.</p><p>Benchmark the different implementations on a range of processes, from
+2 up to 128, and a range of message counts (from 1 up to $2^{24}$).</p><details><summary>Hint</summary><div class=markdown-inner><p>It makes sense to collect the data for different message counts but a
+fixed process count in the same job script. For example, to collect
+data for a count of 1, 2, and 4, your job script could execute</p><pre><code>mpiexec ./main -N 1 -t BENCH
+mpiexec ./main -N 2 -t BENCH
+mpiexec ./main -N 4 -t BENCH
+</code></pre></div></details><p>Produce plots of the behaviour of the reductions as a function of the
+number of processes, and the size of the messages. Think about how
+best to present these data. Compare them with the data we obtained for
+ping-pong messages, and the performance models we developed.</p><h3 id=part-2-writeup>Part 2 writeup
+<a class=anchor href=#part-2-writeup>#</a></h3><p>Write up both the algorithm/implementation choices for
+<code>tree_allreduce</code> and your findings in a short report (max four pages).
+In addition to describing the implementation choices, your report
+should present the results of your experiments, along with an analysis
+of the data. Remember to justify and explain your parameter choices
+for the experiments you carried out.</p><p>Some questions you could consider include:</p><ol><li>Which implementation is the best choice? Does it depend on the
+number of processes taking part?</li><li>What scaling do you observe as a function of the number of
+processes and message size?</li><li>Does the scaling behaviour match the predictions of the models we
+constructed in lectures?</li><li>Do you observe the same algorithmic scaling behaviour for
+<code>MPI_Allreduce</code> as for <code>tree_allreduce</code>? If not, what do you think
+might be the difference?</li></ol><p>You may also cover other points that your noticed or found interesting.</p><p>You should include this writeup in your repository as PDF file called
+<code>part2.pdf</code>.</p><h2 id=submission>Mark scheme and submission
+<a class=anchor href=#submission>#</a></h2><p>To submit your work, upload a single text file to ULTRA containing the
+git commit hash of the code and writeups you want marked. I will then
+go your repository and mark the work from the relevant commit. To
+ensure that I can match things up, add your CIS username to the
+<code>README.md</code> document in your copy of the repository.</p><blockquote class="book-hint warning">I will mark what is in the GitHub classroom repository. <strong>Make sure to
+push your changes to this repository regularly</strong>. Do not upload code
+to ULTRA.</blockquote><p>Your repository should contain your implementations and two <strong>PDF</strong>
+reports:</p><ol><li><code>part1.pdf</code>: Max one page, covering your implementation for Part 1</li><li><code>part2.pdf</code>: Max four pages, covering your implementation and
+experiments for Part 2</li></ol><table><thead><tr><th align=right>Artifact</th><th align=left>Descriptor</th><th>Marks</th></tr></thead><tbody><tr><td align=right>All code</td><td align=left>Compiles with no warnings and no memory leaks</td><td>5</td></tr><tr><td align=right>Part 1 code</td><td align=left>Correct OpenMP parallelisation of Gauss-Seidel iteration</td><td>15</td></tr><tr><td align=right>Part 2 code</td><td align=left>Correct MPI implementation for <code>tree_allreduce</code></td><td>20</td></tr><tr><td align=right>Part 1 report</td><td align=left>Description of parallelisation scheme</td><td>10</td></tr><tr><td align=right>Part 2 report</td><td align=left>Description of implementation choices and analysis and presentation of experimental data</td><td>50</td></tr></tbody></table><p>The reports will be marked with reference to the <a href=https://durhamuniversity.sharepoint.com/teams/MScScientificComputingandDataAnalysis/SitePages/Written-Work-Descriptors-%28Non-Dissertation%29.aspx>descriptors for
+written
+work</a>
+on the MISCADA sharepoint site.</p></article><footer class=book-footer><div class="flex flex-wrap justify-between"><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/commit/d488ecdf20e1aba21512c0e81135546a0c9a77d7 title="Last modified by Lawrence Mitchell | April 7, 2022" target=_blank rel=noopener><img src=/phys52015/svg/calendar.svg class=book-icon alt=Calendar>
+<span>April 7, 2022</span></a></div><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/edit/main/site/content/coursework.md target=_blank rel=noopener><img src=/phys52015/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div></div><div class="flex flex-wrap align-right"><p>© 2020&ndash; <a href=mailto:lawrence.mitchell@durham.ac.uk>Lawrence Mitchell</a>, <a href=https://www.ippp.dur.ac.uk/~hschulz/>Holger Schulz</a>, <a href="https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712">Christian Arnold</a> & <a href=https://www.dur.ac.uk/>Durham University</a>.</p><p><a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=/phys52015/cc-by-sa.svg></a>
+This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.</p></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#part-1-openmp>Part 1: OpenMP</a><ul><li><a href=#task-design-and-implement-an-openmp-parallelisation-scheme>Task: design and implement an OpenMP parallelisation scheme</a></li><li><a href=#part-1-writeup>Part 1 writeup</a></li></ul></li><li><a href=#part-2-mpi>Part 2: MPI</a><ul><li><a href=#task-implement-tree_allreduce>Task: implement <code>tree_allreduce</code></a></li><li><a href=#task-benchmarking-and-comparison-to-mpi_allreduce>Task: benchmarking and comparison to <code>MPI_Allreduce</code></a></li><li><a href=#part-2-writeup>Part 2 writeup</a></li></ul></li><li><a href=#submission>Mark scheme and submission</a></li></ul></nav></aside></main></body></html>

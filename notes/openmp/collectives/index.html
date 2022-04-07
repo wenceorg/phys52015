@@ -1,0 +1,404 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="OpenMP collectives #  So far we&rsquo;ve seen how we can create thread teams using #pragma omp parallel and distribute work in loops between members of the team by using #pragma omp for.
+Now we&rsquo;ll look at what we need to do if we need to communicate between threads.
+Reductions #  Remember that the OpenMP programming model allows communication between threads by using shared memory. If some piece of memory is shared in a parallel region then every thread in the team can both read and write to it."><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Collectives"><meta property="og:description" content="OpenMP collectives #  So far we&rsquo;ve seen how we can create thread teams using #pragma omp parallel and distribute work in loops between members of the team by using #pragma omp for.
+Now we&rsquo;ll look at what we need to do if we need to communicate between threads.
+Reductions #  Remember that the OpenMP programming model allows communication between threads by using shared memory. If some piece of memory is shared in a parallel region then every thread in the team can both read and write to it."><meta property="og:type" content="article"><meta property="og:url" content="https://teaching.wence.uk/phys52015/notes/openmp/collectives/"><meta property="article:modified_time" content="2022-04-07T18:13:40+01:00"><title>Collectives | PHYS52015 – Introduction to HPC</title><link rel=manifest href=/phys52015/manifest.json><link rel=icon href=/phys52015/favicon.png type=image/x-icon><link rel=stylesheet href=/phys52015/book.min.0cb0b7d6a1ed5d0e95321cc15edca4d6e9cc406149d1f4a3f25fd532f6a3bb38.css integrity="sha256-DLC31qHtXQ6VMhzBXtyk1unMQGFJ0fSj8l/VMvajuzg="><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css integrity=sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X crossorigin=anonymous><script defer src=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js integrity=sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4 crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js integrity=sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa crossorigin=anonymous></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false},{left:"\\(",right:"\\)",display:false},{left:"\\[",right:"\\]",display:true}]})});</script></head><body dir=ltr><input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control><main class="container flex"><aside class=book-menu><nav><div class=book-brand><img class=book-center src=/phys52015/logo.svg alt=Logo><h2><a href=/phys52015>PHYS52015 – Introduction to HPC</a></h2></div><ul><li><span>Administrivia</span><ul><li><a href=/phys52015/setup/remote/>Remote editing/development</a></li><li><a href=/phys52015/setup/hamilton-quickstart/>Hamilton access & quickstart</a></li><li><a href=/phys52015/setup/byod/>Local setup</a></li><li><a href=/phys52015/setup/configuration/>ssh configuration</a></li><li><a href=/phys52015/setup/unix/>Unix resources</a></li></ul></li><li><span>Exercises</span><ul><li><a href=/phys52015/exercises/hello/>Parallel Hello World</a></li><li><a href=/phys52015/exercises/openmp-loop/>OpenMP: parallel loops</a></li><li><a href=/phys52015/exercises/openmp-stencil/>OpenMP: stencils</a></li><li><a href=/phys52015/exercises/openmp-reduction/>OpenMP: synchronisation</a></li><li><a href=/phys52015/exercises/mpi-ring/>MPI: messages round a ring</a></li><li><a href=/phys52015/exercises/mpi-pi/>MPI: Calculating π</a></li><li><a href=/phys52015/exercises/mpi-ping-pong/>MPI: ping-pong latency</a></li><li><a href=/phys52015/exercises/mpi-collectives/>MPI: simple collectives</a></li><li><a href=/phys52015/exercises/mpi-stencil/>MPI: domain decomposition and halo exchanges</a></li></ul></li><li><a href=/phys52015/coursework/>Coursework: stencils and collectives</a></li><li><span>Notes</span><ul><li><a href=/phys52015/notes/introduction/>Introduction and motivation</a></li><li><span>Theory & concepts</span><ul><li><a href=/phys52015/notes/theory/scaling-laws/>Parallel scaling laws</a></li><li><a href=/phys52015/notes/theory/hardware-parallelism/>Parallelism in hardware: an overview</a></li><li><a href=/phys52015/notes/theory/concepts/>Parallel patterns</a></li></ul></li><li><a href=/phys52015/notes/openmp/>OpenMP</a><ul><li><a href=/phys52015/notes/openmp/intro/>What is OpenMP?</a></li><li><a href=/phys52015/notes/openmp/loop-parallelism/>Loop parallelism</a></li><li><a href=/phys52015/notes/openmp/collectives/ class=active>Collectives</a></li></ul></li><li><a href=/phys52015/notes/mpi/>MPI</a><ul><li><a href=/phys52015/notes/mpi/point-to-point/>Point-to-point messaging in MPI</a></li><li><a href=/phys52015/notes/mpi/point-to-point-nb/>Non-blocking point-to-point messaging</a></li><li><a href=/phys52015/notes/mpi/collectives/>Collectives</a></li><li><a href=/phys52015/notes/mpi/advanced/>Advanced topics</a></li></ul></li></ul></li><li><a href=/phys52015/resources/>Further resources</a></li><li><a href=/phys52015/acknowledgements/>Acknowledgements</a></li><li><span>Past editions</span><ul><li><span>2020/21</span><ul><li><a href=/phys52015/past-editions/2020-21/coursework/>Coursework: parallel dense linear algebra</a></li></ul></li></ul></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/phys52015/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Collectives</strong>
+<label for=toc-control><img src=/phys52015/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><a href=#reductions>Reductions</a><ul><li><a href=#directives-to-the-rescue>Directives to the rescue</a></li><li><a href=#where-can-you-use-reduction-clauses>Where can you use <code>reduction</code> clauses?</a></li></ul></li><li><a href=#inter-thread-synchronisation>Inter-thread synchronisation</a><ul><li><a href=#barriers>Barriers</a></li><li><a href=#critical-sections-and-atomics>Critical sections and atomics</a></li><li><a href=#atomics>Atomics</a></li></ul></li><li><a href=#data-race-tools>Tools for detecting data races</a></li><li><a href=#summary>Summary</a></li></ul></nav></aside></header><article class=markdown><blockquote class="book-hint warning"><span>This course page was updated until March 2022 when I left Durham University.
+For future updates, please visit
+the <a href=https://durham-phys52015.github.io/>new version
+of the course pages</a>.</span></blockquote><h1 id=openmp-collectives>OpenMP collectives
+<a class=anchor href=#openmp-collectives>#</a></h1><p>So far we&rsquo;ve seen how we can create thread teams using <code>#pragma omp parallel</code> and distribute work in loops between members of the team by
+using <code>#pragma omp for</code>.</p><p>Now we&rsquo;ll look at what we need to do if we need to communicate between
+threads.</p><h2 id=reductions>Reductions
+<a class=anchor href=#reductions>#</a></h2><p>Remember that the OpenMP programming model allows communication
+between threads by using <em>shared memory</em>. If some piece of memory is
+shared in a parallel region then every thread in the team can both
+read and write to it.</p><p>Recall also that there is no synchronisation across accesses to shared
+memory. Let us consider what this means for computing a vector dot
+product</p><p>$$
+a \cdot b = \sum_i^N a_i b_i
+$$</p><p>A serial loop to compute this code might look like the following</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#111>dot</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+  <span style=color:#111>dot</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+<span style=color:#111>}</span>
+</code></pre></div><p>A naive parallelisation would just annotate the loop with <code>#pragma omp for</code>.</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#111>dot</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#75715e>#pragma omp parallel for default(none) shared(dot, a, b) schedule(static)
+</span><span style=color:#75715e></span><span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+  <span style=color:#111>dot</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+<span style=color:#111>}</span>
+</code></pre></div><p>However, this has a problem. The shared variable <code>dot</code> is
+updated by multiple threads, and so we are not guaranteed that all
+increments will be seen since there is a <a href=https://teaching.wence.uk/phys52015/notes/openmp/#sync-data-race>write race</a> in the increment of <code>dot</code>.</p><blockquote class="book-hint info">I discuss some <a href=#data-race-tools>tools</a> for detecting
+data races below.</blockquote><p>We can test this out with the following code</p><div class=book-include><div class=book-include-heading><tt>openmp-snippets/reduction-race.c</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/openmp-snippets/reduction-race.c>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+<span style=color:#00a8c8>int</span> <span style=color:#75af00>main</span><span style=color:#111>(</span><span style=color:#00a8c8>void</span><span style=color:#111>)</span>
+<span style=color:#111>{</span>
+  <span style=color:#00a8c8>const</span> <span style=color:#00a8c8>int</span> <span style=color:#111>N</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>1024</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#f92672>*</span><span style=color:#111>a</span> <span style=color:#f92672>=</span> <span style=color:#111>malloc</span><span style=color:#111>(</span><span style=color:#111>N</span> <span style=color:#f92672>*</span> <span style=color:#00a8c8>sizeof</span><span style=color:#111>(</span><span style=color:#f92672>*</span><span style=color:#111>a</span><span style=color:#111>));</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#f92672>*</span><span style=color:#111>b</span> <span style=color:#f92672>=</span> <span style=color:#111>malloc</span><span style=color:#111>(</span><span style=color:#111>N</span> <span style=color:#f92672>*</span> <span style=color:#00a8c8>sizeof</span><span style=color:#111>(</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>));</span>
+  <span style=color:#75715e>/* Intialise with some values */</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>i</span><span style=color:#f92672>+</span><span style=color:#ae81ff>1</span><span style=color:#111>;</span>
+    <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>i</span><span style=color:#f92672>*</span><span style=color:#ae81ff>2</span><span style=color:#111>;</span>
+  <span style=color:#111>}</span>
+  <span style=color:#75715e>/* Check */</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>dotabserial</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>dotabserial</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+  <span style=color:#111>}</span>
+
+  <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;  Serial a.b = %d</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span> <span style=color:#111>dotabserial</span><span style=color:#111>);</span>
+
+  <span style=color:#00a8c8>int</span> <span style=color:#111>dotabparallel</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#75715e>#pragma omp parallel default(none) shared(a, b, N, dotabparallel)
+</span><span style=color:#75715e></span>  <span style=color:#111>{</span>
+<span style=color:#75715e>#pragma omp for schedule(static)
+</span><span style=color:#75715e></span>    <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+      <span style=color:#111>dotabparallel</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+    <span style=color:#111>}</span>
+  <span style=color:#111>}</span>
+  <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;Parallel a.b = %d</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span> <span style=color:#111>dotabparallel</span><span style=color:#111>);</span>
+  <span style=color:#111>free</span><span style=color:#111>(</span><span style=color:#111>a</span><span style=color:#111>);</span>
+  <span style=color:#111>free</span><span style=color:#111>(</span><span style=color:#111>b</span><span style=color:#111>);</span>
+  <span style=color:#00a8c8>return</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#111>}</span>
+</code></pre></div></div></div><blockquote class=exercise><h3>Exercise</h3><p>This example code computes a dot product in serial and then in
+parallel. But the parallel version has race conditions.</p><p>Try running with different numbers of threads. Do you always get the
+correct answer in parallel? Do you always get the same wrong answer?</p><details><summary>Solution</summary><div class=markdown-inner>I, at least, don&rsquo;t always get the same wrong answer (but I generally
+get the wrong answer).</div></details></blockquote><p>The solution to this problem is to create partial sums on each thread,
+and the accumulate them in a thread-safe way. We could do this like so</p><p><a name=reduction-hand></a></p><div class=book-include><div class=book-include-heading><tt>openmp-snippets/reduction-hand.c</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/openmp-snippets/reduction-hand.c>Download</a></div><div class=book-include-content><div class=highlight><div style=color:#272822;background-color:#fafafa><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#272822;background-color:#fafafa><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;omp.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+<span style=color:#00a8c8>int</span> <span style=color:#75af00>main</span><span style=color:#111>(</span><span style=color:#00a8c8>void</span><span style=color:#111>)</span>
+<span style=color:#111>{</span>
+  <span style=color:#00a8c8>const</span> <span style=color:#00a8c8>int</span> <span style=color:#111>N</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>1024</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#f92672>*</span><span style=color:#111>a</span> <span style=color:#f92672>=</span> <span style=color:#111>malloc</span><span style=color:#111>(</span><span style=color:#111>N</span> <span style=color:#f92672>*</span> <span style=color:#00a8c8>sizeof</span><span style=color:#111>(</span><span style=color:#f92672>*</span><span style=color:#111>a</span><span style=color:#111>));</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#f92672>*</span><span style=color:#111>b</span> <span style=color:#f92672>=</span> <span style=color:#111>malloc</span><span style=color:#111>(</span><span style=color:#111>N</span> <span style=color:#f92672>*</span> <span style=color:#00a8c8>sizeof</span><span style=color:#111>(</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>));</span>
+  <span style=color:#75715e>/* Intialise with some values */</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>i</span><span style=color:#f92672>+</span><span style=color:#ae81ff>1</span><span style=color:#111>;</span>
+    <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>i</span><span style=color:#f92672>*</span><span style=color:#ae81ff>2</span><span style=color:#111>;</span>
+  <span style=color:#111>}</span>
+  <span style=color:#75715e>/* Check */</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>dotabserial</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>dotabserial</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+  <span style=color:#111>}</span>
+
+  <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;  Serial a.b = %d</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span> <span style=color:#111>dotabserial</span><span style=color:#111>);</span>
+
+  <span style=color:#00a8c8>int</span> <span style=color:#111>dotabparallel</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#f92672>*</span><span style=color:#111>dotlocal</span> <span style=color:#f92672>=</span> <span style=color:#111>NULL</span><span style=color:#111>;</span>
+<span style=color:#75715e>#pragma omp parallel default(none) shared(a, b, N, dotabparallel, dotlocal)
+</span><span style=color:#75715e></span>  <span style=color:#111>{</span>
+    <span style=color:#00a8c8>int</span> <span style=color:#111>tid</span> <span style=color:#f92672>=</span> <span style=color:#111>omp_get_thread_num</span><span style=color:#111>();</span>
+<span style=color:#75715e>#pragma omp single
+</span><span style=color:#75715e></span>    <span style=color:#111>dotlocal</span> <span style=color:#f92672>=</span> <span style=color:#111>calloc</span><span style=color:#111>(</span><span style=color:#111>omp_get_num_threads</span><span style=color:#111>(),</span> <span style=color:#00a8c8>sizeof</span><span style=color:#111>(</span><span style=color:#f92672>*</span><span style=color:#111>dotlocal</span><span style=color:#111>));</span>
+    <span style=color:#75715e>/* Implicit barrier at end of single is required so that dotlocal
+</span><span style=color:#75715e>       is defined for the loop */</span>
+<span style=color:#75715e>#pragma omp for schedule(static)
+</span><span style=color:#75715e></span>    <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+      <span style=color:#111>dotlocal</span><span style=color:#111>[</span><span style=color:#111>tid</span><span style=color:#111>]</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+    <span style=color:#111>}</span>
+    <span style=color:#75715e>/* Implicit barrier at end of for is required here so that a
+</span><span style=color:#75715e>       thread finishing early does not update dotabparallel too soon. */</span>
+<span style=color:#75715e>#pragma omp single nowait
+</span><span style=color:#75715e></span>    <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>omp_get_num_threads</span><span style=color:#111>();</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+      <span style=color:#111>dotabparallel</span> <span style=color:#f92672>+=</span> <span style=color:#111>dotlocal</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+    <span style=color:#111>}</span>
+  <span style=color:#111>}</span>
+  <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;Parallel a.b = %d</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span> <span style=color:#111>dotabparallel</span><span style=color:#111>);</span>
+  <span style=color:#111>free</span><span style=color:#111>(</span><span style=color:#111>dotlocal</span><span style=color:#111>);</span>
+  <span style=color:#111>free</span><span style=color:#111>(</span><span style=color:#111>a</span><span style=color:#111>);</span>
+  <span style=color:#111>free</span><span style=color:#111>(</span><span style=color:#111>b</span><span style=color:#111>);</span>
+  <span style=color:#00a8c8>return</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#111>}</span>
+</code></pre></td></tr></table></div></div></div></div><p>As the comments indicate, all the barriers are quite delicate.</p><blockquote class=exercise><h3>Exercise</h3><p>Run this code, check that it continues to give you the correct answer
+independent of the number of threads you use.</p><p>Now explore what happens if you accidentally got some of the barriers
+wrong.</p><ol><li>What happens if you add <code>nowait</code> to the <code>single</code> directive on line
+28?</li><li>What happens if you add <code>nowait</code> to the <code>for</code> directive on line 32?
+(Remove the <code>nowait</code> from line 28 again!)</li></ol><details><summary>Solution</summary><div class=markdown-inner><p>For 1., you probably get a <code>Segmentation fault</code>, because we need to
+wait for the array to be allocated, this means we need to synchronise
+after the allocation.</p><p>For 2., you probably get the wrong answer. The reason is that if one
+thread finishes in the parallel loop before the others, it will
+immediately go ahead and start adding up the contributions, so it&rsquo;ll
+pick up whatever happens to be the current value in the other entries
+in <code>dotlocal</code> (which will likely be incomplete).</p></div></details></blockquote><h3 id=directives-to-the-rescue>Directives to the rescue
+<a class=anchor href=#directives-to-the-rescue>#</a></h3><p>We see that writing a collective reduction by hand is possible, but a
+bit tedious. OpenMP provides facilities to handle all of the gory
+details by adding an extra
+<a href=https://hpc.llnl.gov/tuts/openMP/#REDUCTION><code>reduction</code></a>
+clause to the <code>for</code> directive</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#pragma omp for schedule(static) reduction(+:dot)
+</span><span style=color:#75715e></span><span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+  <span style=color:#111>dot</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+<span style=color:#111>}</span>
+</code></pre></div><p>This tells OpenMP that <code>dot</code> is a reduction variable, and that the
+combining operation is <code>+</code>. It now becomes the compiler&rsquo;s job to
+generate appropriate code for privatising the partial reduction
+contributions from different threads and then combining them.</p><p><code>reduction</code> clauses have some restrictions on the type of data they
+can combine. We need an associative binary operator (so that the
+combination can happen in any order) and an identity element for the
+operation (so that the compiler can generate the right initial value
+for the privatised reduction variables).</p><p>Reductions are defined for builtin datatypes (such as <code>int</code>, <code>double</code>)
+and for the combining operations in the table below</p><table><thead><tr><th>Operation</th><th>Operator</th><th>Initialisation</th></tr></thead><tbody><tr><td>Addition</td><td><code>+</code></td><td><code>0</code></td></tr><tr><td>Multiplication</td><td><code>*</code></td><td><code>1</code></td></tr><tr><td>Subtraction<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup></td><td><code>-</code></td><td><code>0</code></td></tr><tr><td>Minimum</td><td><code>min</code></td><td>Most positive number of given type</td></tr><tr><td>Maximum</td><td><code>max</code></td><td>Most negative number of given type</td></tr><tr><td>Logical and</td><td><code>&&</code></td><td><code>1</code></td></tr><tr><td>Logical or</td><td><code>||</code></td><td><code>0</code></td></tr><tr><td>Bitwise and</td><td><code>&</code></td><td><code>~0</code> (all bits on)</td></tr><tr><td>Bitwise or</td><td><code>|</code></td><td><code>0</code> (all bits off)</td></tr></tbody></table><p>With this, we can rewrite our dot product example</p><div class=book-include><div class=book-include-heading><tt>openmp-snippets/reduction-directive.c</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/openmp-snippets/reduction-directive.c>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+<span style=color:#00a8c8>int</span> <span style=color:#75af00>main</span><span style=color:#111>(</span><span style=color:#00a8c8>void</span><span style=color:#111>)</span>
+<span style=color:#111>{</span>
+  <span style=color:#00a8c8>const</span> <span style=color:#00a8c8>int</span> <span style=color:#111>N</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>1024</span><span style=color:#111>;</span>
+
+  <span style=color:#00a8c8>int</span> <span style=color:#f92672>*</span><span style=color:#111>a</span> <span style=color:#f92672>=</span> <span style=color:#111>malloc</span><span style=color:#111>(</span><span style=color:#111>N</span> <span style=color:#f92672>*</span> <span style=color:#00a8c8>sizeof</span><span style=color:#111>(</span><span style=color:#f92672>*</span><span style=color:#111>a</span><span style=color:#111>));</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#f92672>*</span><span style=color:#111>b</span> <span style=color:#f92672>=</span> <span style=color:#111>malloc</span><span style=color:#111>(</span><span style=color:#111>N</span> <span style=color:#f92672>*</span> <span style=color:#00a8c8>sizeof</span><span style=color:#111>(</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>));</span>
+  <span style=color:#75715e>/* Intialise with some values */</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>(</span><span style=color:#111>i</span><span style=color:#f92672>+</span><span style=color:#ae81ff>1</span><span style=color:#111>)</span> <span style=color:#f92672>*</span> <span style=color:#111>(</span><span style=color:#ae81ff>2</span> <span style=color:#f92672>-</span> <span style=color:#111>(</span><span style=color:#111>i</span> <span style=color:#f92672>%</span> <span style=color:#ae81ff>5</span><span style=color:#111>));</span>
+    <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>i</span><span style=color:#f92672>*</span><span style=color:#ae81ff>2</span><span style=color:#111>;</span>
+  <span style=color:#111>}</span>
+  <span style=color:#75715e>/* Check */</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>dotabserial</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>dotabserial</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+  <span style=color:#111>}</span>
+
+  <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;  Serial a.b = %d</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span> <span style=color:#111>dotabserial</span><span style=color:#111>);</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>dotabparallel</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#75715e>#pragma omp parallel for schedule(static) default(none) \
+</span><span style=color:#75715e>  shared(a, b, N) reduction(+:dotabparallel)
+</span><span style=color:#75715e></span>  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>dotabparallel</span> <span style=color:#f92672>+=</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span><span style=color:#f92672>*</span><span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>];</span>
+  <span style=color:#111>}</span>
+  <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;Parallel a.b = %d</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span> <span style=color:#111>dotabparallel</span><span style=color:#111>);</span>
+  <span style=color:#111>free</span><span style=color:#111>(</span><span style=color:#111>a</span><span style=color:#111>);</span>
+  <span style=color:#111>free</span><span style=color:#111>(</span><span style=color:#111>b</span><span style=color:#111>);</span>
+  <span style=color:#00a8c8>return</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#111>}</span>
+</code></pre></div></div></div><p>This is both more succinct, and potentially better optimised. For
+example, the compiler might implement a tree reduction (rather than
+the linear reduction I coded above).</p><h3 id=where-can-you-use-reduction-clauses>Where can you use <code>reduction</code> clauses?
+<a class=anchor href=#where-can-you-use-reduction-clauses>#</a></h3><p>You don&rsquo;t need to annotate a loop with a reduction. Suppose that you
+have a parallel region where the threads each do a single expensive
+operation and then combine the results. A reduction is entirely
+appropriate here too.</p><h2 id=inter-thread-synchronisation>Inter-thread synchronisation
+<a class=anchor href=#inter-thread-synchronisation>#</a></h2><p>Sometimes, we&rsquo;ll want to do something other than just compute a
+reduction. In these cases, if we want to pass information between
+threads, we need to synchronise on reading and writing to shared
+memory.</p><h3 id=barriers>Barriers
+<a class=anchor href=#barriers>#</a></h3><p>OpenMP has a number of constructs for this purpose. We&rsquo;ve already
+implicitly seen one of them, namely barriers. In a parallel region,
+<a href=https://hpc.llnl.gov/tuts/openMP/#BARRIER><code>#pragma omp barrier</code></a> can be
+used to synchronise all threads in the team.</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#pragma omp parallel for shared(a) default(none)
+</span><span style=color:#75715e></span><span style=color:#111>{</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>tid</span> <span style=color:#f92672>=</span> <span style=color:#111>omp_get_thread_num</span><span style=color:#111>();</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>nthread</span> <span style=color:#f92672>=</span> <span style=color:#111>omp_get_num_threads</span><span style=color:#111>();</span>
+  <span style=color:#75715e>/* Produce some thread-specific data */</span>
+  <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>tid</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>some_computation</span><span style=color:#111>(</span><span style=color:#111>tid</span><span style=color:#111>,</span> <span style=color:#111>...);</span>
+  <span style=color:#75715e>#pragma omp barrier
+</span><span style=color:#75715e></span>  <span style=color:#75715e>/* Read data from a neighbouring thread */</span>
+  <span style=color:#111>b</span><span style=color:#111>[</span><span style=color:#111>tid</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>a</span><span style=color:#111>[(</span><span style=color:#111>tid</span><span style=color:#f92672>+</span><span style=color:#ae81ff>1</span><span style=color:#111>)</span><span style=color:#f92672>%</span><span style=color:#111>nthread</span><span style=color:#111>]</span> <span style=color:#f92672>+</span> <span style=color:#111>...;</span>
+<span style=color:#111>}</span>
+</code></pre></div><p>Without the barrier, there is no synchronisation between the writes to
+<code>a</code> and the reads when updating <code>b</code>. We would therefore likely get the
+wrong answer.</p><p>The barrier ensures that no thread attempts the update to <code>b</code> before
+all threads have arrived at the barrier (after updating <code>a</code>).</p><blockquote class="book-hint warning">Either <strong>all</strong> threads must encounter the barrier, or none, otherwise
+we get a deadlock.</blockquote><div class=book-include><div class=book-include-heading><tt>openmp-snippets/bad-barrier.c</tt></div><div class=book-include-download><a href=https://teaching.wence.uk/phys52015/code/openmp-snippets/bad-barrier.c>Download</a></div><div class=book-include-content><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;omp.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+
+<span style=color:#00a8c8>int</span> <span style=color:#75af00>main</span><span style=color:#111>(</span><span style=color:#00a8c8>void</span><span style=color:#111>)</span>
+<span style=color:#111>{</span>
+  <span style=color:#00a8c8>const</span> <span style=color:#00a8c8>int</span> <span style=color:#111>N</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>16</span><span style=color:#111>;</span>
+  <span style=color:#00a8c8>int</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>N</span><span style=color:#111>];</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span><span style=color:#111>;</span>
+  <span style=color:#111>}</span>
+<span style=color:#75715e>#pragma omp parallel default(none) shared(a, N)
+</span><span style=color:#75715e></span>  <span style=color:#111>{</span>
+    <span style=color:#00a8c8>int</span> <span style=color:#111>tid</span> <span style=color:#f92672>=</span> <span style=color:#111>omp_get_thread_num</span><span style=color:#111>();</span>
+    <span style=color:#00a8c8>int</span> <span style=color:#111>nthread</span> <span style=color:#f92672>=</span> <span style=color:#111>omp_get_num_threads</span><span style=color:#111>();</span>
+
+    <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>tid</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>tid</span> <span style=color:#f92672>+</span> <span style=color:#111>nthread</span><span style=color:#111>;</span>
+
+    <span style=color:#00a8c8>if</span> <span style=color:#111>(</span><span style=color:#111>tid</span> <span style=color:#f92672>%</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+      <span style=color:#75715e>/* deadlock! */</span>
+      <span style=color:#75715e>#pragma omp barrier
+</span><span style=color:#75715e></span>    <span style=color:#111>}</span>
+    <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>tid</span><span style=color:#111>]</span> <span style=color:#f92672>=</span> <span style=color:#111>a</span><span style=color:#111>[(</span><span style=color:#111>tid</span> <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span><span style=color:#111>)</span><span style=color:#f92672>%</span><span style=color:#111>nthread</span><span style=color:#111>];</span>
+  <span style=color:#111>}</span>
+  <span style=color:#00a8c8>for</span> <span style=color:#111>(</span><span style=color:#00a8c8>int</span> <span style=color:#111>i</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span> <span style=color:#111>i</span> <span style=color:#f92672>&lt;</span> <span style=color:#111>N</span><span style=color:#111>;</span> <span style=color:#111>i</span><span style=color:#f92672>++</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>printf</span><span style=color:#111>(</span><span style=color:#d88200>&#34;a[%2d] = %2d</span><span style=color:#8045ff>\n</span><span style=color:#d88200>&#34;</span><span style=color:#111>,</span> <span style=color:#111>i</span><span style=color:#111>,</span> <span style=color:#111>a</span><span style=color:#111>[</span><span style=color:#111>i</span><span style=color:#111>]);</span>
+  <span style=color:#111>}</span>
+  <span style=color:#00a8c8>return</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#111>}</span>
+</code></pre></div></div></div><blockquote class=exercise><h3>Exercise</h3><p>Try this deadlock situation out with the above code.</p><p>Does it run successfully with one thread? What about two or three?</p><details><summary>Hint</summary><div class=markdown-inner>To terminate the hanging program, type <code>Control-c</code> at the commandline.</div></details><details><summary>Solution</summary><div class=markdown-inner>It should work fine with one thread, but not more than one.</div></details></blockquote><p>Recall that often barriers are implicit in worksharing constructs. So
+if we are in a parallel region we do not need a barrier between two
+<code>#pragma omp for</code> directives for synchronisation (because <code>#pragma omp for</code> has an implicit barrier at the end of the loop).</p><h3 id=critical-sections-and-atomics>Critical sections and atomics
+<a class=anchor href=#critical-sections-and-atomics>#</a></h3><p>Sometimes a barrier synchronisation is a little heavy-handed. For this
+OpenMP provides us two further constructions. For protecting <em>code</em>
+and <em>variables</em> respectively.</p><p>The first is the critical section <a href=https://hpc.llnl.gov/tuts/openMP/#CRITICAL><code>#pragma omp critical</code></a>.
+This directive specifies that a region of code must be executed by
+only one thread at a time.</p><p>Here&rsquo;s a trivial example, counting the number of threads in a parallel
+region (don&rsquo;t do this, use <code>omp_get_num_threads()</code>).</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#00a8c8>int</span> <span style=color:#111>nthread</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#75715e>#pragma omp parallel default(none) shared(nthread)
+</span><span style=color:#75715e></span><span style=color:#111>{</span>
+  <span style=color:#75715e>#pragma omp critical
+</span><span style=color:#75715e></span>  <span style=color:#111>{</span>
+    <span style=color:#111>nthread</span> <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span><span style=color:#111>;</span>
+  <span style=color:#111>}</span>
+<span style=color:#111>}</span>
+</code></pre></div><p>Critical sections are more useful if you&rsquo;re parallelising over a
+shared data structure.</p><p>For example, consider a shared task stack of work from which we can
+pop work and push work. In pseudo-code, this looks approximately like
+the below.</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#111>stack</span> <span style=color:#f92672>=</span> <span style=color:#111>...;</span>              <span style=color:#75715e>/* Create initial work */</span>
+<span style=color:#00a8c8>while</span> <span style=color:#111>(</span><span style=color:#ae81ff>1</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+  <span style=color:#111>task</span> <span style=color:#f92672>=</span> <span style=color:#111>pop</span><span style=color:#111>(</span><span style=color:#111>stack</span><span style=color:#111>);</span>      <span style=color:#75715e>/* Get the next work item */</span>
+  <span style=color:#00a8c8>if</span> <span style=color:#111>(</span><span style=color:#111>task</span> <span style=color:#f92672>==</span> <span style=color:#111>NULL</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#00a8c8>break</span><span style=color:#111>;</span>                <span style=color:#75715e>/* No work left, exit loop */</span>
+  <span style=color:#111>}</span>
+  <span style=color:#111>newtask</span> <span style=color:#f92672>=</span> <span style=color:#111>work</span><span style=color:#111>(</span><span style=color:#111>task</span><span style=color:#111>);</span>   <span style=color:#75715e>/* Do work, potentially producing a new task */</span>
+  <span style=color:#00a8c8>if</span> <span style=color:#111>(</span><span style=color:#111>newtask</span> <span style=color:#f92672>!=</span> <span style=color:#111>NULL</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+    <span style=color:#111>push</span><span style=color:#111>(</span><span style=color:#111>newtask</span><span style=color:#111>,</span> <span style=color:#111>stack</span><span style=color:#111>);</span> <span style=color:#75715e>/* If there&#39;s a new task, add it to the stack */</span>
+  <span style=color:#111>}</span>
+<span style=color:#111>}</span>
+</code></pre></div><p>We can parallelise this with OpenMP, but we need to make sure there
+are no race conditions when pushing and popping from the shared
+<code>stack</code> data structure. This can be achieved with <code>critical</code> sections</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#111>stack</span> <span style=color:#f92672>=</span> <span style=color:#111>...;</span>
+<span style=color:#75715e>#pragma omp parallel default(none) shared(stack)
+</span><span style=color:#75715e></span><span style=color:#111>{</span>
+  <span style=color:#00a8c8>while</span> <span style=color:#111>(</span><span style=color:#ae81ff>1</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+<span style=color:#75715e>#pragma omp critical modifystack
+</span><span style=color:#75715e></span>    <span style=color:#111>{</span>
+      <span style=color:#111>task</span> <span style=color:#f92672>=</span> <span style=color:#111>pop</span><span style=color:#111>(</span><span style=color:#111>stack</span><span style=color:#111>);</span>
+    <span style=color:#111>}</span>
+    <span style=color:#00a8c8>if</span> <span style=color:#111>(</span><span style=color:#111>task</span> <span style=color:#f92672>==</span> <span style=color:#111>NULL</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+      <span style=color:#00a8c8>break</span><span style=color:#111>;</span>
+    <span style=color:#111>}</span>
+    <span style=color:#111>newtask</span> <span style=color:#f92672>=</span> <span style=color:#111>work</span><span style=color:#111>(</span><span style=color:#111>task</span><span style=color:#111>);</span>
+    <span style=color:#00a8c8>if</span> <span style=color:#111>(</span><span style=color:#111>newtask</span> <span style=color:#f92672>!=</span> <span style=color:#111>NULL</span><span style=color:#111>)</span> <span style=color:#111>{</span>
+<span style=color:#75715e>#pragma omp critical modifystack
+</span><span style=color:#75715e></span>      <span style=color:#111>push</span><span style=color:#111>(</span><span style=color:#111>newtask</span><span style=color:#111>,</span> <span style=color:#111>stack</span><span style=color:#111>);</span>
+    <span style=color:#111>}</span>
+  <span style=color:#111>}</span>
+<span style=color:#111>}</span>
+</code></pre></div><p>Here we protect the modification of the stack by critical sections.</p><p>Points to note:</p><ol><li>I gave the critical sections an optional name (<code>modifystack</code>). All
+critical sections with the <em>same name</em> synchronise. If no name is
+provided this matches any other critical section without a name.</li><li>We need the critical sections to have the same name for the push and pop
+because both of these sections modify the same shared data
+structure.</li><li>This probably isn&rsquo;t a very good implementation because threads
+might exit the loop too early (if they pop from an empty stack
+before new work is pushed by another thread).</li></ol><blockquote class="book-hint info">Design of high-performance datastructures for these kind of irregular
+computations is actually an ongoing area of research. If you&rsquo;re
+interested, look at some of the work that the <a href="https://iss.oden.utexas.edu/?p=projects/galois">Galois
+team</a> are doing.</blockquote><blockquote class=exercise><h3>Exercise</h3><p>Modify the <a href=#reduction-hand><code>reduction-hand.c</code></a> example
+to use a critical section to ensure the result is always correct.</p><details><summary>Solution</summary><div class=markdown-inner>This was actually the topic of the <a href=https://teaching.wence.uk/phys52015/exercises/openmp-reduction/>synchronisation</a> exercise, so see the solutions there.</div></details></blockquote><h3 id=atomics>Atomics
+<a class=anchor href=#atomics>#</a></h3><p>Even finer-grained than critical sections are <a href=https://hpc.llnl.gov/tuts/openMP/#ATOMIC><code>#pragma omp atomic</code></a>
+directives. These can be used to protect (some) updates to shared
+variables.</p><div class=highlight><pre style=color:#272822;background-color:#fafafa><code class=language-c data-lang=c><span style=color:#00a8c8>int</span> <span style=color:#111>nthread</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span><span style=color:#111>;</span>
+<span style=color:#75715e>#pragma omp parallel default(none) shared(nthread)
+</span><span style=color:#75715e></span><span style=color:#111>{</span>
+  <span style=color:#75715e>#pragma omp atomic
+</span><span style=color:#75715e></span>    <span style=color:#111>nthread</span> <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span><span style=color:#111>;</span>
+<span style=color:#111>}</span>
+</code></pre></div><p>An atomic directive protects variables (not code, like critical
+sections). In particular, it protects the <strong>write</strong> to the variable on
+the left hand side of an assignment. The allowed form is one of</p><ol><li><code>x op= expr</code> where <code>op</code> is one of <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>&</code>, <code>^</code>,
+<code>&lt;&lt;</code>, or <code>>></code></li><li><code>x++</code>, <code>++x</code>, <code>x--</code>, <code>--x</code>.</li></ol><p>Note that the evaluation of <code>expr</code> in the first form is not protected,
+it is <em>only</em> the write to <code>x</code> that is protected.</p><blockquote class=exercise><h3>Exercise</h3>We can use these synchronisation constructs to implement different
+approaches to the reduction example. The <a href=https://teaching.wence.uk/phys52015/exercises/openmp-reduction/>openmp exercise on
+reductions</a> does this.</blockquote><h2 id=data-race-tools>Tools for detecting data races
+<a class=anchor href=#data-race-tools>#</a></h2><p>We need to be careful when writing parallel code that we do not
+accidentally introduce race conditions that produce incorrect results.
+There are some tools available to help with this. On Linux-based
+systems you can use
+<a href=https://www.valgrind.org/docs/manual/hg-manual.html>helgrind</a>.</p><p>Modern versions of GCC and Clang also offer a <a href=https://github.com/google/sanitizers/wiki#threadsanitizer>thread sanitizer
+mode</a>
+enabled with <code>-fsanitize=thread</code>. Again, this is transparently
+supported on Linux, but seemingly not on MacOS.</p><p>Often, thinking hard is your best bet.</p><blockquote class="book-hint warning">Sometimes these tools will report <em>false positives</em>, and you need to
+work a little bit to eliminate them. See <a href=https://medium.com/@joshisameeran/using-tsan-threadsanitizer-and-ways-to-avoid-false-sharing-in-clang-and-gcc-15fae5283ad1>this nice
+article</a>
+for more information.</blockquote><blockquote class=exercise><h3>Exercise</h3><p>Try compiling and running the <a href=https://teaching.wence.uk/phys52015/code/openmp-snippets/reduction-race.c><code>reduction-race.c</code></a>) example using GCC and thread
+sanitizer enabled. Run with two threads, does it help you to
+understand the race condition?</p><p>On Hamilton load the <code>gcc/9.3.0</code> module, on COSMA load the
+<code>gnu_comp/10.2.0</code> module. You should then compile with</p><pre><code>$ gcc -fopenmp -g -fsanitize=thread -o race reduction-race.c
+</code></pre><p>The <code>-g</code> adds debug symbols so that we see line numbers in the error
+reports.</p><details><summary>Solution</summary><div class=markdown-inner><p>If I do this and then run with two threads, I see output like the
+following:</p><pre><code>WARNING: ThreadSanitizer: data race (pid=8685)
+  Read of size 4 at 0x7ffcc8e32e54 by thread T1:
+    #0 main._omp_fn.0 /ddn/home/vtdb72/phys52015/code/openmp-snippets/reduction-race.c:27 (foo+0x400d35)
+    #1 gomp_thread_start ../../../gcc-9.3.0/libgomp/team.c:123 (libgomp.so.1+0x19ec5)
+<p>Previous write of size 4 at 0x7ffcc8e32e54 by main thread:
+#0 main._omp_fn.0 /ddn/home/vtdb72/phys52015/code/openmp-snippets/reduction-race.c:27 (foo+0x400d4f)
+#1 GOMP_parallel ../../../gcc-9.3.0/libgomp/parallel.c:171 (libgomp.so.1+0x10fc1)
+#2 __libc_start_main &lt;null&gt; (libc.so.6+0x22504)</p>
+<p>Location is stack of main thread.</p>
+<p>Location is global &lsquo;&lt;null&gt;&rsquo; at 0x000000000000 ([stack]+0x00000001fe54)</p>
+<p>Thread T1 (tid=8687, running) created by main thread at:
+#0 pthread_create ../../../../gcc-9.3.0/libsanitizer/tsan/tsan_interceptors.cc:964 (libtsan.so.0+0x2cd6b)
+#1 gomp_team_start ../../../gcc-9.3.0/libgomp/team.c:836 (libgomp.so.1+0x1a4e5)
+#2 __libc_start_main &lt;null&gt; (libc.so.6+0x22504)</p>
+<p></code></pre><p>This tells me that multiple threads had a write-race on line 27, which
+is where the <code>dotabparallel</code> variable is updated.</p></p></div></details></blockquote><h2 id=summary>Summary
+<a class=anchor href=#summary>#</a></h2><p>As well as straightforward loop parallelisation, OpenMP also provides
+a number of constructs to help with accumulation of results and
+synchronisation when updating shared variables. The biggest hammer is
+a <code>barrier</code>, but these can often be avoided in favour of more
+fine-grained directives. The most useful is probably the <code>reduction</code>
+clause for loops.</p><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>Yes, subtraction isn&rsquo;t associative, so doesn&rsquo;t give us a
+<a href=https://en.wikipedia.org/wiki/Monoid>monoid</a>. The behaviour of
+OpenMP is to treat this like <code>+</code>, sum all the partial results and
+then multiply by -1 at the end. <a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></article><footer class=book-footer><div class="flex flex-wrap justify-between"><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/commit/d488ecdf20e1aba21512c0e81135546a0c9a77d7 title="Last modified by Lawrence Mitchell | April 7, 2022" target=_blank rel=noopener><img src=/phys52015/svg/calendar.svg class=book-icon alt=Calendar>
+<span>April 7, 2022</span></a></div><div><a class="flex align-center" href=https://github.com/wenceorg/phys52015/edit/main/site/content/notes/openmp/collectives.md target=_blank rel=noopener><img src=/phys52015/svg/edit.svg class=book-icon alt=Edit>
+<span>Edit this page</span></a></div></div><div class="flex flex-wrap align-right"><p>© 2020&ndash; <a href=mailto:lawrence.mitchell@durham.ac.uk>Lawrence Mitchell</a>, <a href=https://www.ippp.dur.ac.uk/~hschulz/>Holger Schulz</a>, <a href="https://www.dur.ac.uk/physics/staff/profiles/?mode=staff&id=16712">Christian Arnold</a> & <a href=https://www.dur.ac.uk/>Durham University</a>.</p><p><a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=/phys52015/cc-by-sa.svg></a>
+This work is licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative
+Commons Attribution-ShareAlike 4.0 International License</a>.</p></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><a href=#reductions>Reductions</a><ul><li><a href=#directives-to-the-rescue>Directives to the rescue</a></li><li><a href=#where-can-you-use-reduction-clauses>Where can you use <code>reduction</code> clauses?</a></li></ul></li><li><a href=#inter-thread-synchronisation>Inter-thread synchronisation</a><ul><li><a href=#barriers>Barriers</a></li><li><a href=#critical-sections-and-atomics>Critical sections and atomics</a></li><li><a href=#atomics>Atomics</a></li></ul></li><li><a href=#data-race-tools>Tools for detecting data races</a></li><li><a href=#summary>Summary</a></li></ul></nav></aside></main></body></html>
